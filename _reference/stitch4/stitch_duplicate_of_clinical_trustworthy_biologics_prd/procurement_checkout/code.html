@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ell. - Secure Checkout</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#15459d",
+          "background-light": "#f6f7f8",
+          "background-dark": "#111721",
+          "success": "#00875A",
+        },
+        fontFamily: {
+          "display": ["Public Sans", "sans-serif"],
+          "heading": ["Playfair Display", "serif"]
+        },
+        borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+      },
+    },
+  }
+</script>
+<style>
+  body { font-family: 'Public Sans', sans-serif; }
+</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-display antialiased">
+<!-- Minimal Header for Isolated Flow -->
+<header class="w-full flex justify-center py-6 px-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
+<div class="max-w-[600px] w-full flex items-center justify-between">
+<a aria-label="Go back" class="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center justify-center size-10 rounded" href="#">
+<span class="material-symbols-outlined">arrow_back</span>
+</a>
+<div class="flex items-center gap-3">
+<div class="text-primary">
+<svg class="size-6" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+</svg>
+</div>
+<span class="font-heading font-semibold text-2xl tracking-tight text-slate-900 dark:text-white">ell.</span>
+</div>
+<div class="size-10"></div> <!-- Spacer to center the logo -->
+</div>
+</header>
+<!-- Main Checkout Content -->
+<main class="w-full px-4 py-12 flex flex-col items-center flex-1">
+<div class="max-w-[600px] w-full flex flex-col gap-10">
+<!-- Title and Steps -->
+<div class="flex flex-col gap-8">
+<h1 class="text-3xl md:text-4xl font-heading font-semibold text-slate-900 dark:text-white tracking-tight">Secure Checkout</h1>
+<!-- Step Indicator -->
+<div class="flex items-center gap-3 text-sm font-medium">
+<div class="flex items-center gap-2 text-primary">
+<span class="flex items-center justify-center size-6 rounded-full bg-primary text-white text-xs font-semibold">1</span>
+<span>Verification</span>
+</div>
+<div class="h-[2px] flex-1 max-w-[40px] bg-slate-200 dark:bg-slate-700"></div>
+<div class="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+<span class="flex items-center justify-center size-6 rounded-full border border-slate-300 dark:border-slate-600 text-xs font-semibold">2</span>
+<span>Shipping</span>
+</div>
+<div class="h-[2px] flex-1 max-w-[40px] bg-slate-200 dark:bg-slate-700"></div>
+<div class="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+<span class="flex items-center justify-center size-6 rounded-full border border-slate-300 dark:border-slate-600 text-xs font-semibold">3</span>
+<span>Payment</span>
+</div>
+</div>
+</div>
+<!-- Order Summary Box -->
+<div class="bg-slate-50 dark:bg-slate-800/50 p-6 rounded border border-slate-200 dark:border-slate-700/80 flex flex-col gap-5 shadow-sm">
+<div class="flex items-center gap-2 text-xs uppercase tracking-widest font-semibold text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+        Order Summary
+      </div>
+<div class="flex justify-between items-start gap-4">
+<div class="flex flex-col gap-1">
+<p class="text-slate-900 dark:text-white font-semibold leading-tight">Umbilical Cord Blood - Mononuclear Cells</p>
+<p class="text-sm text-slate-500 dark:text-slate-400">Lot: <span class="font-mono text-xs font-medium">#LOT-992A-CB</span></p>
+</div>
+<div class="text-right flex flex-col gap-1 shrink-0">
+<p class="text-slate-900 dark:text-white font-semibold">&gt;25M Cells</p>
+<p class="text-sm text-success font-medium bg-success/10 px-2 py-0.5 rounded inline-flex self-end">98.2% Viability</p>
+</div>
+</div>
+<div class="h-[1px] w-full bg-slate-200 dark:bg-slate-700/80 my-1"></div>
+<div class="flex justify-between items-center">
+<p class="text-slate-600 dark:text-slate-300 font-medium">Estimated Subtotal</p>
+<p class="text-slate-900 dark:text-white font-semibold text-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-[18px]">lock</span>
+          Pending Verification
+        </p>
+</div>
+</div>
+<!-- Credential Verification Form -->
+<form class="flex flex-col gap-8">
+<!-- NPI Field -->
+<div class="flex flex-col gap-2 relative group">
+<label class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2" for="npi">
+          National Provider Identifier (NPI)
+          <span class="text-red-500">*</span>
+</label>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Required for institutional clinical biologics procurement.</p>
+<div class="relative">
+<input class="h-11 w-full rounded border border-success bg-white dark:bg-slate-900 px-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all pr-10 font-mono text-base shadow-sm" id="npi" placeholder="10-digit NPI number" required="" type="text" value="1093827184"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+<span class="material-symbols-outlined text-success" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Success State Message -->
+<p class="text-sm text-success font-medium flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+          Verified: Dr. Sarah Jenkins, MD
+        </p>
+</div>
+<!-- PO Number Field -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-900 dark:text-white" for="po">
+          Purchase Order (PO) Number 
+          <span class="text-slate-400 dark:text-slate-500 font-normal ml-1">(Optional)</span>
+</label>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-1">For internal billing and institutional tracking.</p>
+<input class="h-11 w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm font-mono text-sm" id="po" placeholder="e.g., PO-2024-001A" type="text"/>
+</div>
+<div class="pt-4 flex flex-col gap-4 border-t border-slate-200 dark:border-slate-800">
+<!-- Primary CTA -->
+<button class="h-11 w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded transition-colors flex items-center justify-center gap-2 shadow-sm" type="button">
+          Verify &amp; Continue to Shipping
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<div class="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+          Secure 256-bit SSL encrypted transaction
+        </div>
+</div>
+</form>
+</div>
+</main>
+</body></html>

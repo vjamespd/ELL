@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "ell-product-detail",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,0 +1,110 @@
+{% liquid
+  assign summary_title = section.settings.summary_title
+  assign summary_lot = section.settings.summary_lot
+  assign summary_cells = section.settings.summary_cells
+  assign summary_viability = section.settings.summary_viability
+  assign summary_total = section.settings.summary_total
+
+  if cart.item_count > 0
+    assign summary_title = cart.items.first.product.title
+    assign summary_lot = cart.items.first.variant.sku | default: cart.items.first.product.handle | upcase
+    assign summary_cells = 'Clinical allocation'
+    assign summary_viability = 'Pending lot review'
+    assign summary_total = cart.total_price | money
+  endif
+%}
+
+<section class="ell-section procurement-page__hero">
+  <div class="ell-container">
+    <div class="procurement-layout">
+      <div>
+        <h1 class="section-title">{{ section.settings.heading }}</h1>
+        <p class="lead-copy">{{ section.settings.body }}</p>
+      </div>
+
+      <nav class="procurement-steps" aria-label="Procurement steps">
+        <div class="procurement-step is-active">01 Verification</div>
+        <div class="procurement-step">02 Shipping</div>
+        <div class="procurement-step">03 Payment</div>
+      </nav>
+
+      <div class="procurement-card">
+        <div class="procurement-summary">
+          <div class="procurement-line">
+            <strong>{{ summary_title }}</strong>
+            <strong>{{ summary_cells }}</strong>
+          </div>
+          <div class="procurement-line">
+            <span class="muted-copy">Lot: {{ summary_lot }}</span>
+            <span class="status-chip status-chip--verified">{{ summary_viability }}</span>
+          </div>
+          <div class="procurement-line" style="padding-top:1rem;border-top:1px solid rgba(39,15,68,0.08);">
+            <span class="muted-copy">Estimated Subtotal</span>
+            <strong>{{ summary_total }}</strong>
+          </div>
+        </div>
+
+        <div data-verification-root>
+          <div style="display:grid;gap:1.25rem;">
+            <div>
+              <label class="stat-label" for="procurement-npi">National Provider Identifier (NPI)</label>
+              <p class="muted-copy" style="margin:0 0 0.6rem;">Required for institutional clinical biologics procurement.</p>
+              <input id="procurement-npi" class="field" type="text" value="{{ section.settings.example_npi }}" placeholder="10-digit NPI number" data-npi-input>
+            </div>
+
+            <div>
+              <label class="stat-label" for="procurement-institution">Affiliated Institution</label>
+              <input id="procurement-institution" class="field" type="text" placeholder="e.g. Mayo Clinic Research" data-institution-input>
+            </div>
+
+            <div>
+              <label class="stat-label" for="procurement-po">Purchase Order (Optional)</label>
+              <input id="procurement-po" class="field" type="text" placeholder="e.g. PO-2026-001A">
+            </div>
+
+            <div class="upload-drop">
+              <div style="display:flex;justify-content:center;margin-bottom:0.5rem;color:var(--ell-secondary);">{% render 'icon', name: 'file' %}</div>
+              <strong>{{ section.settings.upload_heading }}</strong>
+              <p class="muted-copy" style="margin:0.35rem 0 0;">{{ section.settings.upload_body }}</p>
+            </div>
+          </div>
+
+          <div class="procurement-note" style="margin:1.25rem 0;">
+            {% render 'icon', name: 'lock' %}
+            <div class="muted-copy" style="font-size:0.86rem;">{{ section.settings.note }}</div>
+          </div>
+
+          <button class="ell-button ell-button--primary" type="button" style="width:100%;" data-verify-trigger>
+            {{ section.settings.button_label }}
+            {% render 'icon', name: 'arrow-right' %}
+          </button>
+          <div class="procurement-status" data-verification-status></div>
+          <p class="muted-copy" style="text-align:center;font-size:0.78rem;margin-top:0.9rem;">
+            {% render 'icon', name: 'lock' %}
+            256-bit encrypted institutional procurement
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL procurement",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Secure Checkout" },
+    { "type": "textarea", "id": "body", "label": "Body", "default": "Provider verification and institutional review are required before biologic allocation proceeds to shipping and payment." },
+    { "type": "text", "id": "summary_title", "label": "Summary title", "default": "Umbilical Cord Blood - Mononuclear Cells" },
+    { "type": "text", "id": "summary_lot", "label": "Summary lot", "default": "#LOT-992A-CB" },
+    { "type": "text", "id": "summary_cells", "label": "Summary cells", "default": ">25M Cells" },
+    { "type": "text", "id": "summary_viability", "label": "Summary viability", "default": "98.2% Viability" },
+    { "type": "text", "id": "summary_total", "label": "Summary total", "default": "Pending Verification" },
+    { "type": "text", "id": "example_npi", "label": "Example NPI", "default": "1093827184" },
+    { "type": "text", "id": "upload_heading", "label": "Upload heading", "default": "Upload Practitioner License" },
+    { "type": "text", "id": "upload_body", "label": "Upload body", "default": "PDF or JPG up to 10MB. Placeholder only until backend workflow is connected." },
+    { "type": "textarea", "id": "note", "label": "Compliance note", "default": "Orders are reviewed by our Safety Compliance team. Standard verification time is 2-4 hours." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Verify & Continue to Shipping" }
+  ]
+}
+{% endschema %}

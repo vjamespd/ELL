@@ -1,0 +1,18 @@
+{
+  "type": "header",
+  "name": "Header Group",
+  "sections": {
+    "ell_header": {
+      "type": "header",
+      "settings": {
+        "home_label": "Home",
+        "catalog_label": "Catalog",
+        "quality_label": "Quality & Safety",
+        "login_label": "Log In"
+      }
+    }
+  },
+  "order": [
+    "ell_header"
+  ]
+}

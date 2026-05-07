@@ -1,0 +1,21 @@
+extends: theme-check:recommended
+
+ignore:
+  - '_reference/**'
+  - 'blocks/**'
+  - 'sections/*'
+  - '!sections/header.liquid'
+  - '!sections/footer.liquid'
+  - '!sections/main-cart.liquid'
+  - '!sections/ell-home.liquid'
+  - '!sections/ell-trust-band.liquid'
+  - '!sections/ell-solutions.liquid'
+  - '!sections/ell-feature-grid.liquid'
+  - '!sections/ell-catalog.liquid'
+  - '!sections/ell-product-detail.liquid'
+  - '!sections/ell-quality-safety.liquid'
+  - '!sections/ell-procurement.liquid'
+  - 'snippets/*'
+  - '!snippets/icon.liquid'
+  - '!snippets/product-card-ell.liquid'
+  - '!snippets/lot-row.liquid'

@@ -1,0 +1,29 @@
+{% liquid
+  assign row_status = status | default: 'In Stock'
+  assign row_status_handle = row_status | handle
+  assign row_link = url | default: '/pages/procurement'
+%}
+<tr
+  data-lot-item
+  data-search="{{ lot_id }} {{ title }} {{ source }} {{ volume }} {{ cell_count }} {{ row_status | escape | downcase }}"
+  data-source="{{ source | downcase }}"
+  data-volume="{{ volume | downcase }}"
+  data-status="{{ row_status | downcase }}"
+  data-cells="{{ cell_count }}"
+  data-viability-sort="{{ viability | remove: '%' }}"
+>
+  <td><strong>{{ lot_id }}</strong></td>
+  <td>{{ source }}</td>
+  <td class="is-right">{{ volume }}</td>
+  <td class="is-right">{{ cell_count }}</td>
+  <td class="is-right">{{ viability }}</td>
+  <td>
+    <span class="status-chip status-chip--{{ row_status_handle }}">{{ row_status }}</span>
+  </td>
+  <td class="is-right">
+    <a class="ell-button ell-button--text" href="{{ row_link }}">
+      {{ action_label | default: 'View Data' }}
+      {% render 'icon', name: 'chevron-right' %}
+    </a>
+  </td>
+</tr>

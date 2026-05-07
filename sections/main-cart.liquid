@@ -1,0 +1,87 @@
+<section class="ell-section">
+  <div class="ell-container">
+    <div class="cart-shell">
+      {% if cart.item_count == 0 %}
+        <div style="text-align:center;max-width:32rem;margin:0 auto;padding:2rem 0;">
+          <p class="eyebrow">Clinical Cart</p>
+          <h1 class="section-title">Your procurement cart is currently empty.</h1>
+          <p class="lead-copy">Browse available lots and assemble a clinically verified request package before continuing to provider review.</p>
+          <a class="ell-button ell-button--primary" href="/pages/catalog">Browse Inventory</a>
+        </div>
+      {% else %}
+        <div class="cart-grid">
+          <div>
+            <div class="cart-shell__head" style="margin-bottom:1.5rem;">
+              <div>
+                <p class="eyebrow">Clinical Cart</p>
+                <h1 class="section-title">Procurement summary</h1>
+              </div>
+              <span class="muted-copy">{{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %}</span>
+            </div>
+
+            <div class="cart-items">
+              {% for item in cart.items %}
+                <article class="cart-item">
+                  <div class="cart-thumb">
+                    {% if item.image %}
+                      {{
+                        item.image
+                        | image_url: width: 240
+                        | image_tag:
+                          alt: item.product.title,
+                          widths: '120,180,240'
+                      }}
+                    {% endif %}
+                  </div>
+                  <div>
+                    <h2 style="margin:0 0 0.35rem;font-size:1.1rem;">{{ item.product.title }}</h2>
+                    {% if item.variant.title != 'Default Title' %}
+                      <p class="muted-copy" style="margin:0 0 0.35rem;">{{ item.variant.title }}</p>
+                    {% endif %}
+                    <p class="muted-copy" style="margin:0;">Qty {{ item.quantity }}</p>
+                  </div>
+                  <strong>{{ item.final_line_price | money }}</strong>
+                </article>
+              {% endfor %}
+            </div>
+          </div>
+
+          <aside class="cart-summary-box">
+            <p class="eyebrow">Order Summary</p>
+            <div style="display:grid;gap:0.95rem;">
+              <div class="procurement-line">
+                <span class="muted-copy">Subtotal</span>
+                <strong>{{ cart.total_price | money }}</strong>
+              </div>
+              <div class="procurement-line">
+                <span class="muted-copy">Verification</span>
+                <strong>Required</strong>
+              </div>
+              <div class="procurement-line">
+                <span class="muted-copy">Checkout path</span>
+                <strong>Clinical review</strong>
+              </div>
+            </div>
+            <div class="procurement-note" style="margin:1.25rem 0;">
+              {% render 'icon', name: 'lock' %}
+              <div class="muted-copy" style="font-size:0.86rem;">
+                Provider verification and institutional documentation are required before fulfillment.
+              </div>
+            </div>
+            <a class="ell-button ell-button--primary" style="width:100%;" href="/pages/procurement">
+              Continue to Procurement
+              {% render 'icon', name: 'arrow-right' %}
+            </a>
+          </aside>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Main cart",
+  "settings": []
+}
+{% endschema %}

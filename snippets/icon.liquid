@@ -1,0 +1,74 @@
+{% liquid
+  assign icon_name = name | default: 'arrow-right'
+%}
+<span class="icon icon--{{ icon_name }}" aria-hidden="true">
+  {% case icon_name %}
+    {% when 'menu' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/>
+      </svg>
+    {% when 'close' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M6 6 18 18M18 6 6 18" stroke-linecap="round"/>
+      </svg>
+    {% when 'search' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="11" cy="11" r="6.5"/>
+        <path d="m16 16 4.5 4.5" stroke-linecap="round"/>
+      </svg>
+    {% when 'download' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M12 4v10" stroke-linecap="round"/>
+        <path d="m8 10 4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 19h14" stroke-linecap="round"/>
+      </svg>
+    {% when 'shield' %}
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 3 5 6v5c0 4.6 2.8 8.8 7 10 4.2-1.2 7-5.4 7-10V6l-7-3Z"/>
+      </svg>
+    {% when 'flask' %}
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M9 3h6v2l-1 1v4.2l4.6 7.4A2.2 2.2 0 0 1 16.7 21H7.3a2.2 2.2 0 0 1-1.9-3.4L10 10.2V6L9 5V3Z"/>
+      </svg>
+    {% when 'verified' %}
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="m12 2 2.5 2.1 3.2-.2 1.6 2.8 3 1-1 3 1 3-3 1-1.6 2.8-3.2-.2L12 22l-2.5-2.1-3.2.2-1.6-2.8-3-1 1-3-1-3 3-1L7.5 4l3.2.2L12 2Zm-1 13.2 6-6-1.4-1.4L11 12.4 8.4 9.8 7 11.2l4 4Z"/>
+      </svg>
+    {% when 'truck' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M3 6h11v9H3z"/>
+        <path d="M14 9h4l3 3v3h-7z"/>
+        <circle cx="8" cy="18" r="1.6" fill="currentColor" stroke="none"/>
+        <circle cx="18" cy="18" r="1.6" fill="currentColor" stroke="none"/>
+      </svg>
+    {% when 'support' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M4 12a8 8 0 1 1 16 0"/>
+        <path d="M4 12v4a2 2 0 0 0 2 2h2v-6H6a2 2 0 0 0-2 2Z"/>
+        <path d="M20 12v4a2 2 0 0 1-2 2h-2v-6h2a2 2 0 0 1 2 2Z"/>
+      </svg>
+    {% when 'lock' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <rect x="5" y="11" width="14" height="10" rx="2"/>
+        <path d="M8 11V8a4 4 0 1 1 8 0v3"/>
+      </svg>
+    {% when 'file' %}
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm6 1.5V9h4.5"/>
+      </svg>
+    {% when 'arrow-left' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M19 12H5" stroke-linecap="round"/>
+        <path d="m10 7-5 5 5 5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    {% when 'chevron-right' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="m10 7 5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    {% else %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M5 12h14" stroke-linecap="round"/>
+        <path d="m13 6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+  {% endcase %}
+</span>

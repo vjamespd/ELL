@@ -1,0 +1,51 @@
+{
+  "type": "footer",
+  "name": "Footer Group",
+  "sections": {
+    "ell_footer": {
+      "type": "footer",
+      "settings": {
+        "description": "Elevating the standard of regenerative medicine through sterile precision and transparent science.",
+        "compliance_copy": "For institutional and licensed-provider procurement only. Clinical documentation is available upon verification.",
+        "platform_heading": "Platform",
+        "legal_heading": "Legal & Privacy",
+        "bottom_line": "All rights reserved. Precision in every cell."
+      },
+      "blocks": {
+        "platform_catalog": {
+          "type": "platform_link",
+          "settings": {
+            "label": "Inventory Catalog"
+          }
+        },
+        "platform_procurement": {
+          "type": "platform_link",
+          "settings": {
+            "label": "Procurement"
+          }
+        },
+        "legal_privacy": {
+          "type": "legal_link",
+          "settings": {
+            "label": "Privacy Policy"
+          }
+        },
+        "legal_terms": {
+          "type": "legal_link",
+          "settings": {
+            "label": "Terms of Service"
+          }
+        }
+      },
+      "block_order": [
+        "platform_catalog",
+        "platform_procurement",
+        "legal_privacy",
+        "legal_terms"
+      ]
+    }
+  },
+  "order": [
+    "ell_footer"
+  ]
+}

@@ -1,0 +1,71 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "ELL Biologics",
+    "theme_version": "1.0.0",
+    "theme_author": "OpenAI Codex",
+    "theme_documentation_url": "https://shopify.dev/docs/storefronts/themes",
+    "theme_support_url": "https://shopify.dev/docs/storefronts/themes"
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "text",
+        "id": "brand_name",
+        "label": "Brand name",
+        "default": "ell."
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo_inverse",
+        "label": "Inverse logo image"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      },
+      {
+        "type": "textarea",
+        "id": "brand_tagline",
+        "label": "Brand tagline",
+        "default": "Clinical biologics with editorial precision and transparent science."
+      }
+    ]
+  },
+  {
+    "name": "Theme Styles",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background",
+        "default": "#f7f2f7"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primary",
+        "default": "#270f44"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Secondary",
+        "default": "#6b50a8"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Medical green accent",
+        "default": "#0a6a47"
+      }
+    ]
+  }
+]

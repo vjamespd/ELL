@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "ell_home": {
+      "type": "ell-home",
+      "settings": {}
+    },
+    "ell_trust_band": {
+      "type": "ell-trust-band",
+      "settings": {}
+    },
+    "ell_solutions": {
+      "type": "ell-solutions",
+      "settings": {}
+    },
+    "ell_feature_grid": {
+      "type": "ell-feature-grid",
+      "settings": {}
+    }
+  },
+  "order": [
+    "ell_home",
+    "ell_trust_band",
+    "ell_solutions",
+    "ell_feature_grid"
+  ]
+}

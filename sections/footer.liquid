@@ -1,0 +1,134 @@
+{% liquid
+  assign brand_name = settings.brand_name | default: shop.name
+%}
+
+<footer class="site-footer">
+  <div class="ell-container site-footer__main">
+    <div class="site-footer__brand">
+      <div class="brand-mark" style="margin-bottom:1rem;color:#f8f3fa;">
+        <span class="brand-mark__word">{{ brand_name }}</span>
+      </div>
+      <p>{{ section.settings.description }}</p>
+      <p class="muted-copy" style="color:rgba(248,243,250,0.48);margin-top:1.25rem;">
+        {{ section.settings.compliance_copy }}
+      </p>
+    </div>
+
+    <div>
+      <h3 class="footer-title" style="margin:0 0 1.2rem;font-size:1.5rem;">{{ section.settings.platform_heading }}</h3>
+      <div class="footer-links">
+        {% assign platform_blocks = section.blocks | where: 'type', 'platform_link' %}
+        {% if platform_blocks.size > 0 %}
+          {% for block in platform_blocks %}
+            <a class="site-footer__link" href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>
+              {{ block.settings.label }}
+            </a>
+          {% endfor %}
+        {% else %}
+          <a class="site-footer__link" href="/pages/catalog">Inventory Catalog</a>
+          <a class="site-footer__link" href="/pages/procurement">Procurement</a>
+          <a class="site-footer__link" href="{{ routes.cart_url }}">Order Summary</a>
+          <a class="site-footer__link" href="/pages/quality-safety">AATB Certified</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div>
+      <h3 class="footer-title" style="margin:0 0 1.2rem;font-size:1.5rem;">{{ section.settings.legal_heading }}</h3>
+      <div class="footer-links">
+        {% assign legal_blocks = section.blocks | where: 'type', 'legal_link' %}
+        {% if legal_blocks.size > 0 %}
+          {% for block in legal_blocks %}
+            <a class="site-footer__link" href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>
+              {{ block.settings.label }}
+            </a>
+          {% endfor %}
+        {% else %}
+          <a class="site-footer__link" href="/pages/quality-safety">Legal &amp; Compliance</a>
+          <a class="site-footer__link" href="/policies/privacy-policy">Privacy Policy</a>
+          <a class="site-footer__link" href="/pages/quality-safety">FDA Registered</a>
+          <a class="site-footer__link" href="/policies/terms-of-service">Terms of Service</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    &copy; <span data-current-year></span> {{ brand_name }} Biologics. {{ section.settings.bottom_line }}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "max_blocks": 8,
+  "blocks": [
+    {
+      "type": "platform_link",
+      "name": "Platform link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Inventory Catalog"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "legal_link",
+      "name": "Legal link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Privacy Policy"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Brand description",
+      "default": "Elevating the standard of regenerative medicine through sterile precision and transparent science."
+    },
+    {
+      "type": "textarea",
+      "id": "compliance_copy",
+      "label": "Compliance note",
+      "default": "For institutional and licensed-provider procurement only. Clinical documentation is available upon verification."
+    },
+    {
+      "type": "text",
+      "id": "platform_heading",
+      "label": "Platform heading",
+      "default": "Platform"
+    },
+    {
+      "type": "text",
+      "id": "legal_heading",
+      "label": "Legal heading",
+      "default": "Legal & Privacy"
+    },
+    {
+      "type": "text",
+      "id": "bottom_line",
+      "label": "Bottom line",
+      "default": "All rights reserved. Precision in every cell."
+    }
+  ]
+}
+{% endschema %}

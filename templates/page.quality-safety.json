@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "ell-quality-safety",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

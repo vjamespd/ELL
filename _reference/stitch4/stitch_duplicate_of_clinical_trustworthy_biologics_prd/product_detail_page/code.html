@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Public+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface-variant": "#4a454e",
+              "primary": "#270f44",
+              "error": "#ba1a1a",
+              "tertiary-fixed-dim": "#71dba6",
+              "surface-dim": "#ded8de",
+              "on-secondary": "#ffffff",
+              "secondary": "#694ea8",
+              "primary-container": "#3d265a",
+              "surface-container-low": "#f8f2f7",
+              "outline": "#7b757f",
+              "secondary-fixed": "#eaddff",
+              "tertiary-fixed": "#8df7c1",
+              "on-tertiary-fixed": "#002113",
+              "on-background": "#1d1b1f",
+              "surface-container-highest": "#e7e1e6",
+              "on-tertiary": "#ffffff",
+              "inverse-surface": "#322f34",
+              "on-tertiary-container": "#40ac7c",
+              "surface-tint": "#6c538a",
+              "on-primary-fixed": "#260e43",
+              "on-error-container": "#93000a",
+              "on-secondary-container": "#4c2f88",
+              "surface-variant": "#e7e1e6",
+              "on-primary-container": "#a98eca",
+              "secondary-container": "#bb9eff",
+              "error-container": "#ffdad6",
+              "primary-fixed-dim": "#d7baf9",
+              "on-primary-fixed-variant": "#533c71",
+              "outline-variant": "#ccc4cf",
+              "on-secondary-fixed": "#24005b",
+              "on-surface": "#1d1b1f",
+              "tertiary-container": "#003a24",
+              "surface-bright": "#fef7fd",
+              "surface-container": "#f2ecf1",
+              "surface-container-lowest": "#ffffff",
+              "inverse-on-surface": "#f5eff4",
+              "on-primary": "#ffffff",
+              "on-error": "#ffffff",
+              "inverse-primary": "#d7baf9",
+              "background": "#fef7fd",
+              "surface": "#fef7fd",
+              "on-tertiary-fixed-variant": "#005235",
+              "tertiary": "#002214",
+              "secondary-fixed-dim": "#d1bcff",
+              "on-secondary-fixed-variant": "#51358e",
+              "primary-fixed": "#eedcff",
+              "surface-container-high": "#ede6ec"
+            },
+            fontFamily: {
+              "headline": ["Newsreader"],
+              "body": ["Public Sans"],
+              "label": ["Public Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .font-serif { font-family: 'Newsreader', serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .label-caps { font-family: 'Public Sans', sans-serif; text-transform: none; letter-spacing: 0.05rem; }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopNavBar -->
+<nav class="bg-[#FEF7FD] border-b border-purple-100/20 dark:border-purple-900/20 docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-serif italic text-[#270F44] dark:text-purple-300">ell.</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-[#694EA8] dark:text-purple-400 font-medium hover:text-[#270F44] transition-colors duration-300" href="#">Home</a>
+<a class="text-[#270F44] dark:text-purple-300 font-bold border-b-2 border-[#270F44] pb-1 hover:text-[#270F44] transition-colors duration-300" href="#">Catalog</a>
+<a class="text-[#694EA8] dark:text-purple-400 font-medium hover:text-[#270F44] transition-colors duration-300" href="#">Quality &amp; Safety</a>
+</div>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded font-medium hover:opacity-80 transition-all duration-200">
+                Log In
+            </button>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-8 py-12 lg:py-20">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+<!-- Left Column: Technical Content -->
+<div class="space-y-12">
+<header class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 text-xs font-bold rounded tracking-wider uppercase">Active Lot</span>
+<span class="text-secondary font-medium tracking-wide text-sm font-label uppercase">ID: LX-40029-B</span>
+</div>
+<h1 class="text-5xl lg:text-6xl font-serif text-primary leading-tight">Mesenchymal Stem Cell Lineage</h1>
+<p class="text-lg text-on-surface-variant max-w-xl font-body leading-relaxed">Cryopreserved primary cells isolated from human umbilical cord tissue. Each lot is rigorously screened for potency markers and viability post-thaw.</p>
+</header>
+<!-- CoA Viewer Section -->
+<section class="surface-container-low rounded-lg p-1 overflow-hidden">
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded p-8 space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<h3 class="font-serif text-2xl text-primary">Certificate of Analysis</h3>
+<p class="text-sm text-outline font-label uppercase tracking-widest mt-1">Ref: COA-2024-40029</p>
+</div>
+<button class="flex items-center gap-2 text-primary hover:text-secondary transition-colors group">
+<span class="material-symbols-outlined text-xl">download</span>
+<span class="text-sm font-bold font-label uppercase tracking-tighter border-b border-primary/20 group-hover:border-secondary">Download PDF</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-surface-bright rounded border border-outline-variant/10">
+<span class="block text-[10px] text-outline font-label uppercase tracking-[0.1em] mb-1">Viability</span>
+<span class="text-xl font-serif text-tertiary-container">94.2%</span>
+</div>
+<div class="p-4 bg-surface-bright rounded border border-outline-variant/10">
+<span class="block text-[10px] text-outline font-label uppercase tracking-[0.1em] mb-1">Passage</span>
+<span class="text-xl font-serif text-primary">P1</span>
+</div>
+<div class="p-4 bg-surface-bright rounded border border-outline-variant/10">
+<span class="block text-[10px] text-outline font-label uppercase tracking-[0.1em] mb-1">Sterility</span>
+<span class="text-xl font-serif text-tertiary-container">Negative</span>
+</div>
+<div class="p-4 bg-surface-bright rounded border border-outline-variant/10">
+<span class="block text-[10px] text-outline font-label uppercase tracking-[0.1em] mb-1">Endotoxin</span>
+<span class="text-xl font-serif text-primary">&lt;0.05 EU/mL</span>
+</div>
+</div>
+<div class="h-48 relative overflow-hidden bg-surface-container rounded-sm flex items-center justify-center group">
+<img alt="Microscopic stem cell culture" class="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="Microscopic view of stem cells in laboratory culture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7cfhKmK97rHaE-fpWdV1wQZAREeHqrP3gFgKBPvV4du-mNHGutG9avocM8cSussAdtzCw1QwVyt__zhLXFjpMNFrDum4eNHUFRmyx1_105biZGV6mu8webXmD7b6Mbb8UD2s76qzcTU-PNThVAJqUD9Itarro53QZky_p5yMp1wsBMi6u1CCu8CTQq18Y6_f252qwP-XKAneWAxH4EPJzs3UahzpuStg49PlvZLkR8Zmc6NMBjvTZLX11SWOTYgOFbukviF84bFk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary-container/40 to-transparent"></div>
+<div class="absolute bottom-4 left-4 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-sm">
+<span class="material-symbols-outlined text-primary scale-75">biotech</span>
+<span class="text-[10px] font-bold text-primary font-label uppercase">Live Culture Scan 04.12</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Specs Bento -->
+<section class="space-y-6">
+<h4 class="font-serif text-xl text-primary">Technical Specifications</h4>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1 border-l-2 border-secondary/20 pl-4 py-1">
+<span class="text-[10px] text-outline font-label uppercase tracking-widest">Cell Type</span>
+<p class="text-on-surface font-medium">Multipotent MSCs</p>
+</div>
+<div class="space-y-1 border-l-2 border-secondary/20 pl-4 py-1">
+<span class="text-[10px] text-outline font-label uppercase tracking-widest">Characterization</span>
+<p class="text-on-surface font-medium">CD73+, CD90+, CD105+</p>
+</div>
+<div class="space-y-1 border-l-2 border-secondary/20 pl-4 py-1">
+<span class="text-[10px] text-outline font-label uppercase tracking-widest">Format</span>
+<p class="text-on-surface font-medium">1.0 x 10⁶ cells/vial</p>
+</div>
+<div class="space-y-1 border-l-2 border-secondary/20 pl-4 py-1">
+<span class="text-[10px] text-outline font-label uppercase tracking-widest">Storage</span>
+<p class="text-on-surface font-medium">Liquid Nitrogen (Vapor Phase)</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sticky Procurement -->
+<aside class="lg:sticky lg:top-32 space-y-8">
+<div class="bg-surface-container-highest/30 backdrop-blur-xl border border-outline-variant/30 rounded-lg p-8 space-y-8 shadow-2xl shadow-primary/5">
+<div class="space-y-2">
+<span class="text-sm font-label text-secondary font-bold uppercase tracking-widest">Procurement</span>
+<div class="flex items-baseline justify-between">
+<h2 class="text-4xl font-serif text-primary">Inquire Allocation</h2>
+<div class="flex items-center gap-1 text-tertiary-container">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+<span class="text-xs font-bold font-label uppercase">Limited Reserve</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between text-sm py-2 border-b border-outline-variant/20">
+<span class="text-outline">Lead Time</span>
+<span class="font-medium">48-72 Hours</span>
+</div>
+<div class="flex justify-between text-sm py-2 border-b border-outline-variant/20">
+<span class="text-outline">Shipping Condition</span>
+<span class="font-medium">Dry Shipper (LN2)</span>
+</div>
+<div class="flex justify-between text-sm py-2 border-b border-outline-variant/20">
+<span class="text-outline">Min. Order</span>
+<span class="font-medium">2 Vials</span>
+</div>
+</div>
+<div class="space-y-4">
+<button class="w-full bg-primary-container text-white py-4 rounded font-bold font-label uppercase tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-3 group">
+                            Request Allocation
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<div class="p-6 bg-secondary/5 border border-secondary/10 rounded space-y-4">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary mt-0.5">verified_user</span>
+<div>
+<h5 class="text-sm font-bold text-primary">NPI Verification Required</h5>
+<p class="text-xs text-on-surface-variant leading-relaxed mt-1">Biologic materials are restricted to licensed clinical researchers. Please provide your National Provider Identifier to access full pricing.</p>
+</div>
+</div>
+<div class="flex gap-2">
+<input class="flex-1 bg-white border-outline-variant text-sm rounded px-3 focus:ring-secondary focus:border-secondary" placeholder="Enter NPI Number" type="text"/>
+<button class="px-4 py-2 border border-secondary text-secondary text-xs font-bold font-label uppercase rounded hover:bg-secondary hover:text-white transition-all">Verify</button>
+</div>
+</div>
+</div>
+<div class="pt-4 space-y-4">
+<p class="text-[10px] text-outline text-center font-label uppercase tracking-widest">Compliance Standards</p>
+<div class="flex justify-center gap-8 opacity-60">
+<span class="text-xs font-bold border-2 border-outline px-2 py-0.5 rounded text-outline">AATB</span>
+<span class="text-xs font-bold border-2 border-outline px-2 py-0.5 rounded text-outline">FDA-361</span>
+<span class="text-xs font-bold border-2 border-outline px-2 py-0.5 rounded text-outline">cGMP</span>
+</div>
+</div>
+</div>
+<!-- Support Card -->
+<div class="p-6 border border-outline-variant/20 rounded-lg flex items-center gap-6 group hover:bg-white transition-colors">
+<div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<div>
+<h6 class="text-sm font-bold text-primary">Speak with a Bio-Specialist</h6>
+<p class="text-xs text-outline">Technical support for protocol optimization.</p>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#270F44] dark:bg-[#002214] text-[#FEF7FD]">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 px-12 py-16 w-full max-w-7xl mx-auto">
+<div class="space-y-6">
+<span class="text-3xl font-serif text-[#FEF7FD] mb-4 block">ell.</span>
+<p class="text-purple-200/70 font-body text-sm leading-relaxed max-w-xs">
+                    Advancing precision regenerative medicine through cellular integrity and clinical authority.
+                </p>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-serif text-xl mb-2">Navigation</h4>
+<a class="text-purple-200/70 hover:text-white hover:translate-x-1 transition-all duration-200" href="#">Platform</a>
+<a class="text-purple-200/70 hover:text-white hover:translate-x-1 transition-all duration-200" href="#">Quality Standards</a>
+<a class="text-purple-200/70 hover:text-white hover:translate-x-1 transition-all duration-200" href="#">Catalog Registry</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-serif text-xl mb-2">Compliance</h4>
+<a class="text-purple-200/70 hover:text-white hover:translate-x-1 transition-all duration-200" href="#">Legal &amp; Compliance</a>
+<a class="text-purple-200/70 hover:text-white hover:translate-x-1 transition-all duration-200" href="#">Privacy Policy</a>
+<a class="text-purple-200/70 hover:text-white hover:translate-x-1 transition-all duration-200" href="#">AATB Certified</a>
+<a class="text-purple-200/70 hover:text-white hover:translate-x-1 transition-all duration-200" href="#">FDA Registered</a>
+</div>
+</div>
+<div class="px-12 py-8 border-t border-white/5 text-center text-xs text-purple-200/50 font-label tracking-widest uppercase">
+            © 2024 ell. Biologics. All rights reserved. Precision in every cell.
+        </div>
+</footer>
+</body></html>

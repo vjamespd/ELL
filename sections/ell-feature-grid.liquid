@@ -1,0 +1,124 @@
+<section class="ell-section" style="background:rgba(255,255,255,0.22);">
+  <div class="ell-container">
+    <div class="feature-grid">
+      {% if section.blocks.size > 0 %}
+        {% for block in section.blocks %}
+          {% if block.settings.layout == 'wide' %}
+            <article class="feature-card feature-card--wide surface-card" {{ block.shopify_attributes }}>
+              <div>
+                <div style="margin-bottom:1rem;color:var(--ell-secondary);">{% render 'icon', name: block.settings.icon %}</div>
+                <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2.1rem;font-style:italic;">{{ block.settings.title }}</h3>
+                <p class="muted-copy" style="margin:0 0 1rem;">{{ block.settings.body }}</p>
+                <a class="ell-button ell-button--text" href="{{ block.settings.link | default: '#' }}">{{ block.settings.button_label }}</a>
+              </div>
+              <div class="feature-card__media">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </article>
+          {% else %}
+            <article class="feature-card{% if block.settings.layout == 'dark' %} feature-card--dark{% endif %} surface-card" {{ block.shopify_attributes }}>
+              <div style="margin-bottom:1rem;color:{% if block.settings.layout == 'dark' %}rgba(255,255,255,0.85){% else %}var(--ell-secondary){% endif %};">
+                {% render 'icon', name: block.settings.icon %}
+              </div>
+              <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2rem;font-style:italic;">{{ block.settings.title }}</h3>
+              <p class="muted-copy" style="margin:0;color:{% if block.settings.layout == 'dark' %}rgba(255,255,255,0.76){% else %}var(--ell-muted){% endif %};">{{ block.settings.body }}</p>
+            </article>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <article class="feature-card surface-card">
+          <div style="margin-bottom:1rem;color:var(--ell-secondary);">{% render 'icon', name: 'flask' %}</div>
+          <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2rem;font-style:italic;">Precision Extraction</h3>
+          <p class="muted-copy" style="margin:0;">Our proprietary low-temperature processing preserves structural integrity and cytokine profiles.</p>
+        </article>
+        <article class="feature-card feature-card--dark surface-card">
+          <div style="margin-bottom:1rem;color:rgba(255,255,255,0.85);">{% render 'icon', name: 'truck' %}</div>
+          <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2rem;font-style:italic;">Next-Day Logistics</h3>
+          <p class="muted-copy" style="margin:0;color:rgba(255,255,255,0.76);">Validated cold-chain shipping ensures viability from our facility to your surgical suite.</p>
+        </article>
+        <article class="feature-card feature-card--wide surface-card">
+          <div>
+            <div style="margin-bottom:1rem;color:var(--ell-secondary);">{% render 'icon', name: 'verified' %}</div>
+            <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2.1rem;font-style:italic;">Third-Party Validation</h3>
+            <p class="muted-copy" style="margin:0 0 1rem;">Every batch undergoes rigorous sterility and endotoxin testing by independent CLIA-certified laboratories to ensure maximum safety.</p>
+            <a class="ell-button ell-button--text" href="/pages/quality-safety">Download Safety Report</a>
+          </div>
+          <div class="feature-card__media">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </article>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL feature grid",
+  "max_blocks": 3,
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Precision Extraction"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body",
+          "default": "Our proprietary low-temperature processing preserves structural integrity and cytokine profiles."
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Layout",
+          "default": "light",
+          "options": [
+            {
+              "value": "light",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "wide",
+              "label": "Wide"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "flask",
+          "options": [
+            { "value": "flask", "label": "Flask" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "verified", "label": "Verified" },
+            { "value": "shield", "label": "Shield" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Wide card button label",
+          "default": "Download Safety Report"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Wide card link"
+        }
+      ]
+    }
+  ],
+  "settings": []
+}
+{% endschema %}

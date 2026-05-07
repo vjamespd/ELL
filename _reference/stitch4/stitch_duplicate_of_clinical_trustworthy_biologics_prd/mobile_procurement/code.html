@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Procurement | Ell. Biologics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,700;1,400&amp;family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "background": "#fef7fd",
+              "surface": "#fef7fd",
+              "on-tertiary-fixed-variant": "#005235",
+              "tertiary": "#002214",
+              "secondary-fixed-dim": "#d1bcff",
+              "on-secondary-fixed-variant": "#51358e",
+              "on-primary": "#ffffff",
+              "on-error": "#ffffff",
+              "inverse-primary": "#d7baf9",
+              "surface-bright": "#fef7fd",
+              "surface-container": "#f2ecf1",
+              "surface-container-lowest": "#ffffff",
+              "inverse-on-surface": "#f5eff4",
+              "on-surface": "#1d1b1f",
+              "tertiary-container": "#003a24",
+              "surface-container-high": "#ede6ec",
+              "primary-fixed": "#eedcff",
+              "tertiary-fixed": "#8df7c1",
+              "on-tertiary-fixed": "#002113",
+              "surface-container-highest": "#e7e1e6",
+              "on-background": "#1d1b1f",
+              "on-tertiary": "#ffffff",
+              "secondary": "#694ea8",
+              "surface-container-low": "#f8f2f7",
+              "primary-container": "#3d265a",
+              "secondary-fixed": "#eaddff",
+              "outline": "#7b757f",
+              "surface-dim": "#ded8de",
+              "on-secondary": "#ffffff",
+              "primary": "#270f44",
+              "on-surface-variant": "#4a454e",
+              "tertiary-fixed-dim": "#71dba6",
+              "error": "#ba1a1a",
+              "primary-fixed-dim": "#d7baf9",
+              "on-primary-fixed-variant": "#533c71",
+              "outline-variant": "#ccc4cf",
+              "on-secondary-fixed": "#24005b",
+              "on-secondary-container": "#4c2f88",
+              "on-primary-fixed": "#260e43",
+              "on-error-container": "#93000a",
+              "surface-variant": "#e7e1e6",
+              "on-primary-container": "#a98eca",
+              "secondary-container": "#bb9eff",
+              "error-container": "#ffdad6",
+              "on-tertiary-container": "#40ac7c",
+              "surface-tint": "#6c538a",
+              "inverse-surface": "#322f34"
+            },
+            fontFamily: {
+              "headline": ["Newsreader", "serif"],
+              "body": ["Public Sans", "sans-serif"],
+              "label": ["Public Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .step-active { color: #270f44; border-bottom: 2px solid #270f44; }
+      .step-inactive { color: #ccc4cf; border-bottom: 2px solid #ccc4cf; }
+      body { font-family: 'Public Sans', sans-serif; }
+      h1, h2, h3 { font-family: 'Newsreader', serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopAppBar (Transactional - Shell Suppression Applied) -->
+<header class="fixed top-0 w-full flex justify-between items-center px-6 h-16 bg-[#FEF7FD] border-b border-[#3D265A]/10 z-50">
+<div class="flex items-center gap-4">
+<button class="text-primary">
+<span class="material-symbols-outlined">close</span>
+</button>
+<span class="font-serif italic text-2xl text-[#270F44]">Ell. Biologics</span>
+</div>
+<div class="text-xs font-label uppercase tracking-widest font-semibold text-secondary">
+            SECURE CHECKOUT
+        </div>
+</header>
+<main class="flex-grow pt-24 pb-32 px-6 max-w-md mx-auto w-full">
+<!-- Step Indicator -->
+<nav class="flex justify-between mb-12">
+<div class="flex flex-col items-center gap-2 flex-1 border-b-2 border-primary pb-2">
+<span class="text-[10px] font-bold uppercase tracking-tighter text-primary">01 Verification</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 border-b-2 border-outline-variant pb-2">
+<span class="text-[10px] font-bold uppercase tracking-tighter text-outline">02 Shipping</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 border-b-2 border-outline-variant pb-2">
+<span class="text-[10px] font-bold uppercase tracking-tighter text-outline">03 Payment</span>
+</div>
+</nav>
+<!-- Order Summary (Collapsed/Preview) -->
+<section class="bg-surface-container-low p-5 rounded mb-8 border-l-4 border-primary">
+<div class="flex justify-between items-center mb-2">
+<h3 class="text-lg font-bold text-primary">Order Summary</h3>
+<span class="text-primary-container font-bold">$12,450.00</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                2x Protocol Alpha-7 Sequencing Kit<br/>
+                Institutional Clinical Grade
+            </p>
+</section>
+<!-- Current Step: Verification -->
+<section class="space-y-8">
+<header>
+<h2 class="text-3xl font-bold text-primary mb-2">Clinical Verification</h2>
+<p class="text-on-surface-variant text-sm italic">Verification required for biological procurement.</p>
+</header>
+<div class="space-y-6">
+<!-- NPI Input -->
+<div class="space-y-2">
+<label class="block text-[10px] font-bold uppercase tracking-widest text-primary">National Provider Identifier (NPI)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-high border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 text-lg font-medium placeholder:text-outline/50 transition-colors" placeholder="10-digit NPI Number" type="text"/>
+<span class="absolute right-0 top-3 material-symbols-outlined text-tertiary-container" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<p class="text-[10px] text-on-surface-variant">We use this to verify medical credentials before shipping sensitive biologicals.</p>
+</div>
+<!-- Institution Name -->
+<div class="space-y-2">
+<label class="block text-[10px] font-bold uppercase tracking-widest text-primary">Affiliated Institution</label>
+<input class="w-full bg-surface-container-high border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 text-lg font-medium placeholder:text-outline/50" placeholder="e.g. Mayo Clinic Research" type="text"/>
+</div>
+<!-- License Upload Area (Visual Only) -->
+<div class="border border-dashed border-outline-variant p-8 flex flex-col items-center justify-center rounded bg-surface-container-lowest gap-3">
+<span class="material-symbols-outlined text-secondary text-3xl">upload_file</span>
+<span class="text-xs font-semibold text-secondary uppercase tracking-widest">Upload Practitioner License</span>
+<span class="text-[10px] text-outline">PDF, JPG up to 10MB</span>
+</div>
+</div>
+<!-- Validation Note -->
+<div class="flex items-start gap-3 bg-tertiary-container/5 p-4 rounded border border-tertiary-container/10">
+<span class="material-symbols-outlined text-on-tertiary-container text-sm">info</span>
+<p class="text-[11px] text-on-tertiary-container leading-normal">
+                    Orders are reviewed by our Safety Compliance team. Standard verification time is 2-4 hours.
+                </p>
+</div>
+</section>
+</main>
+<!-- Sticky Footer Action -->
+<footer class="fixed bottom-0 w-full bg-surface border-t border-outline-variant/10 p-6 flex flex-col gap-4 z-50">
+<button class="w-full bg-primary-container text-white py-4 rounded font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-[0.98] transition-transform">
+            Continue to Shipping
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<p class="text-[10px] text-center text-outline uppercase tracking-tighter">
+<span class="material-symbols-outlined align-middle text-xs" style="font-variation-settings: 'FILL' 1;">lock</span>
+            256-bit Encrypted Institutional Procurement
+        </p>
+</footer>
+<!-- Abstract Background Element -->
+<div class="fixed top-0 right-0 -z-10 w-64 h-64 bg-secondary/5 rounded-full blur-3xl opacity-50"></div>
+<div class="fixed bottom-40 left-0 -z-10 w-80 h-80 bg-tertiary-container/5 rounded-full blur-3xl opacity-30"></div>
+</body></html>

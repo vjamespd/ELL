@@ -1,0 +1,121 @@
+<section class="ell-section">
+  <div class="ell-container">
+    <div style="max-width:42rem;margin-bottom:2rem;">
+      <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2 class="section-title"><em>{{ section.settings.heading }}</em></h2>
+    </div>
+
+    <div class="solutions-grid">
+      {% if section.blocks.size > 0 %}
+        {% for block in section.blocks %}
+          {% render 'product-card-ell',
+            title: block.settings.title,
+            body: block.settings.body,
+            status: block.settings.status,
+            url: block.settings.link,
+            cta_label: block.settings.button_label,
+            media_style: block.settings.media_style,
+            label: block.settings.media_label
+          %}
+        {% endfor %}
+      {% else %}
+        {% render 'product-card-ell',
+          title: 'Amniotic Solutions',
+          body: 'Purified placental membrane matrices designed for ophthalmic and wound care applications. Ethically sourced and clinically validated.',
+          status: 'In Stock',
+          url: '/pages/catalog',
+          cta_label: 'Explore Solution',
+          media_label: 'Amniotic Solutions'
+        %}
+        {% render 'product-card-ell',
+          title: "Wharton's Jelly",
+          body: 'High-concentration MSC matrix derived from umbilical cord tissue.',
+          url: '/pages/catalog',
+          cta_label: 'View Technical Specs',
+          media_style: 'wharton',
+          media_label: "Wharton's Jelly"
+        %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL solutions",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "solution",
+      "name": "Solution card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Amniotic Solutions"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body",
+          "default": "Purified placental membrane matrices designed for ophthalmic and wound care applications. Ethically sourced and clinically validated."
+        },
+        {
+          "type": "text",
+          "id": "status",
+          "label": "Status chip",
+          "default": "In Stock"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Explore Solution"
+        },
+        {
+          "type": "text",
+          "id": "media_label",
+          "label": "Media label",
+          "default": "Amniotic Solutions"
+        },
+        {
+          "type": "select",
+          "id": "media_style",
+          "label": "Media style",
+          "default": "default",
+          "options": [
+            {
+              "value": "default",
+              "label": "Amniotic bottle"
+            },
+            {
+              "value": "wharton",
+              "label": "Wharton's Jelly bottle"
+            }
+          ]
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Biologic Solutions"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Advanced tissue grafts for regenerative medicine."
+    }
+  ]
+}
+{% endschema %}

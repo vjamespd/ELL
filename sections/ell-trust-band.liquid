@@ -1,0 +1,59 @@
+<section class="trust-band ell-section--tight">
+  <div class="ell-container">
+    <div class="trust-band__grid">
+      {% if section.blocks.size > 0 %}
+        {% for block in section.blocks %}
+          <div class="trust-badge" {{ block.shopify_attributes }}>
+            <span class="trust-badge__title">{{ block.settings.title }}</span>
+            <span class="trust-badge__caption">{{ block.settings.caption }}</span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="trust-badge">
+          <span class="trust-badge__title">FDA</span>
+          <span class="trust-badge__caption">Registered Facility</span>
+        </div>
+        <div class="trust-badge">
+          <span class="trust-badge__title">AATB</span>
+          <span class="trust-badge__caption">Accredited Member</span>
+        </div>
+        <div class="trust-badge">
+          <span class="trust-badge__title">ISO13485</span>
+          <span class="trust-badge__caption">Quality Management</span>
+        </div>
+        <div class="trust-badge">
+          <span class="trust-badge__title">CLIA</span>
+          <span class="trust-badge__caption">Certified Laboratory</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL trust band",
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Badge",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "FDA"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption",
+          "default": "Registered Facility"
+        }
+      ]
+    }
+  ],
+  "settings": []
+}
+{% endschema %}

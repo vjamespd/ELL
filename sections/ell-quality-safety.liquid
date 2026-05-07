@@ -1,0 +1,141 @@
+<section class="ell-section">
+  <div class="ell-container quality-layout">
+    <aside class="quality-sidebar">
+      <p class="eyebrow">On This Page</p>
+      <nav class="quality-sidebar__nav">
+        <a class="is-active" href="#quality-compliance">Compliance &amp; Certifications</a>
+        <a href="#quality-process">Process Timeline</a>
+        <a href="#quality-literature">Clinical Literature</a>
+      </nav>
+    </aside>
+
+    <div class="quality-main">
+      <section class="quality-page__hero">
+        <h1 class="section-title">{{ section.settings.heading }}</h1>
+        <p class="lead-copy" style="max-width:48rem;">{{ section.settings.body }}</p>
+      </section>
+
+      <section id="quality-compliance">
+        <h2 class="serif-title" style="margin:0 0 1rem;font-size:3rem;">{{ section.settings.compliance_heading }}</h2>
+        <p class="lead-copy" style="margin-bottom:1.5rem;">{{ section.settings.compliance_body }}</p>
+        <div class="quality-certs">
+          {% assign cert_blocks = section.blocks | where: 'type', 'certification' %}
+          {% if cert_blocks.size > 0 %}
+            {% for block in cert_blocks %}
+              <article class="cert-card" {{ block.shopify_attributes }}>
+                <div style="margin:0 auto 1rem;color:var(--ell-secondary);width:2.6rem;height:2.6rem;">{% render 'icon', name: block.settings.icon %}</div>
+                <h3 style="margin:0 0 0.5rem;">{{ block.settings.title }}</h3>
+                <p class="muted-copy" style="margin:0;font-size:0.9rem;">{{ block.settings.body }}</p>
+              </article>
+            {% endfor %}
+          {% else %}
+            <article class="cert-card"><div style="margin:0 auto 1rem;color:var(--ell-secondary);width:2.6rem;height:2.6rem;">{% render 'icon', name: 'verified' %}</div><h3 style="margin:0 0 0.5rem;">FDA Registered</h3><p class="muted-copy" style="margin:0;font-size:0.9rem;">HCT/P establishment strictly compliant with 21 CFR Part 1271.</p></article>
+            <article class="cert-card"><div style="margin:0 auto 1rem;color:var(--ell-secondary);width:2.6rem;height:2.6rem;">{% render 'icon', name: 'shield' %}</div><h3 style="margin:0 0 0.5rem;">AATB Guidelines</h3><p class="muted-copy" style="margin:0;font-size:0.9rem;">Adherence to the highest standards of the American Association of Tissue Banks.</p></article>
+            <article class="cert-card"><div style="margin:0 auto 1rem;color:var(--ell-secondary);width:2.6rem;height:2.6rem;">{% render 'icon', name: 'flask' %}</div><h3 style="margin:0 0 0.5rem;">ISO 13485:2016</h3><p class="muted-copy" style="margin:0;font-size:0.9rem;">Certified Quality Management System for medical devices and related services.</p></article>
+          {% endif %}
+        </div>
+      </section>
+
+      <section id="quality-process">
+        <h2 class="serif-title" style="margin:0 0 1.5rem;font-size:3rem;">{{ section.settings.timeline_heading }}</h2>
+        <div class="timeline-list">
+          {% assign timeline_blocks = section.blocks | where: 'type', 'timeline' %}
+          {% if timeline_blocks.size > 0 %}
+            {% for block in timeline_blocks %}
+              <article class="timeline-item" {{ block.shopify_attributes }}>
+                <h3 style="margin:0 0 0.5rem;">{{ block.settings.title }}</h3>
+                <p class="lead-copy" style="margin:0;font-size:1rem;">{{ block.settings.body }}</p>
+              </article>
+            {% endfor %}
+          {% else %}
+            <article class="timeline-item"><h3 style="margin:0 0 0.5rem;">1. Donor Screening</h3><p class="lead-copy" style="margin:0;font-size:1rem;">Rigorous multi-tiered screening of healthy, consenting donors. Includes comprehensive medical and social history review, physical assessment, and extensive infectious disease testing.</p></article>
+            <article class="timeline-item"><h3 style="margin:0 0 0.5rem;">2. Pathogen Testing</h3><p class="lead-copy" style="margin:0;font-size:1rem;">CLIA-certified laboratory testing for HIV I/II, HCV, HBV, Syphilis, and other pathogens using Nucleic Acid Testing (NAT).</p></article>
+            <article class="timeline-item"><h3 style="margin:0 0 0.5rem;">3. Processing &amp; Isolation</h3><p class="lead-copy" style="margin:0;font-size:1rem;">Conducted in ISO Class 5 cleanrooms using proprietary minimal manipulation techniques to preserve structural and functional integrity.</p></article>
+            <article class="timeline-item"><h3 style="margin:0 0 0.5rem;">4. Cryopreservation &amp; Storage</h3><p class="lead-copy" style="margin:0;font-size:1rem;">Controlled-rate freezing with vapor-phase liquid nitrogen storage and continuously monitored redundant-alarmed facilities.</p></article>
+          {% endif %}
+        </div>
+      </section>
+
+      <section id="quality-literature">
+        <h2 class="serif-title" style="margin:0 0 1rem;font-size:3rem;">{{ section.settings.literature_heading }}</h2>
+        <p class="lead-copy" style="margin-bottom:1.25rem;">{{ section.settings.literature_body }}</p>
+        <div class="resource-list">
+          {% assign resource_blocks = section.blocks | where: 'type', 'resource' %}
+          {% if resource_blocks.size > 0 %}
+            {% for block in resource_blocks %}
+              <a class="resource-card" href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>
+                <span class="resource-card__icon">{% render 'icon', name: 'file' %}</span>
+                <div>
+                  <strong>{{ block.settings.title }}</strong>
+                  <p class="muted-copy" style="margin:0.35rem 0 0;font-size:0.9rem;">{{ block.settings.body }}</p>
+                </div>
+                <span class="muted-copy" style="font-size:0.75rem;">{{ block.settings.file_type }}</span>
+                <span class="muted-copy" style="font-size:0.75rem;">{{ block.settings.file_size }}</span>
+              </a>
+            {% endfor %}
+          {% else %}
+            <a class="resource-card" href="#"><span class="resource-card__icon">{% render 'icon', name: 'file' %}</span><div><strong>Safety Profile of Wharton's Jelly Derived MSCs</strong><p class="muted-copy" style="margin:0.35rem 0 0;font-size:0.9rem;">Comprehensive review of adverse event reporting and long-term safety data.</p></div><span class="muted-copy" style="font-size:0.75rem;">PDF</span><span class="muted-copy" style="font-size:0.75rem;">2.4 MB</span></a>
+            <a class="resource-card" href="#"><span class="resource-card__icon">{% render 'icon', name: 'file' %}</span><div><strong>Optimizing Viability in Cryopreservation</strong><p class="muted-copy" style="margin:0.35rem 0 0;font-size:0.9rem;">Technical dossier on our proprietary controlled-rate freezing protocols.</p></div><span class="muted-copy" style="font-size:0.75rem;">PDF</span><span class="muted-copy" style="font-size:0.75rem;">1.8 MB</span></a>
+            <a class="resource-card" href="#"><span class="resource-card__icon">{% render 'icon', name: 'file' %}</span><div><strong>Amniotic Fluid Processing Guidelines</strong><p class="muted-copy" style="margin:0.35rem 0 0;font-size:0.9rem;">Detailed review of cGTP compliant minimal manipulation techniques.</p></div><span class="muted-copy" style="font-size:0.75rem;">PDF</span><span class="muted-copy" style="font-size:0.75rem;">3.1 MB</span></a>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL quality & safety",
+  "max_blocks": 12,
+  "blocks": [
+    {
+      "type": "certification",
+      "name": "Certification",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "FDA Registered" },
+        { "type": "textarea", "id": "body", "label": "Body", "default": "HCT/P establishment strictly compliant with 21 CFR Part 1271." },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "verified",
+          "options": [
+            { "value": "verified", "label": "Verified" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "flask", "label": "Flask" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "timeline",
+      "name": "Timeline step",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "1. Donor Screening" },
+        { "type": "textarea", "id": "body", "label": "Body", "default": "Rigorous multi-tiered screening of healthy, consenting donors." }
+      ]
+    },
+    {
+      "type": "resource",
+      "name": "Resource",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Safety Profile of Wharton's Jelly Derived MSCs" },
+        { "type": "textarea", "id": "body", "label": "Body", "default": "Comprehensive review of adverse event reporting and long-term safety data." },
+        { "type": "text", "id": "file_type", "label": "File type", "default": "PDF" },
+        { "type": "text", "id": "file_size", "label": "File size", "default": "2.4 MB" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Quality & Safety" },
+    { "type": "textarea", "id": "body", "label": "Body", "default": "Absolute verified safety, precise cell counts, and unimpeachable provenance at every step of the supply chain. We operate under the strictest medical protocols to deliver clinical-grade stem cell biologics." },
+    { "type": "text", "id": "compliance_heading", "label": "Compliance heading", "default": "Compliance & Certifications" },
+    { "type": "textarea", "id": "compliance_body", "label": "Compliance body", "default": "Our facilities and processes are audited and certified by leading medical and regulatory bodies. Every lot is processed in ISO Class 5 cleanrooms and adheres strictly to current Good Tissue Practices and current Good Manufacturing Practices." },
+    { "type": "text", "id": "timeline_heading", "label": "Timeline heading", "default": "Process Timeline" },
+    { "type": "text", "id": "literature_heading", "label": "Literature heading", "default": "Clinical Literature" },
+    { "type": "textarea", "id": "literature_body", "label": "Literature body", "default": "Access our repository of peer-reviewed research, whitepapers, and technical dossiers supporting the efficacy and safety protocols of our biologic offerings." }
+  ]
+}
+{% endschema %}

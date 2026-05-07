@@ -1,0 +1,37 @@
+{% liquid
+  assign card_title = title | default: product.title
+  assign card_body = body
+  if card_body == blank and product.description != blank
+    assign card_body = product.description | strip_html | truncate: 150
+  endif
+  assign card_url = url | default: product.url
+  if card_url == blank
+    assign card_url = '#'
+  endif
+  assign card_status = status
+  assign card_label = label
+%}
+<article class="solution-card surface-card">
+  <div class="solution-card__media{% if media_style == 'wharton' %} solution-card__media--wharton{% endif %}">
+    <span class="solution-card__label{% if media_style == 'wharton' %} solution-card__label--wharton{% endif %}">
+      {{ card_label | default: card_title }}
+    </span>
+  </div>
+  <div class="solution-card__body">
+    <div style="display:flex;justify-content:space-between;gap:1rem;align-items:start;">
+      <h3 class="solution-card__title">{{ card_title }}</h3>
+      {% if card_status != blank %}
+        <span class="status-chip status-chip--{{ card_status | handle }}">
+          {{ card_status }}
+        </span>
+      {% endif %}
+    </div>
+    {% if card_body != blank %}
+      <p class="muted-copy" style="margin:0;">{{ card_body }}</p>
+    {% endif %}
+    <a class="ell-button ell-button--text" href="{{ card_url }}">
+      {{ cta_label | default: 'Explore Solution' }}
+      {% render 'icon', name: 'arrow-right' %}
+    </a>
+  </div>
+</article>

@@ -1,0 +1,101 @@
+{% liquid
+  assign brand_name = settings.brand_name | default: shop.name
+  assign home_active = false
+  assign catalog_active = false
+  assign quality_active = false
+
+  if template.name == 'index'
+    assign home_active = true
+  elsif template.name == 'product' or template.suffix == 'catalog'
+    assign catalog_active = true
+  elsif template.suffix == 'quality-safety'
+    assign quality_active = true
+  endif
+%}
+
+<header class="site-header">
+  <div class="ell-container site-header__inner">
+    <a class="brand-mark" href="{{ routes.root_url }}">
+      {% if settings.logo != blank %}
+        {{
+          settings.logo
+          | image_url: width: 200
+          | image_tag:
+            alt: brand_name,
+            widths: '120,160,200',
+            class: 'brand-mark__image'
+        }}
+      {% else %}
+        <span class="brand-mark__glyph"></span>
+        <span class="brand-mark__word">{{ brand_name }}</span>
+      {% endif %}
+    </a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <a href="{{ routes.root_url }}"{% if home_active %} aria-current="page"{% endif %}>{{ section.settings.home_label }}</a>
+      <a href="/pages/catalog"{% if catalog_active %} aria-current="page"{% endif %}>{{ section.settings.catalog_label }}</a>
+      <a href="/pages/quality-safety"{% if quality_active %} aria-current="page"{% endif %}>{{ section.settings.quality_label }}</a>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="ell-button ell-button--ghost" href="{{ routes.account_login_url | default: '/account/login' }}">
+        {{ section.settings.login_label }}
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" data-nav-toggle>
+        {% render 'icon', name: 'menu' %}
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-sheet" data-mobile-nav>
+    <button class="mobile-sheet__backdrop" type="button" aria-label="Close menu" data-nav-backdrop></button>
+    <div class="mobile-sheet__panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+        <span class="brand-mark__word">{{ brand_name }}</span>
+        <button class="mobile-sheet__close" type="button" aria-label="Close menu" data-nav-close>
+          {% render 'icon', name: 'close' %}
+        </button>
+      </div>
+      <nav class="mobile-sheet__menu" aria-label="Mobile">
+        <a href="{{ routes.root_url }}">Home</a>
+        <a href="/pages/catalog">Catalog</a>
+        <a href="/pages/quality-safety">Quality &amp; Safety</a>
+        <a href="/pages/procurement">Procurement</a>
+        <a href="{{ routes.account_login_url | default: '/account/login' }}">Log In</a>
+      </nav>
+      <p class="muted-copy" style="margin-top:auto;">{{ settings.brand_tagline }}</p>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "home_label",
+      "label": "Home label",
+      "default": "Home"
+    },
+    {
+      "type": "text",
+      "id": "catalog_label",
+      "label": "Catalog label",
+      "default": "Catalog"
+    },
+    {
+      "type": "text",
+      "id": "quality_label",
+      "label": "Quality label",
+      "default": "Quality & Safety"
+    },
+    {
+      "type": "text",
+      "id": "login_label",
+      "label": "Login label",
+      "default": "Log In"
+    }
+  ]
+}
+{% endschema %}

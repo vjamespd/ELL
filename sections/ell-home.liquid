@@ -1,0 +1,73 @@
+<section class="home-hero">
+  <div class="ell-container home-hero__inner">
+    <div class="home-hero__copy">
+      <p class="eyebrow" style="color:rgba(255,255,255,0.7);">{{ section.settings.eyebrow }}</p>
+      <h1 class="display-title">{{ section.settings.heading_prefix }}<br><em>{{ section.settings.heading_emphasis }}</em></h1>
+      <p class="lead-copy">{{ section.settings.body }}</p>
+      <div class="button-row" style="margin-top:2rem;">
+        <a class="ell-button ell-button--ghost" href="{{ section.settings.primary_link | default: '/pages/catalog' }}">
+          {{ section.settings.primary_label }}
+          {% render 'icon', name: 'arrow-right' %}
+        </a>
+        <a class="ell-button ell-button--secondary" href="{{ section.settings.secondary_link | default: '/pages/quality-safety' }}">
+          {{ section.settings.secondary_label }}
+        </a>
+      </div>
+    </div>
+    <div class="cell-visual" aria-hidden="true"></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL home hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Clinical Editorial Biotech"
+    },
+    {
+      "type": "text",
+      "id": "heading_prefix",
+      "label": "Heading line 1",
+      "default": "Elegance at the"
+    },
+    {
+      "type": "text",
+      "id": "heading_emphasis",
+      "label": "Heading line 2",
+      "default": "cellular level."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Pioneering precision biologics through clinical editorial standards and rigorous scientific integrity."
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Primary button label",
+      "default": "Browse Inventory"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary button label",
+      "default": "Scientific Papers"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "Secondary button link"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Public+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface-variant": "#4a454e",
+              "primary": "#270f44",
+              "error": "#ba1a1a",
+              "tertiary-fixed-dim": "#71dba6",
+              "surface-dim": "#ded8de",
+              "on-secondary": "#ffffff",
+              "secondary": "#694ea8",
+              "primary-container": "#3d265a",
+              "surface-container-low": "#f8f2f7",
+              "outline": "#7b757f",
+              "secondary-fixed": "#eaddff",
+              "tertiary-fixed": "#8df7c1",
+              "on-tertiary-fixed": "#002113",
+              "on-background": "#1d1b1f",
+              "surface-container-highest": "#e7e1e6",
+              "on-tertiary": "#ffffff",
+              "inverse-surface": "#322f34",
+              "on-tertiary-container": "#40ac7c",
+              "surface-tint": "#6c538a",
+              "on-primary-fixed": "#260e43",
+              "on-error-container": "#93000a",
+              "on-secondary-container": "#4c2f88",
+              "surface-variant": "#e7e1e6",
+              "on-primary-container": "#a98eca",
+              "secondary-container": "#bb9eff",
+              "error-container": "#ffdad6",
+              "primary-fixed-dim": "#d7baf9",
+              "on-primary-fixed-variant": "#533c71",
+              "outline-variant": "#ccc4cf",
+              "on-secondary-fixed": "#24005b",
+              "on-surface": "#1d1b1f",
+              "tertiary-container": "#003a24",
+              "surface-bright": "#fef7fd",
+              "surface-container": "#f2ecf1",
+              "surface-container-lowest": "#ffffff",
+              "inverse-on-surface": "#f5eff4",
+              "on-primary": "#ffffff",
+              "on-error": "#ffffff",
+              "inverse-primary": "#d7baf9",
+              "background": "#fef7fd",
+              "surface": "#fef7fd",
+              "on-tertiary-fixed-variant": "#005235",
+              "tertiary": "#002214",
+              "secondary-fixed-dim": "#d1bcff",
+              "on-secondary-fixed-variant": "#51358e",
+              "primary-fixed": "#eedcff",
+              "surface-container-high": "#ede6ec"
+            },
+            fontFamily: {
+              "headline": ["Newsreader", "serif"],
+              "body": ["Public Sans", "sans-serif"],
+              "label": ["Public Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .font-serif { font-family: 'Newsreader', serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopNavBar -->
+<header class="bg-[#FEF7FD] dark:bg-slate-950 border-b border-purple-100/20 dark:border-purple-900/20 docked full-width top-0 sticky z-50">
+<nav class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-serif italic text-[#270F44] dark:text-purple-300">ell.</div>
+<div class="hidden md:flex items-center space-x-12">
+<a class="text-[#270F44] dark:text-purple-300 font-bold border-b-2 border-[#270F44] pb-1 Headlines: Newsreader serif. Labels: Public Sans all-caps 0.05rem spacing tracking-[0.05rem]" href="#">Home</a>
+<a class="text-[#694EA8] dark:text-purple-400 font-medium hover:text-[#270F44] transition-colors duration-300 Headlines: Newsreader serif. Labels: Public Sans all-caps 0.05rem spacing tracking-[0.05rem]" href="#">Catalog</a>
+<a class="text-[#694EA8] dark:text-purple-400 font-medium hover:text-[#270F44] transition-colors duration-300 Headlines: Newsreader serif. Labels: Public Sans all-caps 0.05rem spacing tracking-[0.05rem]" href="#">Quality &amp; Safety</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-[#270F44] dark:text-purple-400 font-medium hover:text-[#270F44] transition-colors duration-300 Headlines: Newsreader serif. Labels: Public Sans all-caps 0.05rem spacing tracking-[0.05rem]">Log In</button>
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative bg-primary-container min-h-[870px] flex items-center overflow-hidden">
+<div class="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none">
+<img alt="Cellular structures background" class="w-full h-full object-cover" data-alt="Abstract microscopic cellular structures in purple tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCkFvBPUoZ1GQit8C-ptvRS3GfSQqY45b4HuREV6th2Wreiedd1Oeo8tbPCi3JYReMbaAJcTPS-eDhsGAVn-knHjY_dKYo9JEDXTprwzZnva95A4kn7rpQQ5_Zh-j-N0GCPmoJF1dyOAPPlaLVIeHtparyo_9hG2jUpePdKfApPgjZ3JzdNLDIso7fBNKxXEEx7mXhGLxCaGAlhWP-q8g1nJ2P3_ZeNYj1f8LxwcjT58x2418f7Zz-FpmKtUdo52NV-ZdgP7lS8oY"/>
+</div>
+<div class="max-w-7xl mx-auto px-8 w-full relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+<div class="md:col-span-8">
+<h1 class="font-serif text-5xl md:text-8xl text-white leading-[1.1] mb-8 italic">
+                            Elegance at the <br/>
+<span class="font-normal not-italic opacity-90">cellular level.</span>
+</h1>
+<p class="text-on-primary-container text-xl md:text-2xl max-w-xl mb-12 font-light leading-relaxed">
+                            Pioneering precision biologics through clinical editorial standards and rigorous scientific integrity.
+                        </p>
+<div class="flex flex-wrap gap-6">
+<button class="bg-on-primary text-primary px-10 py-5 rounded-DEFAULT font-medium text-lg flex items-center gap-3 hover:bg-surface-bright transition-all shadow-xl shadow-primary/20">
+                                Browse Inventory
+                                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="text-white border border-white/20 px-10 py-5 rounded-DEFAULT font-medium text-lg hover:bg-white/5 transition-all">
+                                Scientific Papers
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Banner -->
+<section class="bg-surface-container-low py-16 border-b border-outline-variant/20">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex flex-wrap justify-between items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
+<div class="flex flex-col items-center">
+<span class="text-2xl font-bold tracking-tighter text-on-surface">FDA</span>
+<span class="text-[0.6rem] uppercase tracking-[0.2em] mt-1 font-body">Registered Facility</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-2xl font-bold tracking-tighter text-on-surface">AATB</span>
+<span class="text-[0.6rem] uppercase tracking-[0.2em] mt-1 font-body">Accredited Member</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-2xl font-bold tracking-tighter text-on-surface">ISO 13485</span>
+<span class="text-[0.6rem] uppercase tracking-[0.2em] mt-1 font-body">Quality Management</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-2xl font-bold tracking-tighter text-on-surface">CLIA</span>
+<span class="text-[0.6rem] uppercase tracking-[0.2em] mt-1 font-body">Certified Laboratory</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Portals (Asymmetric Grid) -->
+<section class="py-32 bg-background">
+<div class="max-w-7xl mx-auto px-8">
+<div class="mb-20">
+<span class="text-secondary font-label text-sm uppercase tracking-[0.2em] block mb-4">Biologic Solutions</span>
+<h2 class="font-serif text-4xl md:text-6xl text-primary max-w-2xl italic leading-tight">Advanced tissue grafts for regenerative medicine.</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Card 1 -->
+<div class="md:col-span-7 group cursor-pointer relative overflow-hidden rounded-DEFAULT bg-surface-container-high transition-transform duration-500 hover:-translate-y-2">
+<div class="aspect-[16/9] overflow-hidden">
+<img alt="Amniotic Solutions" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Abstract white and lavender medical laboratory background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5MMJx4bf-Vg-3ehkIgjMpn4X_SxQsFg6YBObdafIXQLaxmqjrkor9HE9mxGFQYz-HRYYalqcz_8k2Rw3vtBXnfDA65Dr270yPms5P2M3WHvsUOgyKcwYmiCAsb88ymhgvXbFddpXU7SKl1CvCYQo7sF0JcGWdlHAQidItFu_nIaNNUS4fneYIgRzEua1ZHEQiaBMCY06j_zp31txSpOd15K1Ebaqtc0uI8-7CVcWOqQUPJSINYwjALdjpNRj-Ibr-36M3GL-snOU"/>
+</div>
+<div class="p-10 relative">
+<div class="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-serif text-3xl text-primary italic">Amniotic Solutions</h3>
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-DEFAULT text-xs font-label uppercase tracking-wider">In Stock</span>
+</div>
+<p class="text-on-surface-variant mb-8 max-w-md leading-relaxed">
+                                Purified placental membrane matrices designed for ophthalmic and wound care applications. Ethically sourced and clinically validated.
+                            </p>
+<span class="inline-flex items-center gap-2 text-secondary font-medium group-hover:gap-4 transition-all">
+                                Explore Solution <span class="material-symbols-outlined">trending_flat</span>
+</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="md:col-span-5 group cursor-pointer relative overflow-hidden rounded-DEFAULT bg-surface-container-high transition-transform duration-500 hover:-translate-y-2 flex flex-col">
+<div class="aspect-square overflow-hidden">
+<img alt="Wharton's Jelly" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Crystalline structures in a medical microscope view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8N1kVUOEvuUnus_d4hB03G3B12uKwyImeIAT90SbaCPinXhJFfvx18CczcBdd8egPtbafVKOxZjic_qg668y6JjJYm4DKGJvqD8FDJ4r8hvrBxkLrrrAjC8X8LkZBjKOjRDNtzGL19He-DzOr8d21bVBZ12nvuvygjGNsNg4HJti4Tq4er4xPGkwXw-CTYjGMP5myAnlS9gu1wlmwE7LjTm8xsPHwBNFMIO-eTg-8DP9jgq6wX9awlHeUDREGecJuvRTQCtHX6b4"/>
+</div>
+<div class="p-10 flex-grow relative">
+<div class="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<h3 class="font-serif text-3xl text-primary italic mb-6">Wharton's Jelly</h3>
+<p class="text-on-surface-variant mb-8 leading-relaxed">
+                                High-concentration MSC matrix derived from umbilical cord tissue.
+                            </p>
+<span class="inline-flex items-center gap-2 text-secondary font-medium group-hover:gap-4 transition-all">
+                                View Technical Specs <span class="material-symbols-outlined">trending_flat</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Feature Section -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="md:col-span-2 bg-surface-container-lowest p-12 rounded-DEFAULT border border-outline-variant/20">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6" data-weight="fill">biotech</span>
+<h4 class="font-serif text-2xl text-primary mb-4 italic">Precision Extraction</h4>
+<p class="text-on-surface-variant leading-relaxed">Our proprietary low-temperature processing preserves structural integrity and cytokine profiles.</p>
+</div>
+<div class="md:col-span-2 bg-primary-container p-12 rounded-DEFAULT text-on-primary-container">
+<span class="material-symbols-outlined text-4xl text-on-primary-container mb-6">verified</span>
+<h4 class="font-serif text-2xl text-white mb-4 italic">Next-Day Logistics</h4>
+<p class="opacity-80 leading-relaxed">Validated cold-chain shipping ensures viability from our facility to your surgical suite.</p>
+</div>
+<div class="md:col-span-4 bg-white p-12 rounded-DEFAULT border border-outline-variant/20 flex flex-col md:flex-row items-center gap-12">
+<div class="md:w-1/2">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6">science</span>
+<h4 class="font-serif text-3xl text-primary mb-4 italic">Third-Party Validation</h4>
+<p class="text-on-surface-variant leading-relaxed mb-8">Every batch undergoes rigorous sterility and endotoxin testing by independent CLIA-certified laboratories to ensure maximum safety.</p>
+<button class="text-secondary font-label text-sm uppercase tracking-widest border-b border-secondary pb-1">Download Safety Report</button>
+</div>
+<div class="md:w-1/2 h-64 bg-surface-container rounded-DEFAULT overflow-hidden">
+<img alt="Laboratory precision" class="w-full h-full object-cover" data-alt="Clinical laboratory equipment with sterile lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuO_u4PiBl6svtPQwBmeXlTwvgYTYlNy2Q1xzPpCtoYAwA_vpfz_94VKHYeQ5nTwe8LSnK4S8uxRDEh7ujPKXdxMC9e2zdxf0Wb6aTPe-kIa81_lM_zf4tVIc7XRnxV7SPYNvbltDvzRuDKDJ2VRjaR8vZhmRuZNVfYos0nlTMu6XpWILLaIDN8mDqgL6lIRj_SNCW-V7LwNcZMgNeQR512Jg0ucPyBOW2p-zMMkbkRqzy1UzJJNoPJMCsNjty1gRtYRRu96cN5hA"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#270F44] dark:bg-[#002214] text-[#FEF7FD]">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 px-12 py-16 w-full max-w-7xl mx-auto">
+<div class="col-span-1 md:col-span-1">
+<span class="text-3xl font-serif text-[#FEF7FD] mb-4 block">ell.</span>
+<p class="font-body text-purple-200/70 max-w-xs leading-relaxed font-light mb-8">
+                    Elevating the standard of regenerative medicine through sterile precision and transparent science.
+                </p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined opacity-70 hover:opacity-100 cursor-pointer">linked_camera</span>
+<span class="material-symbols-outlined opacity-70 hover:opacity-100 cursor-pointer">share</span>
+<span class="material-symbols-outlined opacity-70 hover:opacity-100 cursor-pointer">mail</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-8 col-span-1 md:col-span-2">
+<div>
+<h5 class="font-serif text-xl mb-6 italic">Platform</h5>
+<ul class="space-y-4">
+<li><a class="text-purple-200/70 hover:text-white transition-colors hover:translate-x-1 transition-transform duration-200 inline-block font-body font-light" href="#">Inventory Catalog</a></li>
+<li><a class="text-purple-200/70 hover:text-white transition-colors hover:translate-x-1 transition-transform duration-200 inline-block font-body font-light" href="#">Order Tracking</a></li>
+<li><a class="text-purple-200/70 hover:text-white transition-colors hover:translate-x-1 transition-transform duration-200 inline-block font-body font-light" href="#">Provider Portal</a></li>
+<li><a class="text-purple-200/70 hover:text-white transition-colors hover:translate-x-1 transition-transform duration-200 inline-block font-body font-light" href="#">AATB Certified</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-serif text-xl mb-6 italic">Legal &amp; Privacy</h5>
+<ul class="space-y-4">
+<li><a class="text-purple-200/70 hover:text-white transition-colors hover:translate-x-1 transition-transform duration-200 inline-block font-body font-light" href="#">Legal &amp; Compliance</a></li>
+<li><a class="text-purple-200/70 hover:text-white transition-colors hover:translate-x-1 transition-transform duration-200 inline-block font-body font-light" href="#">Privacy Policy</a></li>
+<li><a class="text-purple-200/70 hover:text-white transition-colors hover:translate-x-1 transition-transform duration-200 inline-block font-body font-light" href="#">FDA Registered</a></li>
+<li><a class="text-purple-200/70 hover:text-white transition-colors hover:translate-x-1 transition-transform duration-200 inline-block font-body font-light" href="#">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="border-t border-white/5 py-8 px-12 text-center">
+<p class="font-body text-purple-200/40 text-xs tracking-widest uppercase">
+                © 2024 ell. Biologics. All rights reserved. Precision in every cell.
+            </p>
+</div>
+</footer>
+</body></html>

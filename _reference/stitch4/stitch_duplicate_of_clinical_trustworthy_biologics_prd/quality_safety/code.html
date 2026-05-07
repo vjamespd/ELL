@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ell. - Quality &amp; Safety</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3D265A",
+                        "background-light": "#FFFFFF",
+                        "background-dark": "#111721",
+                        "surface": "#F9F8FC",
+                        "text-main": "#172B4D",
+                        "muted": "#8993A4",
+                        "accent": "#8468C4",
+                        "success": "#00875A",
+                        "border-light": "#E5E1ED"
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"],
+                        "heading": ["Playfair Display", "serif"],
+                        "body": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "none": "0",
+                        "sm": "0.125rem",
+                        "md": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-body text-text-main antialiased selection:bg-accent selection:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- TopAppBar (Shared Component) -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-border-light bg-background-light dark:bg-background-dark px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path></svg>
+</div>
+<h2 class="text-primary font-heading text-2xl font-semibold leading-tight tracking-tight">ell.</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="flex items-center gap-9">
+<a class="text-text-main text-sm font-medium leading-normal hover:text-accent transition-colors" href="#">Home</a>
+<a class="text-text-main text-sm font-medium leading-normal hover:text-accent transition-colors" href="#">Catalog</a>
+<a aria-current="page" class="text-accent text-sm font-medium leading-normal border-b-2 border-accent pb-1" href="#">Quality &amp; Safety</a>
+</nav>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-sm h-10 px-6 bg-primary text-white text-sm font-semibold leading-normal tracking-wide hover:bg-primary/90 transition-colors">
+<span class="truncate">Log In</span>
+</button>
+</div>
+</header>
+<main class="flex-1 w-full max-w-[1200px] mx-auto flex gap-12 px-10 py-16">
+<!-- Sidebar / TOC -->
+<aside class="w-[250px] shrink-0 hidden md:block">
+<div class="sticky top-[100px] flex flex-col gap-2">
+<h3 class="text-xs font-semibold uppercase tracking-widest text-muted mb-4">On this page</h3>
+<a class="flex items-center gap-3 px-3 py-2 rounded-sm bg-surface border-l-2 border-accent text-primary text-sm font-medium leading-normal transition-colors" href="#compliance">
+                        Compliance &amp; Certifications
+                    </a>
+<a class="flex items-center gap-3 px-3 py-2 border-l-2 border-transparent text-text-main hover:text-accent hover:bg-surface/50 text-sm font-medium leading-normal transition-colors" href="#process">
+                        Process Timeline
+                    </a>
+<a class="flex items-center gap-3 px-3 py-2 border-l-2 border-transparent text-text-main hover:text-accent hover:bg-surface/50 text-sm font-medium leading-normal transition-colors" href="#literature">
+                        Clinical Literature
+                    </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 max-w-[800px] flex flex-col gap-20">
+<!-- Page Header -->
+<section>
+<h1 class="text-primary font-heading text-4xl md:text-5xl font-semibold leading-tight mb-6">Quality &amp; Safety</h1>
+<p class="text-text-main text-lg leading-relaxed max-w-3xl">
+                        Absolute verified safety, precise cell counts, and unimpeachable provenance at every step of the supply chain. We operate under the strictest medical protocols to deliver clinical-grade stem cell biologics.
+                    </p>
+</section>
+<!-- Compliance & Certifications -->
+<section class="scroll-mt-28" id="compliance">
+<h2 class="text-primary font-heading text-3xl font-semibold leading-tight mb-8 pb-4 border-b border-border-light">Compliance &amp; Certifications</h2>
+<p class="text-text-main text-base leading-relaxed mb-10">
+                        Our facilities and processes are audited and certified by leading medical and regulatory bodies. Every lot is processed in ISO Class 5 cleanrooms and adheres strictly to current Good Tissue Practices (cGTP) and current Good Manufacturing Practices (cGMP).
+                    </p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Badge Card 1 -->
+<div class="flex flex-col items-center text-center p-8 border border-border-light rounded-sm bg-surface hover:border-accent/50 transition-colors">
+<div class="h-16 w-auto mb-6 text-muted">
+<span class="material-symbols-outlined text-[64px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<h3 class="text-primary font-semibold text-lg mb-2">FDA Registered</h3>
+<p class="text-sm text-text-main">HCT/P establishment strictly compliant with 21 CFR Part 1271.</p>
+</div>
+<!-- Badge Card 2 -->
+<div class="flex flex-col items-center text-center p-8 border border-border-light rounded-sm bg-surface hover:border-accent/50 transition-colors">
+<div class="h-16 w-auto mb-6 text-muted">
+<span class="material-symbols-outlined text-[64px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<h3 class="text-primary font-semibold text-lg mb-2">AATB Guidelines</h3>
+<p class="text-sm text-text-main">Adherence to the highest standards of the American Association of Tissue Banks.</p>
+</div>
+<!-- Badge Card 3 -->
+<div class="flex flex-col items-center text-center p-8 border border-border-light rounded-sm bg-surface hover:border-accent/50 transition-colors">
+<div class="h-16 w-auto mb-6 text-muted">
+<span class="material-symbols-outlined text-[64px]" style="font-variation-settings: 'FILL' 1;">science</span>
+</div>
+<h3 class="text-primary font-semibold text-lg mb-2">ISO 13485:2016</h3>
+<p class="text-sm text-text-main">Certified Quality Management System for medical devices and related services.</p>
+</div>
+</div>
+</section>
+<!-- Process Timeline -->
+<section class="scroll-mt-28" id="process">
+<h2 class="text-primary font-heading text-3xl font-semibold leading-tight mb-12 pb-4 border-b border-border-light">Process Timeline</h2>
+<div class="relative pl-8 md:pl-0">
+<!-- Vertical Line -->
+<div class="absolute left-8 md:left-[15px] top-2 bottom-2 w-[2px] bg-border-light"></div>
+<!-- Timeline Items -->
+<div class="flex flex-col gap-12">
+<!-- Node 1 -->
+<div class="relative flex flex-col md:flex-row gap-6 md:gap-12 md:items-start group">
+<div class="absolute -left-[39px] md:static md:w-[32px] md:shrink-0 flex justify-center mt-1">
+<div class="w-4 h-4 rounded-full bg-accent ring-4 ring-background-light dark:ring-background-dark z-10 group-hover:scale-125 transition-transform"></div>
+</div>
+<div>
+<h3 class="text-primary font-semibold text-xl mb-3">1. Donor Screening</h3>
+<p class="text-text-main text-base leading-relaxed">
+                                        Rigorous multi-tiered screening of healthy, consenting donors. Includes comprehensive medical and social history review, physical assessment, and extensive infectious disease testing beyond standard requirements.
+                                    </p>
+</div>
+</div>
+<!-- Node 2 -->
+<div class="relative flex flex-col md:flex-row gap-6 md:gap-12 md:items-start group">
+<div class="absolute -left-[39px] md:static md:w-[32px] md:shrink-0 flex justify-center mt-1">
+<div class="w-4 h-4 rounded-full bg-accent ring-4 ring-background-light dark:ring-background-dark z-10 group-hover:scale-125 transition-transform"></div>
+</div>
+<div>
+<h3 class="text-primary font-semibold text-xl mb-3">2. Pathogen Testing</h3>
+<p class="text-text-main text-base leading-relaxed">
+                                        CLIA-certified laboratory testing for HIV I/II, HCV, HBV, Syphilis, and other pathogens using Nucleic Acid Testing (NAT) to ensure absolute tissue safety before processing begins.
+                                    </p>
+</div>
+</div>
+<!-- Node 3 -->
+<div class="relative flex flex-col md:flex-row gap-6 md:gap-12 md:items-start group">
+<div class="absolute -left-[39px] md:static md:w-[32px] md:shrink-0 flex justify-center mt-1">
+<div class="w-4 h-4 rounded-full bg-accent ring-4 ring-background-light dark:ring-background-dark z-10 group-hover:scale-125 transition-transform"></div>
+</div>
+<div>
+<h3 class="text-primary font-semibold text-xl mb-3">3. Processing &amp; Isolation</h3>
+<p class="text-text-main text-base leading-relaxed">
+                                        Conducted in ISO Class 5 cleanrooms. Proprietary minimal manipulation techniques are used to isolate target cells while maintaining their structural and functional integrity, ensuring high viability counts.
+                                    </p>
+</div>
+</div>
+<!-- Node 4 -->
+<div class="relative flex flex-col md:flex-row gap-6 md:gap-12 md:items-start group">
+<div class="absolute -left-[39px] md:static md:w-[32px] md:shrink-0 flex justify-center mt-1">
+<div class="w-4 h-4 rounded-full bg-accent ring-4 ring-background-light dark:ring-background-dark z-10 group-hover:scale-125 transition-transform"></div>
+</div>
+<div>
+<h3 class="text-primary font-semibold text-xl mb-3">4. Cryopreservation &amp; Storage</h3>
+<p class="text-text-main text-base leading-relaxed">
+                                        Controlled-rate freezing using optimal cryoprotectants. Products are stored in vapor-phase liquid nitrogen (-196°C) within continuously monitored, redundant-alarmed storage facilities.
+                                    </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Clinical Literature -->
+<section class="scroll-mt-28 mb-20" id="literature">
+<h2 class="text-primary font-heading text-3xl font-semibold leading-tight mb-8 pb-4 border-b border-border-light">Clinical Literature</h2>
+<p class="text-text-main text-base leading-relaxed mb-8">
+                        Access our repository of peer-reviewed research, whitepapers, and technical dossiers supporting the efficacy and safety protocols of our biologic offerings.
+                    </p>
+<div class="flex flex-col gap-4">
+<!-- Whitepaper Card 1 -->
+<a class="flex items-center gap-6 p-5 border border-border-light rounded-sm bg-background-light hover:border-accent hover:shadow-sm transition-all group" href="#">
+<div class="flex items-center justify-center w-12 h-12 rounded bg-surface text-accent group-hover:bg-accent group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1">
+<h4 class="text-primary font-semibold text-lg mb-1 group-hover:text-accent transition-colors">Safety Profile of Wharton's Jelly Derived MSCs</h4>
+<p class="text-sm text-muted">Comprehensive review of adverse event reporting and long-term safety data.</p>
+</div>
+<div class="hidden sm:flex flex-col items-end text-right shrink-0">
+<span class="text-xs font-semibold uppercase tracking-wider text-muted mb-1">PDF</span>
+<span class="text-sm text-text-main">2.4 MB</span>
+</div>
+<div class="text-muted group-hover:text-accent transition-colors shrink-0 ml-4">
+<span class="material-symbols-outlined">download</span>
+</div>
+</a>
+<!-- Whitepaper Card 2 -->
+<a class="flex items-center gap-6 p-5 border border-border-light rounded-sm bg-background-light hover:border-accent hover:shadow-sm transition-all group" href="#">
+<div class="flex items-center justify-center w-12 h-12 rounded bg-surface text-accent group-hover:bg-accent group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1">
+<h4 class="text-primary font-semibold text-lg mb-1 group-hover:text-accent transition-colors">Optimizing Viability in Cryopreservation</h4>
+<p class="text-sm text-muted">Technical dossier on our proprietary controlled-rate freezing protocols.</p>
+</div>
+<div class="hidden sm:flex flex-col items-end text-right shrink-0">
+<span class="text-xs font-semibold uppercase tracking-wider text-muted mb-1">PDF</span>
+<span class="text-sm text-text-main">1.8 MB</span>
+</div>
+<div class="text-muted group-hover:text-accent transition-colors shrink-0 ml-4">
+<span class="material-symbols-outlined">download</span>
+</div>
+</a>
+<!-- Whitepaper Card 3 -->
+<a class="flex items-center gap-6 p-5 border border-border-light rounded-sm bg-background-light hover:border-accent hover:shadow-sm transition-all group" href="#">
+<div class="flex items-center justify-center w-12 h-12 rounded bg-surface text-accent group-hover:bg-accent group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1">
+<h4 class="text-primary font-semibold text-lg mb-1 group-hover:text-accent transition-colors">Amniotic Fluid Processing Guidelines</h4>
+<p class="text-sm text-muted">Detailed review of cGTP compliant minimal manipulation techniques.</p>
+</div>
+<div class="hidden sm:flex flex-col items-end text-right shrink-0">
+<span class="text-xs font-semibold uppercase tracking-wider text-muted mb-1">PDF</span>
+<span class="text-sm text-text-main">3.1 MB</span>
+</div>
+<div class="text-muted group-hover:text-accent transition-colors shrink-0 ml-4">
+<span class="material-symbols-outlined">download</span>
+</div>
+</a>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>
