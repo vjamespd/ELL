@@ -7,7 +7,21 @@ Small Node service for real NPI validation against official CMS/NPPES sources.
 1. Validates that the submitted NPI is exactly 10 digits
 2. Applies the NPI check-digit rule
 3. Looks up the NPI against the official NPPES registry
-4. Returns a normalized response the ELL theme can use
+4. Restricts access to approved provider taxonomy groups
+5. Returns a normalized response the ELL theme can use
+
+## Phase 1 eligibility rules
+
+The current hosted verifier allows only NPIs whose NPPES taxonomy matches one of these provider groups:
+
+- `MD/DO`
+- `NP`
+- `PA`
+- `ND`
+- `DDS/DMD`
+- `DPM`
+
+This is taxonomy-based filtering only. It does **not** yet verify state license standing such as `active`, `clear`, or `good standing`.
 
 ## Official reference sources
 

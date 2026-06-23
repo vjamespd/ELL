@@ -7,6 +7,15 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '*')
   .split(',')
   .map((value) => value.trim())
   .filter(Boolean);
+const approvedTaxonomyRules = [
+  { credential: 'MD/DO', codePrefixes: ['20'] },
+  { credential: 'NP', codePrefixes: ['363L'] },
+  { credential: 'PA', codePrefixes: ['363A'] },
+  { credential: 'ND', codePrefixes: ['175F'] },
+  { credential: 'DDS/DMD', codePrefixes: ['1223'] },
+  { credential: 'DPM', codePrefixes: ['213E'] },
+];
+const approvedCredentialSummary = approvedTaxonomyRules.map((rule) => rule.credential).join(', ');
 
 function sendJson(response, statusCode, payload, origin = '*') {
   response.writeHead(statusCode, {
@@ -108,6 +117,36 @@ function getPrimaryTaxonomy(record) {
   return primary?.desc || primary?.taxonomy_desc || null;
 }
 
+function getNormalizedTaxonomies(record) {
+  const taxonomies = Array.isArray(record?.taxonomies) ? record.taxonomies : [];
+  return taxonomies
+    .map((entry) => ({
+      code: String(entry?.code || entry?.taxonomy_code || '').trim().toUpperCase(),
+      desc: String(entry?.desc || entry?.taxonomy_desc || '').trim(),
+      primary: entry?.primary === true,
+      license: String(entry?.license || entry?.license_number || '').trim() || null,
+    }))
+    .filter((entry) => entry.code || entry.desc);
+}
+
+function findApprovedTaxonomy(record) {
+  const taxonomies = getNormalizedTaxonomies(record);
+
+  for (const taxonomy of taxonomies) {
+    const match = approvedTaxonomyRules.find((rule) =>
+      rule.codePrefixes.some((prefix) => taxonomy.code.startsWith(prefix)));
+
+    if (match) {
+      return {
+        credential: match.credential,
+        taxonomy,
+      };
+    }
+  }
+
+  return null;
+}
+
 function getDeactivationDate(record) {
   const basic = record?.basic || {};
   return basic.deactivation_date
@@ -146,6 +185,22 @@ async function lookupNpiAgainstNppes(npi) {
     };
   }
 
+  const approvedTaxonomy = findApprovedTaxonomy(record);
+  if (!approvedTaxonomy) {
+    return {
+      valid: false,
+      statusCode: 403,
+      message: `This NPI is active in NPPES, but the provider type is not currently eligible for ELL ordering. Approved provider types include ${approvedCredentialSummary}.`,
+      profile: {
+        number: record?.number || npi,
+        name: getRecordName(record),
+        enumerationType: record?.enumeration_type || null,
+        taxonomy: getPrimaryTaxonomy(record),
+        source: 'NPPES NPI Registry',
+      },
+    };
+  }
+
   return {
     valid: true,
     message: 'NPI verified against the official NPPES registry.',
@@ -153,7 +208,10 @@ async function lookupNpiAgainstNppes(npi) {
       number: record?.number || npi,
       name: getRecordName(record),
       enumerationType: record?.enumeration_type || null,
-      taxonomy: getPrimaryTaxonomy(record),
+      taxonomy: approvedTaxonomy.taxonomy.desc || getPrimaryTaxonomy(record),
+      taxonomyCode: approvedTaxonomy.taxonomy.code || null,
+      credential: approvedTaxonomy.credential,
+      license: approvedTaxonomy.taxonomy.license,
       source: 'NPPES NPI Registry',
     },
   };
@@ -198,7 +256,7 @@ const server = http.createServer(async (request, response) => {
     }
 
     const result = await lookupNpiAgainstNppes(npi);
-    sendJson(response, result.valid ? 200 : 404, {
+    sendJson(response, result.valid ? 200 : (result.statusCode || 404), {
       valid: result.valid,
       message: result.message,
       profile: result.profile || null,
