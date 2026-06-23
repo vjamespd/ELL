@@ -9,13 +9,38 @@
     assign card_url = '#'
   endif
   assign card_status = status
+  if card_status == blank and product != blank
+    if product.available
+      assign card_status = 'In Stock'
+    else
+      assign card_status = 'Unavailable'
+    endif
+  endif
   assign card_label = label
 %}
 <article class="solution-card surface-card">
-  <div class="solution-card__media{% if media_style == 'wharton' %} solution-card__media--wharton{% endif %}">
-    <span class="solution-card__label{% if media_style == 'wharton' %} solution-card__label--wharton{% endif %}">
-      {{ card_label | default: card_title }}
-    </span>
+  <div class="solution-card__media{% if media_style == 'wharton' %} solution-card__media--wharton{% endif %}{% if product.featured_image %} solution-card__media--image{% endif %}">
+    {% if product.featured_image %}
+      <a
+        href="{{ card_url }}"
+        aria-label="{{ card_title }}"
+        style="--solution-image: url('{{ product.featured_image | image_url: width: 1200 }}');"
+      >
+        {{
+          product.featured_image
+          | image_url: width: 900
+          | image_tag:
+            alt: card_title,
+            widths: '360,540,720,900',
+            sizes: '(min-width: 990px) 50vw, 100vw',
+            class: 'solution-card__image'
+        }}
+      </a>
+    {% else %}
+      <span class="solution-card__label{% if media_style == 'wharton' %} solution-card__label--wharton{% endif %}">
+        {{ card_label | default: card_title }}
+      </span>
+    {% endif %}
   </div>
   <div class="solution-card__body">
     <div style="display:flex;justify-content:space-between;gap:1rem;align-items:start;">

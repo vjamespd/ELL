@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ell-npi-verifier
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: cd npi-verifier && npm install
+    startCommand: cd npi-verifier && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: NPPES_API_URL
+        value: https://npiregistry.cms.hhs.gov/api/
+      - key: ALLOWED_ORIGINS
+        sync: false

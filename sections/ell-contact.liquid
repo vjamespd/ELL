@@ -1,0 +1,86 @@
+<section class="ell-section">
+  <div class="ell-container contact-layout">
+    <div class="contact-copy">
+      <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      <h1 class="section-title">{{ page.title | default: section.settings.heading }}</h1>
+      <p class="lead-copy">{{ page.content | strip_html | default: section.settings.body }}</p>
+
+      <div class="contact-support-grid">
+        <div class="support-card surface-card">
+          <span class="support-card__icon">{% render 'icon', name: 'support' %}</span>
+          <div>
+            <strong>{{ section.settings.specialist_heading }}</strong>
+            <p class="muted-copy" style="margin:0.25rem 0 0;font-size:0.86rem;">{{ section.settings.specialist_body }}</p>
+          </div>
+        </div>
+        <div class="support-card surface-card">
+          <span class="support-card__icon">{% render 'icon', name: 'shield' %}</span>
+          <div>
+            <strong>{{ section.settings.compliance_heading }}</strong>
+            <p class="muted-copy" style="margin:0.25rem 0 0;font-size:0.86rem;">{{ section.settings.compliance_body }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form-card">
+      {% form 'contact', class: 'ell-contact-form' %}
+        {% if form.posted_successfully? %}
+          <div class="form-status form-status--success">{{ section.settings.success_message }}</div>
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="form-status form-status--error">
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        <div>
+          <label class="stat-label" for="ContactFormName">{{ section.settings.name_label }}</label>
+          <input id="ContactFormName" class="field" type="text" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" autocomplete="name">
+        </div>
+
+        <div>
+          <label class="stat-label" for="ContactFormEmail">{{ section.settings.email_label }}</label>
+          <input id="ContactFormEmail" class="field" type="email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" autocomplete="email" required>
+        </div>
+
+        <div>
+          <label class="stat-label" for="ContactFormPhone">{{ section.settings.phone_label }}</label>
+          <input id="ContactFormPhone" class="field" type="tel" name="contact[phone]" value="{{ form.phone }}" autocomplete="tel">
+        </div>
+
+        <div>
+          <label class="stat-label" for="ContactFormMessage">{{ section.settings.message_label }}</label>
+          <textarea id="ContactFormMessage" class="field-textarea" name="contact[body]" rows="7" required>{{ form.body }}</textarea>
+        </div>
+
+        <button class="ell-button ell-button--primary" type="submit">
+          {{ section.settings.button_label }}
+          {% render 'icon', name: 'arrow-right' %}
+        </button>
+      {% endform %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL contact",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Provider Support" },
+    { "type": "text", "id": "heading", "label": "Fallback heading", "default": "Contact the clinical team" },
+    { "type": "textarea", "id": "body", "label": "Fallback body", "default": "Send cart questions, documentation requests, or institutional ordering details to the ELL team." },
+    { "type": "text", "id": "specialist_heading", "label": "Specialist heading", "default": "Provider support" },
+    { "type": "text", "id": "specialist_body", "label": "Specialist body", "default": "Product, documentation, and ordering questions are routed for review." },
+    { "type": "text", "id": "compliance_heading", "label": "Compliance heading", "default": "Documentation review" },
+    { "type": "text", "id": "compliance_body", "label": "Compliance body", "default": "Request COAs, handling details, quality review materials, or institutional paperwork." },
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Message received. The team will review and follow up." },
+    { "type": "text", "id": "name_label", "label": "Name label", "default": "Name" },
+    { "type": "text", "id": "email_label", "label": "Email label", "default": "Email" },
+    { "type": "text", "id": "phone_label", "label": "Phone label", "default": "Phone" },
+    { "type": "text", "id": "message_label", "label": "Message label", "default": "Message" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Send Message" }
+  ]
+}
+{% endschema %}

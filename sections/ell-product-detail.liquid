@@ -6,16 +6,49 @@
   if product_body == blank
     assign product_body = section.settings.fallback_body
   endif
-  assign lot_id = current_variant.sku | default: section.settings.lot_id
-  assign procurement_url = section.settings.procurement_link | default: '/pages/procurement'
+
+  assign metafield_lot_id = current_product.metafields.custom.lot_id.value
+  assign lot_id = current_variant.sku | default: metafield_lot_id | default: section.settings.lot_id
+  assign lead_time = current_product.metafields.custom.lead_time.value | default: section.settings.lead_time
+  assign shipping_condition = current_product.metafields.custom.shipping_condition.value | default: section.settings.shipping_condition
+  assign minimum_order = current_product.metafields.custom.minimum_order.value | default: section.settings.minimum_order
+  assign coa_reference = current_product.metafields.custom.coa_reference.value | default: section.settings.coa_reference
+  assign coa_url = current_product.metafields.custom.coa_pdf.value | default: section.settings.coa_link
+  assign viability = current_product.metafields.custom.viability.value | default: section.settings.fallback_viability
+  assign passage = current_product.metafields.custom.passage.value | default: section.settings.fallback_passage
+  assign sterility = current_product.metafields.custom.sterility.value | default: section.settings.fallback_sterility
+  assign endotoxin = current_product.metafields.custom.endotoxin.value | default: section.settings.fallback_endotoxin
+  assign cell_type = current_product.metafields.custom.cell_type.value | default: current_product.type | default: section.settings.fallback_cell_type
+  assign characterization = current_product.metafields.custom.characterization.value | default: section.settings.fallback_characterization
+  assign product_format = current_product.metafields.custom.format.value | default: current_variant.title | default: section.settings.fallback_format
+  assign storage = current_product.metafields.custom.storage.value | default: section.settings.fallback_storage
+  assign cart_url = routes.cart_url | default: '/cart'
+  assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign selected_quantity = current_variant.quantity_rule.min | default: 1
 %}
+
+<script type="application/ld+json">
+  {{ current_product | structured_data }}
+</script>
 
 <section class="ell-section">
   <div class="ell-container detail-layout">
     <div class="detail-main">
+      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+        <a href="{{ catalog_url }}">{{ section.settings.catalog_label }}</a>
+        <span>/</span>
+        <span>{{ product_title }}</span>
+      </nav>
+
       <div>
         <div class="detail-kicker">
-          <span class="status-chip status-chip--verified">{{ section.settings.status_label }}</span>
+          <span class="status-chip {% if current_variant.available %}status-chip--verified{% else %}status-chip--limited{% endif %}">
+            {% if current_variant.available %}
+              {{ section.settings.status_label }}
+            {% else %}
+              {{ section.settings.unavailable_label }}
+            {% endif %}
+          </span>
           <span class="eyebrow" style="margin:0;">ID: {{ lot_id }}</span>
         </div>
         <h1 class="section-title">{{ product_title }}</h1>
@@ -26,28 +59,32 @@
         <div class="coa-card__head">
           <div>
             <h2 class="serif-title" style="margin:0;font-size:2.1rem;">{{ section.settings.coa_heading }}</h2>
-            <p class="muted-copy" style="margin:0.35rem 0 0;">{{ section.settings.coa_reference }}</p>
+            <p class="muted-copy" style="margin:0.35rem 0 0;">{{ coa_reference }}</p>
           </div>
-          <a class="ell-button ell-button--text" href="{{ section.settings.coa_link | default: '#' }}">
-            {% render 'icon', name: 'download' %}
-            {{ section.settings.coa_button }}
-          </a>
+          {% if coa_url != blank %}
+            <a class="ell-button ell-button--text" href="{{ coa_url }}">
+              {% render 'icon', name: 'download' %}
+              {{ section.settings.coa_button }}
+            </a>
+          {% endif %}
         </div>
 
         <div class="detail-stats">
           {% assign metric_blocks = section.blocks | where: 'type', 'metric' %}
           {% if metric_blocks.size > 0 %}
             {% for block in metric_blocks %}
-              <div class="metric-card" {{ block.shopify_attributes }}>
-                <span class="stat-label">{{ block.settings.label }}</span>
-                <div class="metric-card__value">{{ block.settings.value }}</div>
-              </div>
+              {% if block.settings.label != blank and block.settings.value != blank %}
+                <div class="metric-card" {{ block.shopify_attributes }}>
+                  <span class="stat-label">{{ block.settings.label }}</span>
+                  <div class="metric-card__value">{{ block.settings.value }}</div>
+                </div>
+              {% endif %}
             {% endfor %}
           {% else %}
-            <div class="metric-card"><span class="stat-label">Viability</span><div class="metric-card__value">94.2%</div></div>
-            <div class="metric-card"><span class="stat-label">Passage</span><div class="metric-card__value">P1</div></div>
-            <div class="metric-card"><span class="stat-label">Sterility</span><div class="metric-card__value">Negative</div></div>
-            <div class="metric-card"><span class="stat-label">Endotoxin</span><div class="metric-card__value">&lt;0.05 EU/mL</div></div>
+            <div class="metric-card"><span class="stat-label">Viability</span><div class="metric-card__value">{{ viability }}</div></div>
+            <div class="metric-card"><span class="stat-label">Passage</span><div class="metric-card__value">{{ passage }}</div></div>
+            <div class="metric-card"><span class="stat-label">Sterility</span><div class="metric-card__value">{{ sterility }}</div></div>
+            <div class="metric-card"><span class="stat-label">Endotoxin</span><div class="metric-card__value">{{ endotoxin }}</div></div>
           {% endif %}
         </div>
 
@@ -73,43 +110,91 @@
           {% assign spec_blocks = section.blocks | where: 'type', 'spec' %}
           {% if spec_blocks.size > 0 %}
             {% for block in spec_blocks %}
-              <div class="spec-item" {{ block.shopify_attributes }}>
-                <span class="stat-label">{{ block.settings.label }}</span>
-                <strong>{{ block.settings.value }}</strong>
-              </div>
+              {% if block.settings.label != blank and block.settings.value != blank %}
+                <div class="spec-item" {{ block.shopify_attributes }}>
+                  <span class="stat-label">{{ block.settings.label }}</span>
+                  <strong>{{ block.settings.value }}</strong>
+                </div>
+              {% endif %}
             {% endfor %}
           {% else %}
-            <div class="spec-item"><span class="stat-label">Cell Type</span><strong>Multipotent MSCs</strong></div>
-            <div class="spec-item"><span class="stat-label">Characterization</span><strong>CD73+, CD90+, CD105+</strong></div>
-            <div class="spec-item"><span class="stat-label">Format</span><strong>1.0 x 10<sup>6</sup> cells/vial</strong></div>
-            <div class="spec-item"><span class="stat-label">Storage</span><strong>Liquid Nitrogen (Vapor Phase)</strong></div>
+            <div class="spec-item"><span class="stat-label">Cell Type</span><strong>{{ cell_type }}</strong></div>
+            <div class="spec-item"><span class="stat-label">Characterization</span><strong>{{ characterization }}</strong></div>
+            <div class="spec-item"><span class="stat-label">Format</span><strong>{{ product_format }}</strong></div>
+            <div class="spec-item"><span class="stat-label">Storage</span><strong>{{ storage }}</strong></div>
+            <div class="spec-item"><span class="stat-label">SKU / Lot</span><strong>{{ lot_id }}</strong></div>
+            <div class="spec-item"><span class="stat-label">Availability</span><strong>{% if current_variant.available %}Available{% else %}Unavailable{% endif %}</strong></div>
           {% endif %}
         </div>
       </div>
     </div>
 
-    <aside class="detail-panel" data-inquiry-root>
-      <div style="display:flex;justify-content:space-between;gap:1rem;align-items:start;margin-bottom:1rem;">
+    <aside class="detail-panel" data-verification-root>
+      <div class="catalog-alloc-panel__head">
         <div>
-          <p class="eyebrow" style="margin-bottom:0.5rem;">Procurement</p>
+          <p class="eyebrow" style="margin-bottom:0.5rem;">{{ section.settings.panel_eyebrow }}</p>
           <h2 class="serif-title" style="margin:0;font-size:2.6rem;">{{ section.settings.panel_heading }}</h2>
         </div>
         <span class="status-chip status-chip--limited">{{ section.settings.panel_status }}</span>
       </div>
 
-      <div class="detail-panel__summary">
-        <div class="detail-panel__line"><span class="muted-copy">Lead Time</span><strong>{{ section.settings.lead_time }}</strong></div>
-        <div class="detail-panel__line"><span class="muted-copy">Shipping Condition</span><strong>{{ section.settings.shipping_condition }}</strong></div>
-        <div class="detail-panel__line"><span class="muted-copy">Min. Order</span><strong>{{ section.settings.minimum_order }}</strong></div>
+      <div class="product-procurement-price">
+        <span class="stat-label">{{ section.settings.price_label }}</span>
+        <strong>{{ current_variant.price | money }}</strong>
       </div>
 
-      <button class="ell-button ell-button--primary" type="button" style="width:100%;margin:1.5rem 0 1rem;" data-inquiry-button>
-        {{ section.settings.panel_button }}
-        {% render 'icon', name: 'arrow-right' %}
-      </button>
-      <div class="inquiry-status" data-inquiry-status></div>
+      <div class="detail-panel__summary">
+        <div class="detail-panel__line"><span class="muted-copy">Lead Time</span><strong>{{ lead_time }}</strong></div>
+        <div class="detail-panel__line"><span class="muted-copy">Shipping Condition</span><strong>{{ shipping_condition }}</strong></div>
+        <div class="detail-panel__line"><span class="muted-copy">Min. Order</span><strong>{{ minimum_order }}</strong></div>
+      </div>
 
-      <div class="verification-box" data-verification-root>
+      {% form 'product', current_product, class: 'product-procurement-form' %}
+        {% if current_product.has_only_default_variant %}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {% else %}
+          <label class="stat-label" for="product-variant-{{ section.id }}">{{ section.settings.variant_label }}</label>
+          <select id="product-variant-{{ section.id }}" class="field-select" name="id">
+            {% for variant in current_product.variants %}
+              <option
+                value="{{ variant.id }}"
+                {% if variant.id == current_variant.id %}selected{% endif %}
+                {% unless variant.available %}disabled{% endunless %}
+              >
+                {{ variant.title }} - {% if variant.available %}{{ variant.price | money }}{% else %}{{ section.settings.unavailable_label }}{% endif %}
+              </option>
+            {% endfor %}
+          </select>
+        {% endif %}
+
+        <label class="stat-label" for="product-quantity-{{ section.id }}">{{ section.settings.quantity_label }}</label>
+        <input
+          id="product-quantity-{{ section.id }}"
+          class="field"
+          type="number"
+          name="quantity"
+          min="{{ selected_quantity }}"
+          value="{{ selected_quantity }}"
+        >
+        <input type="hidden" name="properties[Lot ID]" value="{{ lot_id }}">
+        <input type="hidden" name="properties[Cart pathway]" value="Provider and institution review requested">
+
+        <button
+          class="ell-button ell-button--primary product-procurement-form__submit"
+          type="submit"
+          name="add"
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+          {{ section.settings.panel_button }}
+          {% render 'icon', name: 'arrow-right' %}
+        </button>
+      {% endform %}
+
+      <a class="ell-button ell-button--ghost product-procurement-form__cart" href="{{ cart_url }}">
+        {{ section.settings.cart_label }}
+      </a>
+
+      <div class="verification-box">
         <div style="display:flex;gap:0.75rem;align-items:flex-start;">
           {% render 'icon', name: 'verified' %}
           <div>
@@ -117,25 +202,28 @@
             <p class="muted-copy" style="margin:0.35rem 0 0.75rem;font-size:0.86rem;">{{ section.settings.verify_body }}</p>
           </div>
         </div>
-        <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
-          <input class="field" type="text" placeholder="Enter NPI Number" data-npi-input style="flex:1;min-width:12rem;">
-          <button class="ell-button ell-button--ghost" type="button" data-verify-trigger>Verify</button>
+        <div class="catalog-verify-row">
+          <label class="visually-hidden" for="product-npi-{{ section.id }}">National Provider Identifier</label>
+          <input id="product-npi-{{ section.id }}" class="field" type="text" placeholder="Enter NPI Number" inputmode="numeric" data-npi-input>
+          <button class="ell-button ell-button--ghost" type="button" data-verify-trigger>{{ section.settings.verify_button }}</button>
         </div>
         <div class="verification-status" data-verification-status></div>
       </div>
 
       <div style="padding-top:1.5rem;">
-        <p class="stat-label" style="margin-bottom:0.6rem;">Compliance Standards</p>
+        <p class="stat-label" style="margin-bottom:0.6rem;">{{ section.settings.badges_heading }}</p>
         <div style="display:flex;flex-wrap:wrap;gap:0.6rem;">
           {% assign badge_blocks = section.blocks | where: 'type', 'badge' %}
           {% if badge_blocks.size > 0 %}
             {% for block in badge_blocks %}
-              <span class="status-chip status-chip--allocated" {{ block.shopify_attributes }}>{{ block.settings.label }}</span>
+              {% if block.settings.label != blank %}
+                <span class="status-chip status-chip--allocated" {{ block.shopify_attributes }}>{{ block.settings.label }}</span>
+              {% endif %}
             {% endfor %}
           {% else %}
-            <span class="status-chip status-chip--allocated">AATB</span>
-            <span class="status-chip status-chip--allocated">FDA-361</span>
-            <span class="status-chip status-chip--allocated">cGMP</span>
+            <span class="status-chip status-chip--allocated">Documentation</span>
+            <span class="status-chip status-chip--allocated">Quality Review</span>
+            <span class="status-chip status-chip--allocated">Handling Specs</span>
           {% endif %}
         </div>
       </div>
@@ -147,8 +235,6 @@
           <p class="muted-copy" style="margin:0.25rem 0 0;font-size:0.86rem;">{{ section.settings.support_body }}</p>
         </div>
       </div>
-
-      <a class="ell-button ell-button--text" href="{{ procurement_url }}" style="margin-top:1rem;">Open procurement page</a>
     </aside>
   </div>
 </section>
@@ -178,32 +264,48 @@
       "type": "badge",
       "name": "Compliance badge",
       "settings": [
-        { "type": "text", "id": "label", "label": "Label", "default": "AATB" }
+        { "type": "text", "id": "label", "label": "Label", "default": "Documentation" }
       ]
     }
   ],
   "settings": [
     { "type": "text", "id": "fallback_title", "label": "Fallback title", "default": "Mesenchymal Stem Cell Lineage" },
-    { "type": "textarea", "id": "fallback_body", "label": "Fallback description", "default": "Cryopreserved primary cells isolated from human umbilical cord tissue. Each lot is rigorously screened for potency markers and viability post-thaw." },
-    { "type": "text", "id": "lot_id", "label": "Fallback lot ID", "default": "LX-40029-B" },
+    { "type": "textarea", "id": "fallback_body", "label": "Fallback description", "default": "Quality-focused biologic solution prepared for provider-led documentation review and institutional ordering workflows." },
+    { "type": "text", "id": "lot_id", "label": "Fallback lot ID", "default": "Available upon review" },
+    { "type": "text", "id": "catalog_label", "label": "Catalog label", "default": "Catalog" },
     { "type": "text", "id": "status_label", "label": "Status label", "default": "Active Lot" },
+    { "type": "text", "id": "unavailable_label", "label": "Unavailable label", "default": "Unavailable" },
     { "type": "text", "id": "coa_heading", "label": "COA heading", "default": "Certificate of Analysis" },
-    { "type": "text", "id": "coa_reference", "label": "COA reference", "default": "Ref: COA-2024-40029" },
+    { "type": "text", "id": "coa_reference", "label": "COA reference", "default": "Available upon provider or institutional review." },
     { "type": "text", "id": "coa_button", "label": "COA button label", "default": "Download PDF" },
     { "type": "url", "id": "coa_link", "label": "COA link" },
-    { "type": "text", "id": "scan_badge", "label": "Scan badge", "default": "Live Culture Scan 04.12" },
+    { "type": "text", "id": "scan_badge", "label": "Scan badge", "default": "Documentation review" },
+    { "type": "text", "id": "fallback_viability", "label": "Fallback viability", "default": "Available on request" },
+    { "type": "text", "id": "fallback_passage", "label": "Fallback passage", "default": "Available on request" },
+    { "type": "text", "id": "fallback_sterility", "label": "Fallback sterility", "default": "Available on request" },
+    { "type": "text", "id": "fallback_endotoxin", "label": "Fallback endotoxin", "default": "Available on request" },
+    { "type": "text", "id": "fallback_cell_type", "label": "Fallback cell type", "default": "Biologic solution" },
+    { "type": "text", "id": "fallback_characterization", "label": "Fallback characterization", "default": "Pending review" },
+    { "type": "text", "id": "fallback_format", "label": "Fallback format", "default": "Single lot" },
+    { "type": "text", "id": "fallback_storage", "label": "Fallback storage", "default": "Controlled cold-chain" },
     { "type": "text", "id": "spec_heading", "label": "Specifications heading", "default": "Technical Specifications" },
-    { "type": "text", "id": "panel_heading", "label": "Panel heading", "default": "Inquire Allocation" },
-    { "type": "text", "id": "panel_status", "label": "Panel status", "default": "Limited Reserve" },
+    { "type": "text", "id": "panel_eyebrow", "label": "Panel eyebrow", "default": "Cart" },
+    { "type": "text", "id": "panel_heading", "label": "Panel heading", "default": "Request Allocation" },
+    { "type": "text", "id": "panel_status", "label": "Panel status", "default": "Provider Review" },
+    { "type": "text", "id": "price_label", "label": "Price label", "default": "Allocation Price" },
     { "type": "text", "id": "lead_time", "label": "Lead time", "default": "48-72 Hours" },
-    { "type": "text", "id": "shipping_condition", "label": "Shipping condition", "default": "Dry Shipper (LN2)" },
-    { "type": "text", "id": "minimum_order", "label": "Minimum order", "default": "2 Vials" },
-    { "type": "text", "id": "panel_button", "label": "Panel button label", "default": "Request Allocation" },
-    { "type": "text", "id": "verify_heading", "label": "Verification heading", "default": "NPI Verification Required" },
-    { "type": "textarea", "id": "verify_body", "label": "Verification body", "default": "Biologic materials are restricted to licensed clinical researchers. Please provide your National Provider Identifier to access full pricing." },
+    { "type": "text", "id": "shipping_condition", "label": "Shipping condition", "default": "Subject to product specifications" },
+    { "type": "text", "id": "minimum_order", "label": "Minimum order", "default": "1 Unit" },
+    { "type": "text", "id": "variant_label", "label": "Variant label", "default": "Lot / Variant" },
+    { "type": "text", "id": "quantity_label", "label": "Quantity label", "default": "Quantity" },
+    { "type": "text", "id": "panel_button", "label": "Panel button label", "default": "Add to Cart" },
+    { "type": "text", "id": "cart_label", "label": "Cart label", "default": "Review Cart" },
+    { "type": "text", "id": "verify_heading", "label": "Verification heading", "default": "Provider review information" },
+    { "type": "textarea", "id": "verify_body", "label": "Verification body", "default": "Provide an NPI to prepare order review details. This does not perform real-time provider verification." },
+    { "type": "text", "id": "verify_button", "label": "Verification button", "default": "Prepare Review" },
+    { "type": "text", "id": "badges_heading", "label": "Compliance heading", "default": "Review Materials" },
     { "type": "text", "id": "support_heading", "label": "Support heading", "default": "Speak with a Bio-Specialist" },
-    { "type": "text", "id": "support_body", "label": "Support body", "default": "Technical support for protocol optimization." },
-    { "type": "url", "id": "procurement_link", "label": "Procurement page link" }
+    { "type": "text", "id": "support_body", "label": "Support body", "default": "Support for documentation, ordering, and handling questions." }
   ]
 }
 {% endschema %}

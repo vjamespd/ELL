@@ -1,41 +1,26 @@
-<section class="ell-section">
+<section class="ell-section solutions-section">
   <div class="ell-container">
-    <div style="max-width:42rem;margin-bottom:2rem;">
+    <div class="solutions-heading solutions-heading--narrative">
       <p class="eyebrow">{{ section.settings.eyebrow }}</p>
-      <h2 class="section-title"><em>{{ section.settings.heading }}</em></h2>
-    </div>
-
-    <div class="solutions-grid">
-      {% if section.blocks.size > 0 %}
-        {% for block in section.blocks %}
-          {% render 'product-card-ell',
-            title: block.settings.title,
-            body: block.settings.body,
-            status: block.settings.status,
-            url: block.settings.link,
-            cta_label: block.settings.button_label,
-            media_style: block.settings.media_style,
-            label: block.settings.media_label
-          %}
-        {% endfor %}
-      {% else %}
-        {% render 'product-card-ell',
-          title: 'Amniotic Solutions',
-          body: 'Purified placental membrane matrices designed for ophthalmic and wound care applications. Ethically sourced and clinically validated.',
-          status: 'In Stock',
-          url: '/pages/catalog',
-          cta_label: 'Explore Solution',
-          media_label: 'Amniotic Solutions'
-        %}
-        {% render 'product-card-ell',
-          title: "Wharton's Jelly",
-          body: 'High-concentration MSC matrix derived from umbilical cord tissue.',
-          url: '/pages/catalog',
-          cta_label: 'View Technical Specs',
-          media_style: 'wharton',
-          media_label: "Wharton's Jelly"
-        %}
-      {% endif %}
+      <div class="solutions-story">
+        <h2 class="section-title solutions-story__title"><em>{{ section.settings.heading }}</em></h2>
+        <div class="solutions-story__layout">
+          <p class="lead-copy solutions-story__body">{{ section.settings.body }}</p>
+          <div class="solutions-story__content">
+            <div class="solutions-story__panel surface-card">
+              <p class="stat-label">{{ section.settings.panel_eyebrow }}</p>
+              <p class="solutions-story__panel-copy">{{ section.settings.panel_body }}</p>
+            </div>
+            <div class="solutions-pill-grid">
+              <span class="solutions-pill">{{ section.settings.pill_1 }}</span>
+              <span class="solutions-pill">{{ section.settings.pill_2 }}</span>
+              <span class="solutions-pill">{{ section.settings.pill_3 }}</span>
+              <span class="solutions-pill">{{ section.settings.pill_4 }}</span>
+              <span class="solutions-pill">{{ section.settings.pill_5 }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -43,78 +28,66 @@
 {% schema %}
 {
   "name": "ELL solutions",
-  "max_blocks": 4,
-  "blocks": [
-    {
-      "type": "solution",
-      "name": "Solution card",
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": "Amniotic Solutions"
-        },
-        {
-          "type": "textarea",
-          "id": "body",
-          "label": "Body",
-          "default": "Purified placental membrane matrices designed for ophthalmic and wound care applications. Ethically sourced and clinically validated."
-        },
-        {
-          "type": "text",
-          "id": "status",
-          "label": "Status chip",
-          "default": "In Stock"
-        },
-        {
-          "type": "text",
-          "id": "button_label",
-          "label": "Button label",
-          "default": "Explore Solution"
-        },
-        {
-          "type": "text",
-          "id": "media_label",
-          "label": "Media label",
-          "default": "Amniotic Solutions"
-        },
-        {
-          "type": "select",
-          "id": "media_style",
-          "label": "Media style",
-          "default": "default",
-          "options": [
-            {
-              "value": "default",
-              "label": "Amniotic bottle"
-            },
-            {
-              "value": "wharton",
-              "label": "Wharton's Jelly bottle"
-            }
-          ]
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link"
-        }
-      ]
-    }
-  ],
   "settings": [
     {
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow",
-      "default": "Biologic Solutions"
+      "default": "Centralized Product Catalog"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "ELL provides prescribing providers access to advanced biologic solutions, cellular banking services, IV supplies, supplements, and practice resources through one centralized Product Catalog."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Built to support modern regenerative and longevity practices with one streamlined destination for product discovery, provider review, and operational support."
     },
     {
       "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Advanced tissue grafts for regenerative medicine."
+      "id": "panel_eyebrow",
+      "label": "Panel eyebrow",
+      "default": "Platform Overview"
+    },
+    {
+      "type": "textarea",
+      "id": "panel_body",
+      "label": "Panel body",
+      "default": "One centralized destination for biologic access, review materials, operational support, and provider-facing practice resources."
+    },
+    {
+      "type": "text",
+      "id": "pill_1",
+      "label": "Pill 1",
+      "default": "Advanced biologic solutions"
+    },
+    {
+      "type": "text",
+      "id": "pill_2",
+      "label": "Pill 2",
+      "default": "Cellular banking services"
+    },
+    {
+      "type": "text",
+      "id": "pill_3",
+      "label": "Pill 3",
+      "default": "IV supplies"
+    },
+    {
+      "type": "text",
+      "id": "pill_4",
+      "label": "Pill 4",
+      "default": "Supplements"
+    },
+    {
+      "type": "text",
+      "id": "pill_5",
+      "label": "Pill 5",
+      "default": "Practice resources"
     }
   ]
 }

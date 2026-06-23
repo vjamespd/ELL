@@ -1,5 +1,6 @@
 {% liquid
-  assign procurement_url = section.settings.procurement_link | default: '/pages/procurement'
+  assign procurement_url = section.settings.procurement_link | default: routes.cart_url | default: '/cart'
+  assign coa_url = section.settings.coa_link
 %}
 
 <section class="ell-section catalog-dossier-page catalog-page__hero">
@@ -20,10 +21,12 @@
             <h2 class="serif-title" style="margin:0;font-size:2.1rem;">{{ section.settings.coa_heading }}</h2>
             <p class="muted-copy" style="margin:0.35rem 0 0;">{{ section.settings.coa_reference }}</p>
           </div>
-          <a class="ell-button ell-button--text" href="{{ section.settings.coa_link | default: '#' }}">
-            {% render 'icon', name: 'download' %}
-            {{ section.settings.coa_button }}
-          </a>
+          {% if coa_url != blank %}
+            <a class="ell-button ell-button--text" href="{{ coa_url }}">
+              {% render 'icon', name: 'download' %}
+              {{ section.settings.coa_button }}
+            </a>
+          {% endif %}
         </div>
 
         <div class="detail-stats">
@@ -36,10 +39,10 @@
               </div>
             {% endfor %}
           {% else %}
-            <div class="metric-card"><span class="stat-label">Viability</span><div class="metric-card__value">94.2%</div></div>
-            <div class="metric-card"><span class="stat-label">Passage</span><div class="metric-card__value">P1</div></div>
-            <div class="metric-card"><span class="stat-label">Sterility</span><div class="metric-card__value">Negative</div></div>
-            <div class="metric-card"><span class="stat-label">Endotoxin</span><div class="metric-card__value">&lt;0.05 EU/mL</div></div>
+            <div class="metric-card"><span class="stat-label">Documentation</span><div class="metric-card__value">Available</div></div>
+            <div class="metric-card"><span class="stat-label">Lot Review</span><div class="metric-card__value">On Request</div></div>
+            <div class="metric-card"><span class="stat-label">Handling</span><div class="metric-card__value">Product Specific</div></div>
+            <div class="metric-card"><span class="stat-label">Ordering</span><div class="metric-card__value">Reviewed</div></div>
           {% endif %}
         </div>
 
@@ -74,10 +77,10 @@
               </div>
             {% endfor %}
           {% else %}
-            <div class="spec-item"><span class="stat-label">Cell Type</span><strong>Multipotent MSCs</strong></div>
-            <div class="spec-item"><span class="stat-label">Characterization</span><strong>CD73+, CD90+, CD105+</strong></div>
-            <div class="spec-item"><span class="stat-label">Format</span><strong>1.0 x 10<sup>6</sup> cells/vial</strong></div>
-            <div class="spec-item"><span class="stat-label">Storage</span><strong>Liquid Nitrogen (Vapor Phase)</strong></div>
+            <div class="spec-item"><span class="stat-label">Product Type</span><strong>Biologic solution</strong></div>
+            <div class="spec-item"><span class="stat-label">Documentation</span><strong>Available upon review</strong></div>
+            <div class="spec-item"><span class="stat-label">Format</span><strong>Product specific</strong></div>
+            <div class="spec-item"><span class="stat-label">Storage</span><strong>Subject to specifications</strong></div>
           {% endif %}
         </div>
       </div>
@@ -101,11 +104,10 @@
         <div class="detail-panel__line"><span class="muted-copy">Min. Order</span><strong>{{ section.settings.minimum_order }}</strong></div>
       </div>
 
-      <button class="ell-button ell-button--primary catalog-alloc-button" type="button" data-inquiry-button>
+      <a class="ell-button ell-button--primary catalog-alloc-button" href="{{ procurement_url }}">
         {{ section.settings.panel_button }}
         {% render 'icon', name: 'arrow-right' %}
-      </button>
-      <div class="inquiry-status" data-inquiry-status></div>
+      </a>
 
       <div class="verification-box" data-verification-root>
         <div style="display:flex;gap:0.75rem;align-items:flex-start;">
@@ -116,7 +118,8 @@
           </div>
         </div>
         <div class="catalog-verify-row">
-          <input class="field" type="text" placeholder="Enter NPI Number" data-npi-input>
+          <label class="visually-hidden" for="catalog-npi-{{ section.id }}">National Provider Identifier</label>
+          <input id="catalog-npi-{{ section.id }}" class="field" type="text" placeholder="Enter NPI Number" inputmode="numeric" data-npi-input>
           <button class="ell-button ell-button--ghost" type="button" data-verify-trigger>{{ section.settings.verify_button }}</button>
         </div>
         <div class="verification-status" data-verification-status></div>
@@ -131,9 +134,9 @@
               <span class="catalog-outline-badge" {{ block.shopify_attributes }}>{{ block.settings.label }}</span>
             {% endfor %}
           {% else %}
-            <span class="catalog-outline-badge">AATB</span>
-            <span class="catalog-outline-badge">FDA-361</span>
-            <span class="catalog-outline-badge">cGMP</span>
+            <span class="catalog-outline-badge">Documentation</span>
+            <span class="catalog-outline-badge">Quality Review</span>
+            <span class="catalog-outline-badge">Handling Specs</span>
           {% endif %}
         </div>
       </div>
@@ -158,51 +161,51 @@
       "type": "metric",
       "name": "Metric",
       "settings": [
-        { "type": "text", "id": "label", "label": "Label", "default": "Viability" },
-        { "type": "text", "id": "value", "label": "Value", "default": "94.2%" }
+        { "type": "text", "id": "label", "label": "Label", "default": "Documentation" },
+        { "type": "text", "id": "value", "label": "Value", "default": "Available on request" }
       ]
     },
     {
       "type": "spec",
       "name": "Specification",
       "settings": [
-        { "type": "text", "id": "label", "label": "Label", "default": "Cell Type" },
-        { "type": "text", "id": "value", "label": "Value", "default": "Multipotent MSCs" }
+        { "type": "text", "id": "label", "label": "Label", "default": "Product Type" },
+        { "type": "text", "id": "value", "label": "Value", "default": "Biologic solution" }
       ]
     },
     {
       "type": "badge",
-      "name": "Compliance badge",
+      "name": "Review badge",
       "settings": [
-        { "type": "text", "id": "label", "label": "Label", "default": "AATB" }
+        { "type": "text", "id": "label", "label": "Label", "default": "Documentation" }
       ]
     }
   ],
   "settings": [
-    { "type": "text", "id": "status_label", "label": "Status label", "default": "Active Lot" },
-    { "type": "text", "id": "lot_id", "label": "Lot ID", "default": "LX-40029-B" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Mesenchymal Stem Cell Lineage" },
-    { "type": "textarea", "id": "body", "label": "Body", "default": "Cryopreserved primary cells isolated from human umbilical cord tissue. Each lot is rigorously screened for potency markers and viability post-thaw." },
-    { "type": "text", "id": "coa_heading", "label": "COA heading", "default": "Certificate of Analysis" },
-    { "type": "text", "id": "coa_reference", "label": "COA reference", "default": "Ref: COA-2024-40029" },
-    { "type": "text", "id": "coa_button", "label": "COA button label", "default": "Download PDF" },
+    { "type": "text", "id": "status_label", "label": "Status label", "default": "Review Ready" },
+    { "type": "text", "id": "lot_id", "label": "Lot ID", "default": "Pending lot review" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Quality-focused biologic solution" },
+    { "type": "textarea", "id": "body", "label": "Body", "default": "Product information, documentation, handling details, and ordering considerations are organized for provider and institutional review." },
+    { "type": "text", "id": "coa_heading", "label": "COA heading", "default": "Documentation Review" },
+    { "type": "text", "id": "coa_reference", "label": "COA reference", "default": "Available upon provider or institutional review." },
+    { "type": "text", "id": "coa_button", "label": "COA button label", "default": "Review PDF" },
     { "type": "url", "id": "coa_link", "label": "COA link" },
     { "type": "image_picker", "id": "visual_image", "label": "Culture scan image" },
-    { "type": "text", "id": "scan_badge", "label": "Scan badge", "default": "Live Culture Scan 04.12" },
-    { "type": "text", "id": "spec_heading", "label": "Specifications heading", "default": "Technical Specifications" },
-    { "type": "text", "id": "panel_eyebrow", "label": "Panel eyebrow", "default": "Procurement" },
-    { "type": "text", "id": "panel_heading", "label": "Panel heading", "default": "Inquire Allocation" },
-    { "type": "text", "id": "panel_status", "label": "Panel status", "default": "Limited Reserve" },
-    { "type": "text", "id": "lead_time", "label": "Lead time", "default": "48-72 Hours" },
-    { "type": "text", "id": "shipping_condition", "label": "Shipping condition", "default": "Dry Shipper (LN2)" },
-    { "type": "text", "id": "minimum_order", "label": "Minimum order", "default": "2 Vials" },
-    { "type": "text", "id": "panel_button", "label": "Panel button label", "default": "Request Allocation" },
-    { "type": "text", "id": "verify_heading", "label": "Verification heading", "default": "NPI Verification Required" },
-    { "type": "textarea", "id": "verify_body", "label": "Verification body", "default": "Biologic materials are restricted to licensed clinical researchers. Please provide your National Provider Identifier to access full pricing." },
-    { "type": "text", "id": "verify_button", "label": "Verification button", "default": "Verify" },
-    { "type": "text", "id": "badges_heading", "label": "Compliance heading", "default": "Compliance Standards" },
-    { "type": "text", "id": "support_heading", "label": "Support heading", "default": "Speak with a Bio-Specialist" },
-    { "type": "text", "id": "support_body", "label": "Support body", "default": "Technical support for protocol optimization." },
+    { "type": "text", "id": "scan_badge", "label": "Scan badge", "default": "Documentation Preview" },
+    { "type": "text", "id": "spec_heading", "label": "Specifications heading", "default": "Review Details" },
+    { "type": "text", "id": "panel_eyebrow", "label": "Panel eyebrow", "default": "Cart" },
+    { "type": "text", "id": "panel_heading", "label": "Panel heading", "default": "Begin Review" },
+    { "type": "text", "id": "panel_status", "label": "Panel status", "default": "Order Review" },
+    { "type": "text", "id": "lead_time", "label": "Lead time", "default": "Reviewed after inquiry" },
+    { "type": "text", "id": "shipping_condition", "label": "Shipping condition", "default": "Subject to product specifications" },
+    { "type": "text", "id": "minimum_order", "label": "Minimum order", "default": "Product specific" },
+    { "type": "text", "id": "panel_button", "label": "Panel button label", "default": "Open Cart" },
+    { "type": "text", "id": "verify_heading", "label": "Verification heading", "default": "Provider details requested" },
+    { "type": "textarea", "id": "verify_body", "label": "Verification body", "default": "Provider and institutional details may be reviewed before pricing, documentation, or fulfillment steps are completed." },
+    { "type": "text", "id": "verify_button", "label": "Verification button", "default": "Prepare Review" },
+    { "type": "text", "id": "badges_heading", "label": "Compliance heading", "default": "Review Materials" },
+    { "type": "text", "id": "support_heading", "label": "Support heading", "default": "Provider support" },
+    { "type": "text", "id": "support_body", "label": "Support body", "default": "Product, documentation, and ordering questions can be routed for review." },
     { "type": "url", "id": "procurement_link", "label": "Procurement page link" }
   ]
 }

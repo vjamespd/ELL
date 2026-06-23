@@ -1,0 +1,57 @@
+{
+  "sections": {
+    "main": {
+      "type": "ell-team",
+      "settings": {},
+      "blocks": {
+        "member_1": {
+          "type": "member",
+          "settings": {
+            "initials": "MS",
+            "role": "Cofounder",
+            "name": "Matt Stang",
+            "company": "Stangco",
+            "bio_heading": "Matt Stang Biography",
+            "bio": "Matt Stang is a pioneer in the regulated health space leading and selling High Times before buying it back and cofounding a dozen companies in the regulated health space from peptides to psychedelics.",
+            "phone": "917.922.7937",
+            "email": "Matt@stangcollc.com"
+          }
+        },
+        "member_2": {
+          "type": "member",
+          "settings": {
+            "initials": "TBD",
+            "role": "Leadership Member",
+            "name": "Additional Team Member",
+            "company": "ELL",
+            "bio_heading": "Profile Coming Soon",
+            "bio": "Additional leadership details will be added soon as the executive and advisory team roster is finalized.",
+            "phone": "",
+            "email": ""
+          }
+        },
+        "member_3": {
+          "type": "member",
+          "settings": {
+            "initials": "TBD",
+            "role": "Leadership Member",
+            "name": "Additional Team Member",
+            "company": "ELL",
+            "bio_heading": "Profile Coming Soon",
+            "bio": "Additional leadership details will be added soon as the executive and advisory team roster is finalized.",
+            "phone": "",
+            "email": ""
+          }
+        }
+      },
+      "block_order": [
+        "member_1",
+        "member_2",
+        "member_3"
+      ]
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

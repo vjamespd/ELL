@@ -1,0 +1,250 @@
+{% liquid
+  assign collection_title = collection.title | default: section.settings.fallback_heading
+  assign collection_description = collection.description | strip_html
+  if collection_description == blank
+    assign collection_description = section.settings.fallback_body
+  endif
+%}
+
+<section class="ell-section catalog-page__hero" data-catalog-root>
+  <div class="ell-container">
+    <div class="collection-hero">
+      <div>
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        <h1 class="section-title">{{ collection_title }}</h1>
+        <p class="lead-copy">{{ collection_description }}</p>
+      </div>
+      <div class="collection-hero__panel">
+        <span class="stat-label">Available Lots</span>
+        <strong data-results-count>{{ collection.products_count }} Result{% if collection.products_count != 1 %}s{% endif %}</strong>
+        <p class="muted-copy">{{ section.settings.panel_copy }}</p>
+      </div>
+    </div>
+
+    <div class="catalog-layout">
+      <aside class="filters-panel">
+        <div class="filters-panel__card collection-filter-card">
+          <div class="filters-panel__head">
+            <h2 class="panel-title">{{ section.settings.filters_heading }}</h2>
+            <button class="ell-button ell-button--text" type="button" data-catalog-reset>{{ section.settings.reset_label }}</button>
+          </div>
+
+          <div class="filters-panel__group">
+            <label class="stat-label" for="catalog-search">{{ section.settings.search_label }}</label>
+            <div class="search-field">
+              {% render 'icon', name: 'search' %}
+              <input id="catalog-search" class="field" type="search" placeholder="{{ section.settings.search_placeholder }}" data-catalog-search>
+            </div>
+          </div>
+
+          <div class="filters-panel__group">
+            <label class="stat-label" for="catalog-sort">{{ section.settings.sort_label }}</label>
+            <select id="catalog-sort" class="field-select" data-catalog-sort>
+              <option value="default">{{ section.settings.sort_default }}</option>
+              <option value="cells-desc">{{ section.settings.sort_inventory }}</option>
+              <option value="volume-asc">{{ section.settings.sort_price }}</option>
+            </select>
+          </div>
+
+          <div class="filter-pills" data-filter-pills></div>
+        </div>
+      </aside>
+
+      <div class="collection-catalog">
+        <div class="table-shell__top collection-toolbar">
+          <div>
+            <p class="eyebrow">{{ section.settings.catalog_eyebrow }}</p>
+            <h2 class="serif-title">{{ section.settings.catalog_heading }}</h2>
+          </div>
+          <button class="ell-button ell-button--ghost mobile-only" type="button" aria-expanded="false" data-filter-toggle>
+            {% render 'icon', name: 'search' %}
+            {{ section.settings.mobile_filter_label }}
+          </button>
+        </div>
+
+        {% paginate collection.products by section.settings.products_per_page %}
+          <div class="collection-product-grid" data-sort-container>
+            {% for product in collection.products %}
+              {% liquid
+                assign current_variant = product.selected_or_first_available_variant
+                assign product_status = section.settings.available_label
+                if product.available == false
+                  assign product_status = section.settings.sold_out_label
+                elsif current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= section.settings.low_stock_threshold
+                  assign product_status = section.settings.low_stock_label
+                endif
+
+                assign product_search = product.title | append: ' ' | append: product.vendor | append: ' ' | append: product.type | append: ' ' | append: current_variant.sku | append: ' ' | append: product.description | strip_html
+                assign inventory_count = current_variant.inventory_quantity | default: 0
+              %}
+
+              <article
+                class="collection-product-card"
+                data-lot-item
+                data-source="{{ product.vendor | handle }}"
+                data-volume="{{ current_variant.price | divided_by: 100.0 }}"
+                data-status="{{ product_status | handle }}"
+                data-cells="{{ inventory_count }}"
+                data-viability-sort="{{ inventory_count }}"
+                data-search="{{ product_search | escape }}"
+              >
+                <a class="collection-product-card__media" href="{{ product.url }}">
+                  {% if product.featured_image %}
+                    {{
+                      product.featured_image
+                      | image_url: width: 720
+                      | image_tag:
+                        alt: product.title,
+                        widths: '360,540,720',
+                        sizes: '(min-width: 1100px) 30vw, 100vw'
+                    }}
+                  {% else %}
+                    <span class="collection-product-card__placeholder">{{ section.settings.placeholder_label }}</span>
+                  {% endif %}
+                </a>
+
+                <div class="collection-product-card__body">
+                  <div class="collection-product-card__head">
+                    <div>
+                      <p class="stat-label">
+                        {% if current_variant.sku != blank %}
+                          {{ current_variant.sku }}
+                        {% else %}
+                          {{ product.vendor | default: shop.name }}
+                        {% endif %}
+                      </p>
+                      <h3 class="solution-card__title">
+                        <a href="{{ product.url }}">{{ product.title }}</a>
+                      </h3>
+                    </div>
+                    <span class="status-chip status-chip--{{ product_status | handle }}">{{ product_status }}</span>
+                  </div>
+
+                  {% if product.description != blank %}
+                    <p class="muted-copy">{{ product.description | strip_html | truncate: 150 }}</p>
+                  {% endif %}
+
+                  <div class="collection-product-card__meta">
+                    <div>
+                      <span class="stat-label">{{ section.settings.price_label }}</span>
+                      <strong>{{ current_variant.price | money }}</strong>
+                    </div>
+                    <div>
+                      <span class="stat-label">{{ section.settings.inventory_label }}</span>
+                      <strong>
+                        {% if current_variant.inventory_management and current_variant.inventory_quantity >= 0 %}
+                          {{ current_variant.inventory_quantity }}
+                        {% else %}
+                          {{ section.settings.inventory_review_label }}
+                        {% endif %}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div class="collection-product-card__actions">
+                    <a class="ell-button ell-button--ghost" href="{{ product.url }}">{{ section.settings.details_label }}</a>
+                    {% if product.available and product.has_only_default_variant %}
+                      {% form 'product', product, class: 'collection-product-card__form' %}
+                        <input type="hidden" name="id" value="{{ current_variant.id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="properties[Cart pathway]" value="Provider and institution review requested">
+                        <button class="ell-button ell-button--primary" type="submit" name="add">
+                          {{ section.settings.add_label }}
+                        </button>
+                      {% endform %}
+                    {% endif %}
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+
+          <div class="catalog-empty{% if collection.products_count == 0 %} is-visible{% endif %}" data-catalog-empty>
+            <h3 class="serif-title">{{ section.settings.empty_heading }}</h3>
+            <p class="muted-copy">{{ section.settings.empty_body }}</p>
+            <button class="ell-button ell-button--ghost" type="button" data-catalog-reset>{{ section.settings.reset_label }}</button>
+          </div>
+
+          {% if paginate.pages > 1 %}
+            <nav class="collection-pagination" aria-label="Catalog pagination">
+              {% if paginate.previous %}
+                <a class="ell-button ell-button--ghost" href="{{ paginate.previous.url }}">
+                  {% render 'icon', name: 'arrow-left' %}
+                  {{ section.settings.previous_label }}
+                </a>
+              {% endif %}
+              <span class="muted-copy">{{ section.settings.page_label }} {{ paginate.current_page }} / {{ paginate.pages }}</span>
+              {% if paginate.next %}
+                <a class="ell-button ell-button--ghost" href="{{ paginate.next.url }}">
+                  {{ section.settings.next_label }}
+                  {% render 'icon', name: 'arrow-right' %}
+                </a>
+              {% endif %}
+            </nav>
+          {% endif %}
+        {% endpaginate %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-filter-sheet" data-mobile-filters>
+    <button class="mobile-filter-sheet__backdrop" type="button" aria-label="Close filters" data-filter-backdrop></button>
+    <div class="mobile-filter-sheet__panel">
+      <div class="filters-panel__head">
+        <h2 class="panel-title">{{ section.settings.filters_heading }}</h2>
+        <button class="mobile-sheet__close" type="button" aria-label="Close filters" data-filter-close>
+          {% render 'icon', name: 'close' %}
+        </button>
+      </div>
+      <div class="mobile-filter-groups">
+        <div>
+          <label class="stat-label" for="catalog-search-mobile">{{ section.settings.search_label }}</label>
+          <div class="search-field">
+            {% render 'icon', name: 'search' %}
+            <input id="catalog-search-mobile" class="field" type="search" placeholder="{{ section.settings.search_placeholder }}" data-catalog-search>
+          </div>
+        </div>
+        <button class="ell-button ell-button--ghost" type="button" data-catalog-reset>{{ section.settings.reset_label }}</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL collection catalog",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Clinical Inventory" },
+    { "type": "text", "id": "fallback_heading", "label": "Fallback heading", "default": "Inventory Catalog" },
+    { "type": "textarea", "id": "fallback_body", "label": "Fallback body", "default": "Browse active biologic lots, review technical documentation, and begin a provider-verified cart request." },
+    { "type": "textarea", "id": "panel_copy", "label": "Panel copy", "default": "Products shown here are powered by Shopify collections, inventory status, and Online Store availability." },
+    { "type": "text", "id": "filters_heading", "label": "Filters heading", "default": "Refine catalog" },
+    { "type": "text", "id": "search_label", "label": "Search label", "default": "Search" },
+    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Search product, lot, source, or documentation..." },
+    { "type": "text", "id": "sort_label", "label": "Sort label", "default": "Sort" },
+    { "type": "text", "id": "sort_default", "label": "Default sort label", "default": "Featured" },
+    { "type": "text", "id": "sort_inventory", "label": "Inventory sort label", "default": "Inventory high to low" },
+    { "type": "text", "id": "sort_price", "label": "Price sort label", "default": "Price low to high" },
+    { "type": "text", "id": "reset_label", "label": "Reset label", "default": "Reset" },
+    { "type": "text", "id": "catalog_eyebrow", "label": "Catalog eyebrow", "default": "Available Lots" },
+    { "type": "text", "id": "catalog_heading", "label": "Catalog heading", "default": "Quality-focused biologic solutions" },
+    { "type": "text", "id": "mobile_filter_label", "label": "Mobile filter label", "default": "Search" },
+    { "type": "text", "id": "available_label", "label": "Available label", "default": "In Stock" },
+    { "type": "text", "id": "low_stock_label", "label": "Low stock label", "default": "Low Stock" },
+    { "type": "text", "id": "sold_out_label", "label": "Sold out label", "default": "Sold Out" },
+    { "type": "range", "id": "low_stock_threshold", "label": "Low stock threshold", "min": 1, "max": 20, "step": 1, "default": 5 },
+    { "type": "text", "id": "placeholder_label", "label": "Image placeholder label", "default": "ell." },
+    { "type": "text", "id": "price_label", "label": "Price label", "default": "Price" },
+    { "type": "text", "id": "inventory_label", "label": "Inventory label", "default": "Inventory" },
+    { "type": "text", "id": "inventory_review_label", "label": "Inventory review label", "default": "Review" },
+    { "type": "text", "id": "details_label", "label": "Details button", "default": "View Details" },
+    { "type": "text", "id": "add_label", "label": "Add button", "default": "Add to Cart" },
+    { "type": "text", "id": "empty_heading", "label": "Empty heading", "default": "No inventory lots are published yet." },
+    { "type": "textarea", "id": "empty_body", "label": "Empty body", "default": "Once products are active on the Online Store sales channel, they will appear in this catalog automatically." },
+    { "type": "text", "id": "previous_label", "label": "Previous label", "default": "Previous" },
+    { "type": "text", "id": "next_label", "label": "Next label", "default": "Next" },
+    { "type": "text", "id": "page_label", "label": "Page label", "default": "Page" },
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 4, "max": 24, "step": 4, "default": 12 }
+  ]
+}
+{% endschema %}

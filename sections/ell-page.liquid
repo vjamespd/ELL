@@ -1,0 +1,24 @@
+<section class="ell-section">
+  <div class="ell-container ell-page-content">
+    <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+    <h1 class="section-title">{{ page.title | default: section.settings.heading }}</h1>
+    <div class="ell-rte lead-copy">
+      {% if page.content != blank %}
+        {{ page.content }}
+      {% else %}
+        <p>{{ section.settings.body }}</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL page",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Information" },
+    { "type": "text", "id": "heading", "label": "Fallback heading", "default": "Page" },
+    { "type": "textarea", "id": "body", "label": "Fallback body", "default": "Add page content in Shopify admin." }
+  ]
+}
+{% endschema %}

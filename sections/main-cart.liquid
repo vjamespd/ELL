@@ -1,79 +1,165 @@
+{% liquid
+  assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign npi_value = cart.attributes['NPI Number']
+  assign institution_value = cart.attributes['Institution']
+  assign po_value = cart.attributes['Purchase Order']
+%}
+
 <section class="ell-section">
   <div class="ell-container">
     <div class="cart-shell">
       {% if cart.item_count == 0 %}
         <div style="text-align:center;max-width:32rem;margin:0 auto;padding:2rem 0;">
-          <p class="eyebrow">Clinical Cart</p>
-          <h1 class="section-title">Your procurement cart is currently empty.</h1>
-          <p class="lead-copy">Browse available lots and assemble a clinically verified request package before continuing to provider review.</p>
-          <a class="ell-button ell-button--primary" href="/pages/catalog">Browse Inventory</a>
+          <p class="eyebrow">{{ section.settings.empty_eyebrow }}</p>
+          <h1 class="section-title">{{ section.settings.empty_heading }}</h1>
+          <p class="lead-copy">{{ section.settings.empty_body }}</p>
+          <a class="ell-button ell-button--primary" href="{{ catalog_url }}">{{ section.settings.empty_button }}</a>
         </div>
       {% else %}
-        <div class="cart-grid">
-          <div>
-            <div class="cart-shell__head" style="margin-bottom:1.5rem;">
-              <div>
-                <p class="eyebrow">Clinical Cart</p>
-                <h1 class="section-title">Procurement summary</h1>
+        <form action="{{ routes.cart_url }}" method="post" id="cart-form" data-cart-form>
+          <div class="cart-grid">
+            <div>
+              <div class="cart-shell__head">
+                <div>
+                  <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+                  <h1 class="section-title">{{ section.settings.heading }}</h1>
+                </div>
+                <span class="muted-copy">{{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %}</span>
               </div>
-              <span class="muted-copy">{{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %}</span>
+
+              <div class="cart-items">
+                {% for item in cart.items %}
+                  <article class="cart-item">
+                    <a class="cart-thumb" href="{{ item.url }}">
+                      {% if item.image %}
+                        {{
+                          item.image
+                          | image_url: width: 240
+                          | image_tag:
+                            alt: item.product.title,
+                            widths: '120,180,240'
+                        }}
+                      {% endif %}
+                    </a>
+
+                    <div class="cart-item__details">
+                      <h2 style="margin:0 0 0.35rem;font-size:1.1rem;">
+                        <a href="{{ item.url }}">{{ item.product.title }}</a>
+                      </h2>
+                      {% if item.variant.title != 'Default Title' %}
+                        <p class="muted-copy" style="margin:0 0 0.35rem;">{{ item.variant.title }}</p>
+                      {% endif %}
+                      {% if item.sku != blank %}
+                        <p class="muted-copy" style="margin:0 0 0.35rem;">Lot {{ item.sku }}</p>
+                      {% endif %}
+                      {% if item.properties.size > 0 %}
+                        <div class="cart-item__properties">
+                          {% for property in item.properties %}
+                            {% unless property.last == blank %}
+                              <span>{{ property.first }}: {{ property.last }}</span>
+                            {% endunless %}
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                      <a class="ell-button ell-button--text" href="{{ item.url_to_remove }}">{{ section.settings.remove_label }}</a>
+                    </div>
+
+                    <div class="cart-item__controls">
+                      <label class="stat-label" for="cart-quantity-{{ forloop.index }}">{{ section.settings.quantity_label }}</label>
+                      <input
+                        id="cart-quantity-{{ forloop.index }}"
+                        class="field cart-quantity-field"
+                        type="number"
+                        name="updates[]"
+                        min="0"
+                        value="{{ item.quantity }}"
+                      >
+                      <strong>{{ item.final_line_price | money }}</strong>
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
             </div>
 
-            <div class="cart-items">
-              {% for item in cart.items %}
-                <article class="cart-item">
-                  <div class="cart-thumb">
-                    {% if item.image %}
-                      {{
-                        item.image
-                        | image_url: width: 240
-                        | image_tag:
-                          alt: item.product.title,
-                          widths: '120,180,240'
-                      }}
-                    {% endif %}
-                  </div>
-                  <div>
-                    <h2 style="margin:0 0 0.35rem;font-size:1.1rem;">{{ item.product.title }}</h2>
-                    {% if item.variant.title != 'Default Title' %}
-                      <p class="muted-copy" style="margin:0 0 0.35rem;">{{ item.variant.title }}</p>
-                    {% endif %}
-                    <p class="muted-copy" style="margin:0;">Qty {{ item.quantity }}</p>
-                  </div>
-                  <strong>{{ item.final_line_price | money }}</strong>
-                </article>
-              {% endfor %}
-            </div>
+            <aside class="cart-summary-box">
+              <p class="eyebrow">{{ section.settings.summary_eyebrow }}</p>
+              <div style="display:grid;gap:0.95rem;">
+                <div class="procurement-line">
+                  <span class="muted-copy">{{ section.settings.subtotal_label }}</span>
+                  <strong>{{ cart.total_price | money }}</strong>
+                </div>
+                <div class="procurement-line" data-verified-provider-line hidden>
+                  <span class="muted-copy">{{ section.settings.verified_provider_label }}</span>
+                  <strong data-verified-provider-name></strong>
+                </div>
+                <div class="procurement-line">
+                  <span class="muted-copy">{{ section.settings.checkout_label }}</span>
+                  <strong>{{ section.settings.checkout_value }}</strong>
+                </div>
+              </div>
+
+              <div id="clinical-verification" class="cart-verification" data-verification-root>
+                <h2 class="panel-title">{{ section.settings.verification_heading }}</h2>
+                <p class="muted-copy">{{ section.settings.verification_body }}</p>
+
+                <label class="stat-label" for="cart-npi">{{ section.settings.npi_label }}</label>
+                <input
+                  id="cart-npi"
+                  class="field"
+                  type="text"
+                  name="attributes[NPI Number]"
+                  value="{{ npi_value | escape }}"
+                  placeholder="{{ section.settings.npi_placeholder }}"
+                  inputmode="numeric"
+                  data-npi-input
+                >
+
+                <label class="stat-label" for="cart-institution">{{ section.settings.institution_label }}</label>
+                <input
+                  id="cart-institution"
+                  class="field"
+                  type="text"
+                  name="attributes[Institution]"
+                  value="{{ institution_value | escape }}"
+                  placeholder="{{ section.settings.institution_placeholder }}"
+                  data-institution-input
+                >
+
+                <label class="stat-label" for="cart-po">{{ section.settings.po_label }}</label>
+                <input
+                  id="cart-po"
+                  class="field"
+                  type="text"
+                  name="attributes[Purchase Order]"
+                  value="{{ po_value | escape }}"
+                  placeholder="{{ section.settings.po_placeholder }}"
+                >
+
+                <button class="ell-button ell-button--ghost" type="button" data-verify-trigger>
+                  {{ section.settings.verify_button }}
+                </button>
+                <div class="procurement-status" data-verification-status></div>
+              </div>
+
+              <div class="procurement-note">
+                {% render 'icon', name: 'lock' %}
+                <div class="muted-copy" style="font-size:0.86rem;">{{ section.settings.note }}</div>
+              </div>
+
+              <div class="cart-actions-row">
+                <button class="ell-button ell-button--ghost" type="submit" name="update">
+                  {{ section.settings.update_label }}
+                </button>
+                <button class="ell-button ell-button--primary" type="submit" name="checkout" data-checkout-submit>
+                  {{ section.settings.checkout_button }}
+                  {% render 'icon', name: 'arrow-right' %}
+                </button>
+              </div>
+
+              <a class="ell-button ell-button--text" href="{{ catalog_url }}">{{ section.settings.continue_label }}</a>
+            </aside>
           </div>
-
-          <aside class="cart-summary-box">
-            <p class="eyebrow">Order Summary</p>
-            <div style="display:grid;gap:0.95rem;">
-              <div class="procurement-line">
-                <span class="muted-copy">Subtotal</span>
-                <strong>{{ cart.total_price | money }}</strong>
-              </div>
-              <div class="procurement-line">
-                <span class="muted-copy">Verification</span>
-                <strong>Required</strong>
-              </div>
-              <div class="procurement-line">
-                <span class="muted-copy">Checkout path</span>
-                <strong>Clinical review</strong>
-              </div>
-            </div>
-            <div class="procurement-note" style="margin:1.25rem 0;">
-              {% render 'icon', name: 'lock' %}
-              <div class="muted-copy" style="font-size:0.86rem;">
-                Provider verification and institutional documentation are required before fulfillment.
-              </div>
-            </div>
-            <a class="ell-button ell-button--primary" style="width:100%;" href="/pages/procurement">
-              Continue to Procurement
-              {% render 'icon', name: 'arrow-right' %}
-            </a>
-          </aside>
-        </div>
+        </form>
       {% endif %}
     </div>
   </div>
@@ -82,6 +168,33 @@
 {% schema %}
 {
   "name": "Main cart",
-  "settings": []
+  "settings": [
+    { "type": "text", "id": "empty_eyebrow", "label": "Empty eyebrow", "default": "Clinical Cart" },
+    { "type": "text", "id": "empty_heading", "label": "Empty heading", "default": "Your cart is currently empty." },
+    { "type": "textarea", "id": "empty_body", "label": "Empty body", "default": "Browse available products and assemble a documentation-ready order review before continuing." },
+    { "type": "text", "id": "empty_button", "label": "Empty button", "default": "Browse Inventory" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Clinical Cart" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Cart summary" },
+    { "type": "text", "id": "remove_label", "label": "Remove label", "default": "Remove" },
+    { "type": "text", "id": "quantity_label", "label": "Quantity label", "default": "Quantity" },
+    { "type": "text", "id": "summary_eyebrow", "label": "Summary eyebrow", "default": "Order Summary" },
+    { "type": "text", "id": "subtotal_label", "label": "Subtotal label", "default": "Subtotal" },
+    { "type": "text", "id": "verified_provider_label", "label": "Verified NPI label", "default": "Verified NPI" },
+    { "type": "text", "id": "checkout_label", "label": "Checkout path label", "default": "Review path" },
+    { "type": "text", "id": "checkout_value", "label": "Checkout path value", "default": "Order review" },
+    { "type": "text", "id": "verification_heading", "label": "Verification heading", "default": "Provider and institution details" },
+    { "type": "textarea", "id": "verification_body", "label": "Verification body", "default": "These fields are stored with the order for provider, institutional, and shipping eligibility review. This does not perform real-time verification." },
+    { "type": "text", "id": "npi_label", "label": "NPI label", "default": "National Provider Identifier (NPI)" },
+    { "type": "text", "id": "npi_placeholder", "label": "NPI placeholder", "default": "10-digit NPI number" },
+    { "type": "text", "id": "institution_label", "label": "Institution label", "default": "Affiliated Institution" },
+    { "type": "text", "id": "institution_placeholder", "label": "Institution placeholder", "default": "e.g. Mayo Clinic Research" },
+    { "type": "text", "id": "po_label", "label": "PO label", "default": "Purchase Order (Optional)" },
+    { "type": "text", "id": "po_placeholder", "label": "PO placeholder", "default": "e.g. PO-2026-001A" },
+    { "type": "text", "id": "verify_button", "label": "Verify button", "default": "Prepare Review" },
+    { "type": "textarea", "id": "note", "label": "Note", "default": "Orders may be reviewed for provider, institutional, and shipping eligibility before fulfillment." },
+    { "type": "text", "id": "update_label", "label": "Update label", "default": "Update Cart" },
+    { "type": "text", "id": "checkout_button", "label": "Checkout button", "default": "Continue to Order Review" },
+    { "type": "text", "id": "continue_label", "label": "Continue shopping label", "default": "Continue browsing inventory" }
+  ]
 }
 {% endschema %}

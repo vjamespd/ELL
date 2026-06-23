@@ -1,13 +1,18 @@
 {% liquid
   assign brand_name = settings.brand_name | default: shop.name
+  assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign cart_url = routes.cart_url | default: '/cart'
+  assign quality_url = catalog_url | append: '?view=quality-safety'
 %}
 
 <footer class="site-footer">
   <div class="ell-container site-footer__main">
     <div class="site-footer__brand">
-      <div class="brand-mark" style="margin-bottom:1rem;color:#f8f3fa;">
-        <span class="brand-mark__word">{{ brand_name }}</span>
-      </div>
+      <img
+        class="site-footer__logo"
+        src="{{ 'ell-logo-05.png' | asset_url }}"
+        alt="ell. Elegance at the Cellular Level"
+      >
       <p>{{ section.settings.description }}</p>
       <p class="muted-copy" style="color:rgba(248,243,250,0.48);margin-top:1.25rem;">
         {{ section.settings.compliance_copy }}
@@ -20,15 +25,33 @@
         {% assign platform_blocks = section.blocks | where: 'type', 'platform_link' %}
         {% if platform_blocks.size > 0 %}
           {% for block in platform_blocks %}
-            <a class="site-footer__link" href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>
+            {% liquid
+              assign platform_url = block.settings.url
+              if platform_url == blank
+                assign platform_handle = block.settings.label | handle
+                if platform_handle contains 'catalog' or platform_handle contains 'inventory'
+                  assign platform_url = catalog_url
+                elsif platform_handle contains 'procurement' or platform_handle contains 'cart'
+                  assign platform_url = cart_url
+                elsif platform_handle contains 'contact' or platform_handle contains 'support'
+                  assign platform_url = '/pages/contact'
+                elsif platform_handle contains 'order'
+                  assign platform_url = cart_url
+                else
+                  assign platform_url = catalog_url
+                endif
+              endif
+            %}
+            <a class="site-footer__link" href="{{ platform_url }}" {{ block.shopify_attributes }}>
               {{ block.settings.label }}
             </a>
           {% endfor %}
         {% else %}
-          <a class="site-footer__link" href="/pages/catalog">Inventory Catalog</a>
-          <a class="site-footer__link" href="/pages/procurement">Procurement</a>
-          <a class="site-footer__link" href="{{ routes.cart_url }}">Order Summary</a>
-          <a class="site-footer__link" href="/pages/quality-safety">AATB Certified</a>
+          <a class="site-footer__link" href="{{ catalog_url }}">Inventory Catalog</a>
+          <a class="site-footer__link" href="{{ cart_url }}">Cart</a>
+          <a class="site-footer__link" href="/pages/contact">Contact</a>
+          <a class="site-footer__link" href="{{ cart_url }}">Order Summary</a>
+          <a class="site-footer__link" href="{{ quality_url }}">Quality &amp; Safety</a>
         {% endif %}
       </div>
     </div>
@@ -39,15 +62,28 @@
         {% assign legal_blocks = section.blocks | where: 'type', 'legal_link' %}
         {% if legal_blocks.size > 0 %}
           {% for block in legal_blocks %}
-            <a class="site-footer__link" href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>
+            {% liquid
+              assign legal_url = block.settings.url
+              if legal_url == blank
+                assign legal_handle = block.settings.label | handle
+                if legal_handle contains 'privacy'
+                  assign legal_url = '/policies/privacy-policy'
+                elsif legal_handle contains 'terms'
+                  assign legal_url = quality_url
+                else
+                  assign legal_url = quality_url
+                endif
+              endif
+            %}
+            <a class="site-footer__link" href="{{ legal_url }}" {{ block.shopify_attributes }}>
               {{ block.settings.label }}
             </a>
           {% endfor %}
         {% else %}
-          <a class="site-footer__link" href="/pages/quality-safety">Legal &amp; Compliance</a>
+          <a class="site-footer__link" href="{{ quality_url }}">Legal &amp; Compliance</a>
           <a class="site-footer__link" href="/policies/privacy-policy">Privacy Policy</a>
-          <a class="site-footer__link" href="/pages/quality-safety">FDA Registered</a>
-          <a class="site-footer__link" href="/policies/terms-of-service">Terms of Service</a>
+          <a class="site-footer__link" href="{{ quality_url }}">Documentation Review</a>
+          <a class="site-footer__link" href="{{ quality_url }}">Terms &amp; Compliance</a>
         {% endif %}
       </div>
     </div>
@@ -103,13 +139,13 @@
       "type": "textarea",
       "id": "description",
       "label": "Brand description",
-      "default": "Elevating the standard of regenerative medicine through sterile precision and transparent science."
+      "default": "Built for provider-led regenerative medicine workflows, documentation review, and institutional ordering."
     },
     {
       "type": "textarea",
       "id": "compliance_copy",
       "label": "Compliance note",
-      "default": "For institutional and licensed-provider procurement only. Clinical documentation is available upon verification."
+      "default": "Product, quality, and handling documentation may be reviewed before fulfillment. Orders may be subject to provider, institutional, and shipping eligibility review."
     },
     {
       "type": "text",

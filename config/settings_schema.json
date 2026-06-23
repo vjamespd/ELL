@@ -67,5 +67,17 @@
         "default": "#0a6a47"
       }
     ]
+  },
+  {
+    "name": "Provider Access",
+    "settings": [
+      {
+        "type": "text",
+        "id": "npi_verification_endpoint",
+        "label": "NPI verification endpoint",
+        "default": "http://127.0.0.1:8787/verify",
+        "info": "Use a real verifier service endpoint for NPPES/CMS checks. Local default works only in local development."
+      }
+    ]
   }
 ]

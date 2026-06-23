@@ -1,66 +1,105 @@
 {% liquid
   assign brand_name = settings.brand_name | default: shop.name
+  assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign cart_url = routes.cart_url | default: '/cart'
+  assign quality_route = catalog_url | append: '?view=quality-safety'
+  assign quality_url = section.settings.quality_link | default: quality_route
+  assign about_url = section.settings.about_link | default: '/pages/about-us'
   assign home_active = false
   assign catalog_active = false
   assign quality_active = false
+  assign about_active = false
+  assign procurement_active = false
+  assign contact_active = false
+  assign provider_active = false
+  assign cart_active = false
+  assign quality_view_active = false
+  assign provider_info_url = section.settings.provider_info_link | default: '/pages/provider-info'
+  assign provider_account_url = section.settings.provider_account_link | default: '/pages/provider-account-setup'
+  assign provider_order_url = section.settings.provider_order_link | default: '/pages/pricing-order-form'
+
+  if request.params.view == 'quality-safety'
+    assign quality_view_active = true
+  endif
 
   if template.name == 'index'
     assign home_active = true
-  elsif template.name == 'product' or template.suffix == 'catalog'
-    assign catalog_active = true
-  elsif template.suffix == 'quality-safety'
+  elsif template.suffix == 'about-us' or request.path contains 'about-us'
+    assign about_active = true
+  elsif template.suffix == 'quality-safety' or request.path contains 'quality-safety' or quality_view_active
     assign quality_active = true
+  elsif request.path contains '/cart' or template.name == 'cart'
+    assign cart_active = true
+  elsif template.suffix == 'procurement' or request.path contains 'procurement'
+    assign procurement_active = true
+  elsif template.suffix == 'contact' or request.path contains 'contact'
+    assign contact_active = true
+  elsif request.path contains 'provider' or request.path contains 'pricing-order-form'
+    assign provider_active = true
+  elsif template.name == 'collection' or template.name == 'product' or template.suffix == 'catalog'
+    assign catalog_active = true
   endif
 %}
 
 <header class="site-header">
   <div class="ell-container site-header__inner">
     <a class="brand-mark" href="{{ routes.root_url }}">
-      {% if settings.logo != blank %}
-        {{
-          settings.logo
-          | image_url: width: 200
-          | image_tag:
-            alt: brand_name,
-            widths: '120,160,200',
-            class: 'brand-mark__image'
-        }}
-      {% else %}
-        <span class="brand-mark__glyph"></span>
-        <span class="brand-mark__word">{{ brand_name }}</span>
-      {% endif %}
+      <span class="brand-logo">
+        <img class="brand-logo__image" src="{{ 'ell-logo-03.png' | asset_url }}" alt="ell. Elegance at the Cellular Level">
+      </span>
     </a>
 
     <nav class="site-nav" aria-label="Primary">
       <a href="{{ routes.root_url }}"{% if home_active %} aria-current="page"{% endif %}>{{ section.settings.home_label }}</a>
-      <a href="/pages/catalog"{% if catalog_active %} aria-current="page"{% endif %}>{{ section.settings.catalog_label }}</a>
-      <a href="/pages/quality-safety"{% if quality_active %} aria-current="page"{% endif %}>{{ section.settings.quality_label }}</a>
+      <a href="{{ catalog_url }}"{% if catalog_active %} aria-current="page"{% endif %}>{{ section.settings.catalog_label }}</a>
+      <a href="{{ quality_url }}"{% if quality_active %} aria-current="page"{% endif %}>{{ section.settings.quality_label }}</a>
+      <details class="site-nav__dropdown" data-provider-menu>
+        <summary{% if provider_active %} aria-current="page"{% endif %}>{{ section.settings.provider_label }}</summary>
+        <div class="site-nav__dropdown-panel">
+          <a href="{{ provider_info_url }}">{{ section.settings.provider_info_label }}</a>
+          <a href="{{ provider_account_url }}">{{ section.settings.provider_account_label }}</a>
+          <a href="{{ provider_order_url }}">{{ section.settings.provider_order_label }}</a>
+        </div>
+      </details>
+      <a href="{{ about_url }}"{% if about_active %} aria-current="page"{% endif %}>{{ section.settings.about_label }}</a>
     </nav>
 
     <div class="site-header__actions">
+      <a class="cart-action" href="{{ cart_url }}" aria-label="{{ section.settings.cart_label }}"{% if cart_active %} aria-current="page"{% endif %}>
+        {% render 'icon', name: 'cart' %}
+        <span class="cart-action__count">{{ cart.item_count }}</span>
+      </a>
       <a class="ell-button ell-button--ghost" href="{{ routes.account_login_url | default: '/account/login' }}">
         {{ section.settings.login_label }}
       </a>
-      <button class="nav-toggle" type="button" aria-label="Open menu" data-nav-toggle>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-controls="ell-mobile-nav" data-nav-toggle>
         {% render 'icon', name: 'menu' %}
       </button>
     </div>
   </div>
 
-  <div class="mobile-sheet" data-mobile-nav>
+  <div id="ell-mobile-nav" class="mobile-sheet" data-mobile-nav>
     <button class="mobile-sheet__backdrop" type="button" aria-label="Close menu" data-nav-backdrop></button>
     <div class="mobile-sheet__panel">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-        <span class="brand-mark__word">{{ brand_name }}</span>
+        <span class="brand-logo brand-logo--mobile">
+          <img class="brand-logo__image" src="{{ 'ell-logo-03.png' | asset_url }}" alt="ell. Elegance at the Cellular Level">
+        </span>
         <button class="mobile-sheet__close" type="button" aria-label="Close menu" data-nav-close>
           {% render 'icon', name: 'close' %}
         </button>
       </div>
       <nav class="mobile-sheet__menu" aria-label="Mobile">
-        <a href="{{ routes.root_url }}">Home</a>
-        <a href="/pages/catalog">Catalog</a>
-        <a href="/pages/quality-safety">Quality &amp; Safety</a>
-        <a href="/pages/procurement">Procurement</a>
+        <a href="{{ routes.root_url }}"{% if home_active %} aria-current="page"{% endif %}>Home</a>
+        <a href="{{ catalog_url }}"{% if catalog_active %} aria-current="page"{% endif %}>Catalog</a>
+        <a href="{{ quality_url }}"{% if quality_active %} aria-current="page"{% endif %}>Quality &amp; Safety</a>
+        <span class="mobile-sheet__group-label">{{ section.settings.provider_label }}</span>
+        <a href="{{ provider_info_url }}"{% if request.path contains 'provider-info' %} aria-current="page"{% endif %}>{{ section.settings.provider_info_label }}</a>
+        <a href="{{ provider_account_url }}"{% if request.path contains 'provider-account-setup' %} aria-current="page"{% endif %}>{{ section.settings.provider_account_label }}</a>
+        <a href="{{ provider_order_url }}"{% if request.path contains 'pricing-order-form' %} aria-current="page"{% endif %}>{{ section.settings.provider_order_label }}</a>
+        <a href="{{ about_url }}"{% if about_active %} aria-current="page"{% endif %}>{{ section.settings.about_label }}</a>
+        <a href="/pages/contact"{% if contact_active %} aria-current="page"{% endif %}>Contact</a>
+        <a href="{{ cart_url }}"{% if cart_active %} aria-current="page"{% endif %}>Cart</a>
         <a href="{{ routes.account_login_url | default: '/account/login' }}">Log In</a>
       </nav>
       <p class="muted-copy" style="margin-top:auto;">{{ settings.brand_tagline }}</p>
@@ -89,6 +128,67 @@
       "id": "quality_label",
       "label": "Quality label",
       "default": "Quality & Safety"
+    },
+    {
+      "type": "url",
+      "id": "quality_link",
+      "label": "Quality link"
+    },
+    {
+      "type": "text",
+      "id": "about_label",
+      "label": "About label",
+      "default": "About Us"
+    },
+    {
+      "type": "url",
+      "id": "about_link",
+      "label": "About link"
+    },
+    {
+      "type": "text",
+      "id": "provider_label",
+      "label": "Provider label",
+      "default": "Provider"
+    },
+    {
+      "type": "text",
+      "id": "provider_info_label",
+      "label": "Provider info label",
+      "default": "Provider Info"
+    },
+    {
+      "type": "url",
+      "id": "provider_info_link",
+      "label": "Provider info link"
+    },
+    {
+      "type": "text",
+      "id": "provider_account_label",
+      "label": "Provider account setup label",
+      "default": "Provider Account Setup"
+    },
+    {
+      "type": "url",
+      "id": "provider_account_link",
+      "label": "Provider account setup link"
+    },
+    {
+      "type": "text",
+      "id": "provider_order_label",
+      "label": "Pricing/order form label",
+      "default": "Pricing/Order Form"
+    },
+    {
+      "type": "url",
+      "id": "provider_order_link",
+      "label": "Pricing/order form link"
+    },
+    {
+      "type": "text",
+      "id": "cart_label",
+      "label": "Cart label",
+      "default": "Cart"
     },
     {
       "type": "text",

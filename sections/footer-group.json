@@ -5,8 +5,8 @@
     "ell_footer": {
       "type": "footer",
       "settings": {
-        "description": "Elevating the standard of regenerative medicine through sterile precision and transparent science.",
-        "compliance_copy": "For institutional and licensed-provider procurement only. Clinical documentation is available upon verification.",
+        "description": "Built for provider-led regenerative medicine workflows, documentation review, and institutional ordering.",
+        "compliance_copy": "Product, quality, and handling documentation may be reviewed before fulfillment. Orders may be subject to provider, institutional, and shipping eligibility review.",
         "platform_heading": "Platform",
         "legal_heading": "Legal & Privacy",
         "bottom_line": "All rights reserved. Precision in every cell."
@@ -21,7 +21,22 @@
         "platform_procurement": {
           "type": "platform_link",
           "settings": {
-            "label": "Procurement"
+            "label": "Cart",
+            "url": "/cart"
+          }
+        },
+        "platform_contact": {
+          "type": "platform_link",
+          "settings": {
+            "label": "Contact",
+            "url": "/pages/contact"
+          }
+        },
+        "platform_about": {
+          "type": "platform_link",
+          "settings": {
+            "label": "About Us",
+            "url": "/pages/about-us"
           }
         },
         "legal_privacy": {
@@ -33,13 +48,16 @@
         "legal_terms": {
           "type": "legal_link",
           "settings": {
-            "label": "Terms of Service"
+            "label": "Terms & Compliance",
+            "url": "/collections/all?view=quality-safety"
           }
         }
       },
       "block_order": [
         "platform_catalog",
         "platform_procurement",
+        "platform_contact",
+        "platform_about",
         "legal_privacy",
         "legal_terms"
       ]

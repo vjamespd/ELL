@@ -1,4 +1,10 @@
-<section class="ell-section" style="background:rgba(255,255,255,0.22);">
+{% liquid
+  assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign quality_url = catalog_url | append: '?view=quality-safety'
+  assign about_url = '/pages/about-us'
+%}
+
+<section class="ell-section feature-section">
   <div class="ell-container">
     <div class="feature-grid">
       {% if section.blocks.size > 0 %}
@@ -9,10 +15,10 @@
                 <div style="margin-bottom:1rem;color:var(--ell-secondary);">{% render 'icon', name: block.settings.icon %}</div>
                 <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2.1rem;font-style:italic;">{{ block.settings.title }}</h3>
                 <p class="muted-copy" style="margin:0 0 1rem;">{{ block.settings.body }}</p>
-                <a class="ell-button ell-button--text" href="{{ block.settings.link | default: '#' }}">{{ block.settings.button_label }}</a>
+                <a class="ell-button ell-button--text" href="{{ block.settings.link | default: quality_url }}">{{ block.settings.button_label }}</a>
               </div>
-              <div class="feature-card__media">
-                <span></span><span></span><span></span><span></span>
+              <div class="feature-card__media feature-card__media--photo">
+                <img src="{{ 'ell-third-party-validation.png' | asset_url }}" alt="Laboratory glassware representing documentation review" loading="lazy">
               </div>
             </article>
           {% else %}
@@ -29,25 +35,41 @@
         <article class="feature-card surface-card">
           <div style="margin-bottom:1rem;color:var(--ell-secondary);">{% render 'icon', name: 'flask' %}</div>
           <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2rem;font-style:italic;">Precision Extraction</h3>
-          <p class="muted-copy" style="margin:0;">Our proprietary low-temperature processing preserves structural integrity and cytokine profiles.</p>
+          <p class="muted-copy" style="margin:0;">Quality-focused biologic solutions organized for documentation review and provider-led ordering workflows.</p>
         </article>
         <article class="feature-card feature-card--dark surface-card">
           <div style="margin-bottom:1rem;color:rgba(255,255,255,0.85);">{% render 'icon', name: 'truck' %}</div>
           <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2rem;font-style:italic;">Next-Day Logistics</h3>
-          <p class="muted-copy" style="margin:0;color:rgba(255,255,255,0.76);">Validated cold-chain shipping ensures viability from our facility to your surgical suite.</p>
+          <p class="muted-copy" style="margin:0;color:rgba(255,255,255,0.76);">Shipping and handling considerations are reviewed against product specifications before fulfillment.</p>
         </article>
         <article class="feature-card feature-card--wide surface-card">
           <div>
             <div style="margin-bottom:1rem;color:var(--ell-secondary);">{% render 'icon', name: 'verified' %}</div>
             <h3 class="serif-title" style="margin:0 0 0.75rem;font-size:2.1rem;font-style:italic;">Third-Party Validation</h3>
-            <p class="muted-copy" style="margin:0 0 1rem;">Every batch undergoes rigorous sterility and endotoxin testing by independent CLIA-certified laboratories to ensure maximum safety.</p>
-            <a class="ell-button ell-button--text" href="/pages/quality-safety">Download Safety Report</a>
+            <p class="muted-copy" style="margin:0 0 1rem;">Manufacturing documentation, product handling details, and quality review materials are available for provider and institutional due diligence.</p>
+            <a class="ell-button ell-button--text" href="{{ quality_url }}">Review Documentation</a>
           </div>
-          <div class="feature-card__media">
-            <span></span><span></span><span></span><span></span>
+          <div class="feature-card__media feature-card__media--photo">
+            <img src="{{ 'ell-third-party-validation.png' | asset_url }}" alt="Laboratory glassware representing documentation review" loading="lazy">
           </div>
         </article>
       {% endif %}
+    </div>
+
+    <div class="home-closing-cta surface-card">
+      <p class="eyebrow">{{ section.settings.closing_eyebrow }}</p>
+      <h2 class="section-title home-closing-cta__title">{{ section.settings.closing_tagline }}</h2>
+      <div class="button-row home-closing-cta__actions">
+        <a class="ell-button ell-button--primary" href="{{ section.settings.catalog_button_link | default: catalog_url }}">
+          {{ section.settings.catalog_button_label }}
+        </a>
+        <a class="ell-button ell-button--ghost" href="{{ section.settings.featured_button_link | default: quality_url }}">
+          {{ section.settings.featured_button_label }}
+        </a>
+        <a class="ell-button ell-button--ghost" href="{{ section.settings.registration_button_link | default: about_url }}">
+          {{ section.settings.registration_button_label }}
+        </a>
+      </div>
     </div>
   </div>
 </section>
@@ -71,7 +93,7 @@
           "type": "textarea",
           "id": "body",
           "label": "Body",
-          "default": "Our proprietary low-temperature processing preserves structural integrity and cytokine profiles."
+          "default": "Quality-focused biologic solutions organized for documentation review and provider-led ordering workflows."
         },
         {
           "type": "select",
@@ -109,7 +131,7 @@
           "type": "text",
           "id": "button_label",
           "label": "Wide card button label",
-          "default": "Download Safety Report"
+          "default": "Review Documentation"
         },
         {
           "type": "url",
@@ -119,6 +141,52 @@
       ]
     }
   ],
-  "settings": []
+  "settings": [
+    {
+      "type": "text",
+      "id": "closing_eyebrow",
+      "label": "Closing eyebrow",
+      "default": "Provider Platform"
+    },
+    {
+      "type": "textarea",
+      "id": "closing_tagline",
+      "label": "Closing tagline",
+      "default": "ELL — Designed for the Needs of Today's Regenerative Provider™"
+    },
+    {
+      "type": "text",
+      "id": "catalog_button_label",
+      "label": "Catalog button label",
+      "default": "Explore the Product Catalog"
+    },
+    {
+      "type": "url",
+      "id": "catalog_button_link",
+      "label": "Catalog button link"
+    },
+    {
+      "type": "text",
+      "id": "featured_button_label",
+      "label": "Featured button label",
+      "default": "Featured Biologic of the Month"
+    },
+    {
+      "type": "url",
+      "id": "featured_button_link",
+      "label": "Featured button link"
+    },
+    {
+      "type": "text",
+      "id": "registration_button_label",
+      "label": "Registration button label",
+      "default": "Provider Registration"
+    },
+    {
+      "type": "url",
+      "id": "registration_button_link",
+      "label": "Registration button link"
+    }
+  ]
 }
 {% endschema %}

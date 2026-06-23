@@ -44,29 +44,57 @@
           </div>
         </div>
 
-        <div data-verification-root>
-          <div style="display:grid;gap:1.25rem;">
-            <div>
-              <label class="stat-label" for="procurement-npi">National Provider Identifier (NPI)</label>
-              <p class="muted-copy" style="margin:0 0 0.6rem;">Required for institutional clinical biologics procurement.</p>
-              <input id="procurement-npi" class="field" type="text" value="{{ section.settings.example_npi }}" placeholder="10-digit NPI number" data-npi-input>
-            </div>
+        {% form 'contact', class: 'procurement-inquiry-form' %}
+          {% if form.posted_successfully? %}
+            <div class="form-status form-status--success">{{ section.settings.success_message }}</div>
+          {% endif %}
 
-            <div>
-              <label class="stat-label" for="procurement-institution">Affiliated Institution</label>
-              <input id="procurement-institution" class="field" type="text" placeholder="e.g. Mayo Clinic Research" data-institution-input>
+          {% if form.errors %}
+            <div class="form-status form-status--error">
+              {{ form.errors | default_errors }}
             </div>
+          {% endif %}
 
-            <div>
-              <label class="stat-label" for="procurement-po">Purchase Order (Optional)</label>
-              <input id="procurement-po" class="field" type="text" placeholder="e.g. PO-2026-001A">
-            </div>
+          <input type="hidden" name="contact[subject]" value="Cart inquiry">
+          <input type="hidden" name="contact[cart_summary]" value="{{ summary_title }} / {{ summary_total }}">
 
-            <div class="upload-drop">
-              <div style="display:flex;justify-content:center;margin-bottom:0.5rem;color:var(--ell-secondary);">{% render 'icon', name: 'file' %}</div>
-              <strong>{{ section.settings.upload_heading }}</strong>
-              <p class="muted-copy" style="margin:0.35rem 0 0;">{{ section.settings.upload_body }}</p>
+          <div class="procurement-form-section">
+            <h2 class="panel-title">{{ section.settings.provider_heading }}</h2>
+            <p class="muted-copy">{{ section.settings.provider_body }}</p>
+            <div class="procurement-form-grid">
+              <div>
+                <label class="stat-label" for="ProcurementName">Name</label>
+                <input id="ProcurementName" class="field" type="text" name="contact[name]" autocomplete="name" required>
+              </div>
+              <div>
+                <label class="stat-label" for="ProcurementEmail">Email</label>
+                <input id="ProcurementEmail" class="field" type="email" name="contact[email]" autocomplete="email" required>
+              </div>
+              <div>
+                <label class="stat-label" for="ProcurementNpi">National Provider Identifier (NPI)</label>
+                <input id="ProcurementNpi" class="field" type="text" name="contact[npi]" placeholder="10-digit NPI, if applicable" inputmode="numeric">
+              </div>
+              <div>
+                <label class="stat-label" for="ProcurementInstitution">Institution or clinic</label>
+                <input id="ProcurementInstitution" class="field" type="text" name="contact[institution]" placeholder="Institution, clinic, or organization">
+              </div>
             </div>
+          </div>
+
+          <div class="procurement-form-section">
+            <h2 class="panel-title">{{ section.settings.interest_heading }}</h2>
+            <div class="procurement-form-grid">
+              <div>
+                <label class="stat-label" for="ProcurementProductInterest">Product interest</label>
+                <input id="ProcurementProductInterest" class="field" type="text" name="contact[product_interest]" value="{{ summary_title }}">
+              </div>
+              <div>
+                <label class="stat-label" for="ProcurementDocumentation">Documentation requests</label>
+                <input id="ProcurementDocumentation" class="field" type="text" name="contact[documentation_requests]" placeholder="COA, handling specs, institutional paperwork">
+              </div>
+            </div>
+            <label class="stat-label" for="ProcurementMessage">Shipping, handling, or ordering considerations</label>
+            <textarea id="ProcurementMessage" class="field-textarea" name="contact[body]" rows="5" placeholder="Share destination, timing, documentation, or product review needs."></textarea>
           </div>
 
           <div class="procurement-note" style="margin:1.25rem 0;">
@@ -74,16 +102,11 @@
             <div class="muted-copy" style="font-size:0.86rem;">{{ section.settings.note }}</div>
           </div>
 
-          <button class="ell-button ell-button--primary" type="button" style="width:100%;" data-verify-trigger>
+          <button class="ell-button ell-button--primary" type="submit" style="width:100%;">
             {{ section.settings.button_label }}
             {% render 'icon', name: 'arrow-right' %}
           </button>
-          <div class="procurement-status" data-verification-status></div>
-          <p class="muted-copy" style="text-align:center;font-size:0.78rem;margin-top:0.9rem;">
-            {% render 'icon', name: 'lock' %}
-            256-bit encrypted institutional procurement
-          </p>
-        </div>
+        {% endform %}
       </div>
     </div>
   </div>
@@ -93,18 +116,19 @@
 {
   "name": "ELL procurement",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Secure Checkout" },
-    { "type": "textarea", "id": "body", "label": "Body", "default": "Provider verification and institutional review are required before biologic allocation proceeds to shipping and payment." },
-    { "type": "text", "id": "summary_title", "label": "Summary title", "default": "Umbilical Cord Blood - Mononuclear Cells" },
-    { "type": "text", "id": "summary_lot", "label": "Summary lot", "default": "#LOT-992A-CB" },
-    { "type": "text", "id": "summary_cells", "label": "Summary cells", "default": ">25M Cells" },
-    { "type": "text", "id": "summary_viability", "label": "Summary viability", "default": "98.2% Viability" },
-    { "type": "text", "id": "summary_total", "label": "Summary total", "default": "Pending Verification" },
-    { "type": "text", "id": "example_npi", "label": "Example NPI", "default": "1093827184" },
-    { "type": "text", "id": "upload_heading", "label": "Upload heading", "default": "Upload Practitioner License" },
-    { "type": "text", "id": "upload_body", "label": "Upload body", "default": "PDF or JPG up to 10MB. Placeholder only until backend workflow is connected." },
-    { "type": "textarea", "id": "note", "label": "Compliance note", "default": "Orders are reviewed by our Safety Compliance team. Standard verification time is 2-4 hours." },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Verify & Continue to Shipping" }
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Institutional cart inquiry" },
+    { "type": "textarea", "id": "body", "label": "Body", "default": "Submit provider, institution, product interest, documentation, and shipping considerations for review before ordering or fulfillment." },
+    { "type": "text", "id": "summary_title", "label": "Summary title", "default": "Product interest pending" },
+    { "type": "text", "id": "summary_lot", "label": "Summary lot", "default": "To be assigned" },
+    { "type": "text", "id": "summary_cells", "label": "Summary cells", "default": "Documentation review" },
+    { "type": "text", "id": "summary_viability", "label": "Summary viability", "default": "Pending review" },
+    { "type": "text", "id": "summary_total", "label": "Summary total", "default": "Pending review" },
+    { "type": "text", "id": "provider_heading", "label": "Provider heading", "default": "Provider and institution information" },
+    { "type": "textarea", "id": "provider_body", "label": "Provider body", "default": "Use this form for provider-led regenerative medicine workflows and institutional documentation requests." },
+    { "type": "text", "id": "interest_heading", "label": "Interest heading", "default": "Product interest and documentation requests" },
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Cart inquiry received. The team will review your request and follow up." },
+    { "type": "textarea", "id": "note", "label": "Review note", "default": "Orders may be reviewed for provider, institutional, and shipping eligibility before fulfillment. This form does not perform real-time provider verification." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Submit Inquiry" }
   ]
 }
 {% endschema %}

@@ -10,20 +10,20 @@
         {% endfor %}
       {% else %}
         <div class="trust-badge">
-          <span class="trust-badge__title">FDA</span>
-          <span class="trust-badge__caption">Registered Facility</span>
+          <span class="trust-badge__title">Review</span>
+          <span class="trust-badge__caption">Documentation Ready</span>
         </div>
         <div class="trust-badge">
-          <span class="trust-badge__title">AATB</span>
-          <span class="trust-badge__caption">Accredited Member</span>
+          <span class="trust-badge__title">Due Diligence</span>
+          <span class="trust-badge__caption">Provider Led</span>
         </div>
         <div class="trust-badge">
-          <span class="trust-badge__title">ISO13485</span>
-          <span class="trust-badge__caption">Quality Management</span>
+          <span class="trust-badge__title">Handling</span>
+          <span class="trust-badge__caption">Product Specific</span>
         </div>
         <div class="trust-badge">
-          <span class="trust-badge__title">CLIA</span>
-          <span class="trust-badge__caption">Certified Laboratory</span>
+          <span class="trust-badge__title">Ordering</span>
+          <span class="trust-badge__caption">Institutional Review</span>
         </div>
       {% endif %}
     </div>
@@ -43,13 +43,13 @@
           "type": "text",
           "id": "title",
           "label": "Title",
-          "default": "FDA"
+          "default": "Review"
         },
         {
           "type": "text",
           "id": "caption",
           "label": "Caption",
-          "default": "Registered Facility"
+          "default": "Documentation Ready"
         }
       ]
     }

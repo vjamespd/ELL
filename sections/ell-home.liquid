@@ -1,20 +1,12 @@
 <section class="home-hero">
   <div class="ell-container home-hero__inner">
     <div class="home-hero__copy">
-      <p class="eyebrow" style="color:rgba(255,255,255,0.7);">{{ section.settings.eyebrow }}</p>
-      <h1 class="display-title">{{ section.settings.heading_prefix }}<br><em>{{ section.settings.heading_emphasis }}</em></h1>
-      <p class="lead-copy">{{ section.settings.body }}</p>
-      <div class="button-row" style="margin-top:2rem;">
-        <a class="ell-button ell-button--ghost" href="{{ section.settings.primary_link | default: '/pages/catalog' }}">
-          {{ section.settings.primary_label }}
-          {% render 'icon', name: 'arrow-right' %}
-        </a>
-        <a class="ell-button ell-button--secondary" href="{{ section.settings.secondary_link | default: '/pages/quality-safety' }}">
-          {{ section.settings.secondary_label }}
-        </a>
-      </div>
+      <h1 class="display-title"><em>{{ section.settings.heading_prefix }}</em><br><span>{{ section.settings.heading_emphasis }}</span></h1>
+      <p class="home-hero__headline">{{ section.settings.body }}</p>
     </div>
-    <div class="cell-visual" aria-hidden="true"></div>
+    <div class="cell-visual" aria-hidden="true">
+      <img src="{{ 'ell-hero-cells.png' | asset_url }}" alt="">
+    </div>
   </div>
 </section>
 
@@ -22,12 +14,6 @@
 {
   "name": "ELL home hero",
   "settings": [
-    {
-      "type": "text",
-      "id": "eyebrow",
-      "label": "Eyebrow",
-      "default": "Clinical Editorial Biotech"
-    },
     {
       "type": "text",
       "id": "heading_prefix",
@@ -43,30 +29,8 @@
     {
       "type": "textarea",
       "id": "body",
-      "label": "Body",
-      "default": "Pioneering precision biologics through clinical editorial standards and rigorous scientific integrity."
-    },
-    {
-      "type": "text",
-      "id": "primary_label",
-      "label": "Primary button label",
-      "default": "Browse Inventory"
-    },
-    {
-      "type": "url",
-      "id": "primary_link",
-      "label": "Primary button link"
-    },
-    {
-      "type": "text",
-      "id": "secondary_label",
-      "label": "Secondary button label",
-      "default": "Scientific Papers"
-    },
-    {
-      "type": "url",
-      "id": "secondary_link",
-      "label": "Secondary button link"
+      "label": "Headline copy",
+      "default": "Everything Your Regenerative Practice Needs. One Trusted Source."
     }
   ]
 }

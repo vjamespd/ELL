@@ -1,7 +1,7 @@
 {% liquid
   assign row_status = status | default: 'In Stock'
   assign row_status_handle = row_status | handle
-  assign row_link = url | default: '/pages/procurement'
+  assign row_link = url | default: routes.cart_url | default: '/cart'
 %}
 <tr
   data-lot-item
