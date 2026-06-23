@@ -133,9 +133,21 @@ function getMaskedNpi(npi) {
   return `verified NPI ending in ${normalized.slice(-4)}`;
 }
 
-function getVerifiedProviderSummaryText(stored) {
-  const providerName = stored?.profile?.name?.trim();
+function getVerifiedProviderIdentity(profile) {
+  const providerName = profile?.name?.trim();
+  const credential = profile?.credential?.trim();
+  const taxonomyCode = profile?.taxonomyCode?.trim();
+
+  const suffixParts = [credential, taxonomyCode].filter(Boolean);
+  if (providerName && suffixParts.length) return `${providerName} (${suffixParts.join(' • ')})`;
   if (providerName) return providerName;
+  if (suffixParts.length) return suffixParts.join(' • ');
+  return '';
+}
+
+function getVerifiedProviderSummaryText(stored) {
+  const providerIdentity = getVerifiedProviderIdentity(stored?.profile);
+  if (providerIdentity) return providerIdentity;
   return getMaskedNpi(stored?.npi || '');
 }
 
@@ -181,12 +193,12 @@ function applyStoredNpiToRoots() {
     if (status instanceof HTMLElement) {
       const institutionInput = root.querySelector('[data-institution-input]');
       const institutionValue = institutionInput instanceof HTMLInputElement ? institutionInput.value.trim() : '';
-      const providerName = stored?.profile?.name?.trim();
+      const providerIdentity = getVerifiedProviderIdentity(stored?.profile);
 
-      if (providerName) {
+      if (providerIdentity) {
         status.textContent = institutionValue
-          ? `Verified: ${providerName} for ${institutionValue}.`
-          : `Verified: ${providerName}.`;
+          ? `Verified: ${providerIdentity} for ${institutionValue}.`
+          : `Verified: ${providerIdentity}.`;
       } else {
         status.textContent = institutionValue
           ? `Using ${getMaskedNpi(stored.npi)} for ${institutionValue}.`
@@ -781,11 +793,11 @@ function setupProcurementVerification() {
       applyStoredNpiToRoots();
 
       if (status) {
-        const providerName = result.profile?.name?.trim();
-        status.textContent = providerName
+        const providerIdentity = getVerifiedProviderIdentity(result.profile);
+        status.textContent = providerIdentity
           ? institutionValue
-            ? `Verified: ${providerName} for ${institutionValue}. Review details are prepared and eligibility is reviewed before fulfillment.`
-            : `Verified: ${providerName}. Review details are prepared and provider eligibility is reviewed before fulfillment.`
+            ? `Verified: ${providerIdentity} for ${institutionValue}. Review details are prepared and eligibility is reviewed before fulfillment.`
+            : `Verified: ${providerIdentity}. Review details are prepared and provider eligibility is reviewed before fulfillment.`
           : institutionValue
             ? `NPI verified for ${institutionValue}. Review details are prepared and eligibility is reviewed before fulfillment.`
             : 'NPI verified. Review details are prepared and provider eligibility is reviewed before fulfillment.';
@@ -841,9 +853,9 @@ function setupCartCheckoutGuard() {
         storeNpiAccess(result);
         applyStoredNpiToRoots();
         if (status) {
-          const providerName = result.profile?.name?.trim();
-          status.textContent = providerName
-            ? `Verified: ${providerName}. Order review can continue.`
+          const providerIdentity = getVerifiedProviderIdentity(result.profile);
+          status.textContent = providerIdentity
+            ? `Verified: ${providerIdentity}. Order review can continue.`
             : 'NPI verified. Order review can continue.';
         }
         return;
