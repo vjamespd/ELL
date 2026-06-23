@@ -2,7 +2,7 @@ services:
   - type: web
     name: ell-npi-verifier
     runtime: node
-    plan: starter
+    plan: free
     region: oregon
     buildCommand: cd npi-verifier && npm install
     startCommand: cd npi-verifier && npm start
