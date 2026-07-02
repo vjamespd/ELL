@@ -17,6 +17,25 @@ const approvedTaxonomyRules = [
 ];
 const approvedCredentialSummary = approvedTaxonomyRules.map((rule) => rule.credential).join(', ');
 
+function normalizeOrigin(value) {
+  return String(value || '').trim().replace(/\/+$/, '');
+}
+
+function isLocalHostname(value) {
+  return ['127.0.0.1', 'localhost', '0.0.0.0', '::1'].includes(String(value || '').toLowerCase());
+}
+
+function isLocalOrigin(value) {
+  if (!value) return false;
+
+  try {
+    const url = new URL(value);
+    return isLocalHostname(url.hostname);
+  } catch (error) {
+    return false;
+  }
+}
+
 function sendJson(response, statusCode, payload, origin = '*') {
   response.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -30,8 +49,12 @@ function sendJson(response, statusCode, payload, origin = '*') {
 }
 
 function getAllowedOrigin(requestOrigin) {
-  if (!requestOrigin || allowedOrigins.includes('*')) return '*';
-  return allowedOrigins.includes(requestOrigin) ? requestOrigin : allowedOrigins[0] || '*';
+  const normalizedOrigin = normalizeOrigin(requestOrigin);
+  const normalizedAllowedOrigins = allowedOrigins.map(normalizeOrigin);
+
+  if (!normalizedOrigin || normalizedAllowedOrigins.includes('*')) return '*';
+  if (isLocalOrigin(normalizedOrigin)) return normalizedOrigin;
+  return normalizedAllowedOrigins.includes(normalizedOrigin) ? normalizedOrigin : normalizedAllowedOrigins[0] || '*';
 }
 
 function readJsonBody(request) {

@@ -1,3 +1,9 @@
+{% liquid
+  assign featured_collection = collections[section.settings.featured_collection]
+  assign preview_limit = section.settings.products_to_show | default: 3
+  assign browse_url = section.settings.browse_link | default: routes.all_products_collection_url | default: '/collections/all'
+%}
+
 <section class="home-hero">
   <div class="ell-container home-hero__inner">
     <div class="home-hero__copy">
@@ -9,6 +15,73 @@
     </div>
   </div>
 </section>
+
+{% if featured_collection != blank and featured_collection.products_count > 0 %}
+  <section class="ell-section ell-section--tight home-product-preview">
+    <div class="ell-container">
+      <div class="home-product-preview__head">
+        <div>
+          <p class="eyebrow">{{ section.settings.products_eyebrow }}</p>
+          <h2 class="section-title home-product-preview__title">{{ section.settings.products_heading }}</h2>
+          <p class="lead-copy home-product-preview__copy">{{ section.settings.products_body }}</p>
+        </div>
+        <a class="ell-button ell-button--ghost" href="{{ browse_url }}">
+          {{ section.settings.products_link_label }}
+          {% render 'icon', name: 'arrow-right' %}
+        </a>
+      </div>
+
+      <div class="home-product-preview__grid">
+        {% for product in featured_collection.products limit: preview_limit %}
+          {% liquid
+            assign current_variant = product.selected_or_first_available_variant
+            assign product_summary = product.description | strip_html | truncate: 120
+            if product_summary == blank
+              assign product_summary = section.settings.product_fallback_copy
+            endif
+            assign product_kicker = current_variant.sku | default: product.vendor | default: section.settings.product_kicker_fallback
+            assign product_status = section.settings.product_status_review
+            if product.available
+              assign product_status = section.settings.product_status_available
+            endif
+          %}
+
+          <article class="home-product-preview__card">
+            <a class="home-product-preview__media" href="{{ product.url }}" aria-label="{{ product.title }}">
+              {% if product.featured_image %}
+                {{
+                  product.featured_image
+                  | image_url: width: 720
+                  | image_tag:
+                    alt: product.title,
+                    widths: '360,540,720',
+                    sizes: '(min-width: 990px) 28vw, 100vw'
+                }}
+              {% else %}
+                <span class="home-product-preview__placeholder">{{ section.settings.placeholder_label }}</span>
+              {% endif %}
+            </a>
+
+            <div class="home-product-preview__body">
+              <div class="home-product-preview__meta">
+                <p class="stat-label">{{ product_kicker }}</p>
+                <span class="status-chip status-chip--{{ product_status | handle }}">{{ product_status }}</span>
+              </div>
+              <h3 class="home-product-preview__card-title">
+                <a href="{{ product.url }}">{{ product.title }}</a>
+              </h3>
+              <p class="muted-copy home-product-preview__summary">{{ product_summary }}</p>
+              <a class="ell-button ell-button--text" href="{{ product.url }}">
+                {{ section.settings.product_cta_label }}
+                {% render 'icon', name: 'arrow-right' %}
+              </a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
 
 {% schema %}
 {
@@ -31,6 +104,85 @@
       "id": "body",
       "label": "Headline copy",
       "default": "Everything Your Regenerative Practice Needs. One Trusted Source."
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "Homepage products collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "products_eyebrow",
+      "label": "Products eyebrow",
+      "default": "Featured Catalog"
+    },
+    {
+      "type": "text",
+      "id": "products_heading",
+      "label": "Products heading",
+      "default": "Explore selected products without leaving the homepage."
+    },
+    {
+      "type": "textarea",
+      "id": "products_body",
+      "label": "Products body",
+      "default": "Bring back product visibility on the homepage with a streamlined preview: image, name, summary, and quick navigation into the catalog."
+    },
+    {
+      "type": "text",
+      "id": "products_link_label",
+      "label": "Products link label",
+      "default": "Browse full catalog"
+    },
+    {
+      "type": "url",
+      "id": "browse_link",
+      "label": "Browse link override"
+    },
+    {
+      "type": "text",
+      "id": "product_cta_label",
+      "label": "Product CTA label",
+      "default": "View product"
+    },
+    {
+      "type": "text",
+      "id": "product_status_available",
+      "label": "Available status label",
+      "default": "Available"
+    },
+    {
+      "type": "text",
+      "id": "product_status_review",
+      "label": "Review status label",
+      "default": "Review"
+    },
+    {
+      "type": "text",
+      "id": "product_kicker_fallback",
+      "label": "Product kicker fallback",
+      "default": "ELL"
+    },
+    {
+      "type": "textarea",
+      "id": "product_fallback_copy",
+      "label": "Product fallback copy",
+      "default": "A streamlined product preview is available here. Open the product page for full clinical, documentation, and ordering details."
+    },
+    {
+      "type": "text",
+      "id": "placeholder_label",
+      "label": "Image placeholder label",
+      "default": "ell."
     }
   ]
 }

@@ -75,8 +75,8 @@
         "type": "text",
         "id": "npi_verification_endpoint",
         "label": "NPI verification endpoint",
-        "default": "http://127.0.0.1:8787/verify",
-        "info": "Use a real verifier service endpoint for NPPES/CMS checks. Local default works only in local development."
+        "default": "https://ell-npi-verifier.onrender.com/verify",
+        "info": "Use the hosted verifier URL for live storefronts. Local preview can still use http://127.0.0.1:8787/verify when the local verifier is running."
       }
     ]
   }

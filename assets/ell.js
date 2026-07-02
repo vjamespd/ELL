@@ -1,5 +1,7 @@
 const ELL_NPI_STORAGE_KEY = 'ellNpiAccess';
 const ELL_NPI_SESSION_HOURS = 12;
+const ELL_NPI_LOCAL_ENDPOINT = 'http://127.0.0.1:8787/verify';
+const ELL_NPI_PUBLIC_FALLBACK_ENDPOINT = 'https://ell-npi-verifier.onrender.com/verify';
 
 function sanitizeNpi(value) {
   return String(value || '').replace(/\D/g, '').slice(0, 10);
@@ -9,11 +11,55 @@ function isLikelyNpi(value) {
   return sanitizeNpi(value).length === 10;
 }
 
+function isLocalHostname(hostname) {
+  return ['127.0.0.1', 'localhost', '0.0.0.0', '::1'].includes(String(hostname || '').toLowerCase());
+}
+
+function isLocalEndpoint(endpoint) {
+  if (!endpoint) return false;
+
+  try {
+    const resolved = new URL(endpoint, window.location.origin);
+    return isLocalHostname(resolved.hostname);
+  } catch (error) {
+    return false;
+  }
+}
+
 function getNpiConfig() {
   const body = document.body;
   return {
-    endpoint: body?.dataset.npiVerificationEndpoint || '',
+    endpoint: body?.dataset.npiVerificationEndpoint?.trim() || '',
   };
+}
+
+function getNpiEndpointCandidates() {
+  const { endpoint } = getNpiConfig();
+  const currentHostIsLocal = isLocalHostname(window.location.hostname);
+  const configuredIsLocal = isLocalEndpoint(endpoint);
+  const candidates = [];
+
+  function addCandidate(nextEndpoint) {
+    const normalized = String(nextEndpoint || '').trim();
+    if (!normalized || candidates.includes(normalized)) return;
+    candidates.push(normalized);
+  }
+
+  if (currentHostIsLocal && (!endpoint || configuredIsLocal || endpoint === ELL_NPI_PUBLIC_FALLBACK_ENDPOINT)) {
+    addCandidate(ELL_NPI_LOCAL_ENDPOINT);
+  }
+
+  addCandidate(endpoint);
+
+  if (!currentHostIsLocal && (!endpoint || configuredIsLocal)) {
+    addCandidate(ELL_NPI_PUBLIC_FALLBACK_ENDPOINT);
+  }
+
+  if (currentHostIsLocal && (!endpoint || configuredIsLocal || endpoint === ELL_NPI_PUBLIC_FALLBACK_ENDPOINT)) {
+    addCandidate(ELL_NPI_PUBLIC_FALLBACK_ENDPOINT);
+  }
+
+  return candidates;
 }
 
 function getStoredNpiAccess() {
@@ -72,59 +118,72 @@ async function verifyNpiAgainstService(npi, context = 'catalog') {
     };
   }
 
-  const { endpoint } = getNpiConfig();
-  if (!endpoint) {
+  const endpointCandidates = getNpiEndpointCandidates();
+  if (!endpointCandidates.length) {
     return {
       valid: false,
       message: 'NPI verification endpoint is not configured yet.',
     };
   }
 
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        npi: normalized,
-        context,
-      }),
-    });
+  const endpointErrors = [];
 
-    let data = null;
+  for (const endpoint of endpointCandidates) {
     try {
-      data = await response.json();
-    } catch (error) {
-      data = null;
-    }
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          npi: normalized,
+          context,
+        }),
+      });
 
-    if (!response.ok) {
+      let data = null;
+      try {
+        data = await response.json();
+      } catch (error) {
+        data = null;
+      }
+
+      if (!response.ok) {
+        return {
+          valid: false,
+          message: data?.message || 'Unable to verify this NPI right now. Please try again shortly.',
+        };
+      }
+
+      if (data?.valid) {
+        return {
+          valid: true,
+          message: data.message || 'NPI verified.',
+          npi: normalized,
+          profile: data.profile || null,
+        };
+      }
+
       return {
         valid: false,
-        message: data?.message || 'Unable to verify this NPI right now. Please try again shortly.',
+        message: data?.message || 'We could not confirm that NPI against the official source.',
       };
+    } catch (error) {
+      endpointErrors.push({
+        endpoint,
+        message: error instanceof Error ? error.message : 'Unknown network error',
+      });
     }
-
-    if (data?.valid) {
-      return {
-        valid: true,
-        message: data.message || 'NPI verified.',
-        npi: normalized,
-        profile: data.profile || null,
-      };
-    }
-
-    return {
-      valid: false,
-      message: data?.message || 'We could not confirm that NPI against the official source.',
-    };
-  } catch (error) {
-    return {
-      valid: false,
-      message: 'NPI verification is temporarily unavailable. Please try again shortly.',
-    };
   }
+
+  if (window.console && endpointErrors.length) {
+    window.console.warn('ELL NPI verification endpoints were unreachable.', endpointErrors);
+  }
+
+  return {
+    valid: false,
+    message: 'NPI verification is temporarily unavailable. Please try again shortly.',
+  };
 }
 
 function getMaskedNpi(npi) {
@@ -212,6 +271,7 @@ function applyStoredNpiToRoots() {
 
 document.addEventListener('DOMContentLoaded', () => {
   setupMobileNav();
+  setupStickyHeader();
   setupNpiGate();
   setupCatalog();
   setupQualitySidebar();
@@ -222,6 +282,19 @@ document.addEventListener('DOMContentLoaded', () => {
   applyStoredNpiToRoots();
   syncVerifiedProviderSummary();
 });
+
+function setupStickyHeader() {
+  const header = document.querySelector('.site-header');
+  if (!(header instanceof HTMLElement)) return;
+
+  const syncHeaderState = () => {
+    if (window.scrollY > 8) header.classList.add('is-scrolled');
+    else header.classList.remove('is-scrolled');
+  };
+
+  syncHeaderState();
+  window.addEventListener('scroll', syncHeaderState, { passive: true });
+}
 
 function setupMobileNav() {
   const toggle = document.querySelector('[data-nav-toggle]');

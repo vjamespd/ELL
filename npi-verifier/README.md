@@ -64,6 +64,8 @@ curl -X POST http://127.0.0.1:8787/verify \
 - `NPPES_API_URL`: official lookup base URL, default `https://npiregistry.cms.hhs.gov/api/`
 - `ALLOWED_ORIGINS`: comma-separated allowed browser origins, default `*`
 
+Local loopback origins such as `http://127.0.0.1:9292` and `http://localhost:9292` are accepted automatically for development previews.
+
 ## Deploy on Render
 
 This repo now includes a root-level `render.yaml` Blueprint for the verifier service.
