@@ -15,7 +15,8 @@
         "platform_catalog": {
           "type": "platform_link",
           "settings": {
-            "label": "Inventory Catalog"
+            "label": "Inventory Catalog",
+            "url": "/collections/all?view=provider-registration"
           }
         },
         "platform_procurement": {
@@ -36,7 +37,7 @@
           "type": "platform_link",
           "settings": {
             "label": "About Us",
-            "url": "/pages/about-us"
+            "url": "/collections/all?view=about-us"
           }
         },
         "legal_privacy": {

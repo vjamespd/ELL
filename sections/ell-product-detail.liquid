@@ -24,9 +24,25 @@
   assign storage = current_product.metafields.custom.storage.value | default: section.settings.fallback_storage
   assign cart_url = routes.cart_url | default: '/cart'
   assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign provider_registration_url = catalog_url | append: '?view=provider-registration'
   assign selected_quantity = current_variant.quantity_rule.min | default: 1
+  assign provider_approved = false
+  if customer and customer.tags contains 'provider-approved'
+    assign provider_approved = true
+  endif
 %}
 
+{% unless provider_approved %}
+  <section class="ell-section">
+    <div class="ell-container">
+      {% render 'provider-access-gate',
+        gate_eyebrow: 'Product Detail',
+        gate_heading: 'Provider approval required to view product details',
+        gate_body: 'Product specifications, pricing, ordering controls, and technical documentation are available to approved provider accounts.'
+      %}
+    </div>
+  </section>
+{% else %}
 <script type="application/ld+json">
   {{ current_product | structured_data }}
 </script>
@@ -35,7 +51,7 @@
   <div class="ell-container detail-layout">
     <div class="detail-main">
       <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <a href="{{ catalog_url }}">{{ section.settings.catalog_label }}</a>
+        <a href="{{ provider_registration_url }}">{{ section.settings.catalog_label }}</a>
         <span>/</span>
         <span>{{ product_title }}</span>
       </nav>
@@ -129,7 +145,7 @@
       </div>
     </div>
 
-    <aside class="detail-panel" data-verification-root>
+    <aside class="detail-panel">
       <div class="catalog-alloc-panel__head">
         <div>
           <p class="eyebrow" style="margin-bottom:0.5rem;">{{ section.settings.panel_eyebrow }}</p>
@@ -198,16 +214,10 @@
         <div style="display:flex;gap:0.75rem;align-items:flex-start;">
           {% render 'icon', name: 'verified' %}
           <div>
-            <strong>{{ section.settings.verify_heading }}</strong>
-            <p class="muted-copy" style="margin:0.35rem 0 0.75rem;font-size:0.86rem;">{{ section.settings.verify_body }}</p>
+            <strong>Provider account required</strong>
+            <p class="muted-copy" style="margin:0.35rem 0 0;font-size:0.86rem;">Product visibility, pricing, documentation, and fulfillment details are reviewed through provider account setup.</p>
           </div>
         </div>
-        <div class="catalog-verify-row">
-          <label class="visually-hidden" for="product-npi-{{ section.id }}">National Provider Identifier</label>
-          <input id="product-npi-{{ section.id }}" class="field" type="text" placeholder="Enter NPI Number" inputmode="numeric" data-npi-input>
-          <button class="ell-button ell-button--ghost" type="button" data-verify-trigger>{{ section.settings.verify_button }}</button>
-        </div>
-        <div class="verification-status" data-verification-status></div>
       </div>
 
       <div style="padding-top:1.5rem;">
@@ -238,6 +248,7 @@
     </aside>
   </div>
 </section>
+{% endunless %}
 
 {% schema %}
 {
@@ -300,9 +311,6 @@
     { "type": "text", "id": "quantity_label", "label": "Quantity label", "default": "Quantity" },
     { "type": "text", "id": "panel_button", "label": "Panel button label", "default": "Add to Cart" },
     { "type": "text", "id": "cart_label", "label": "Cart label", "default": "Review Cart" },
-    { "type": "text", "id": "verify_heading", "label": "Verification heading", "default": "Provider review information" },
-    { "type": "textarea", "id": "verify_body", "label": "Verification body", "default": "Provide an NPI to prepare order review details. This does not perform real-time provider verification." },
-    { "type": "text", "id": "verify_button", "label": "Verification button", "default": "Prepare Review" },
     { "type": "text", "id": "badges_heading", "label": "Compliance heading", "default": "Review Materials" },
     { "type": "text", "id": "support_heading", "label": "Support heading", "default": "Speak with a Bio-Specialist" },
     { "type": "text", "id": "support_body", "label": "Support body", "default": "Support for documentation, ordering, and handling questions." }

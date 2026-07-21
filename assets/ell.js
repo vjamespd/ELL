@@ -1,287 +1,195 @@
-const ELL_NPI_STORAGE_KEY = 'ellNpiAccess';
-const ELL_NPI_SESSION_HOURS = 12;
-const ELL_NPI_LOCAL_ENDPOINT = 'http://127.0.0.1:8787/verify';
-const ELL_NPI_PUBLIC_FALLBACK_ENDPOINT = 'https://ell-npi-verifier.onrender.com/verify';
+document.addEventListener('DOMContentLoaded', () => {
+  setupMobileNav();
+  setupStickyHeader();
+  setupProviderSignupRedirects();
+  setupProviderRegistrationForm();
+  setupCatalog();
+  setupQualitySidebar();
+  setupCurrentYear();
+  setupSiteAnimations();
+});
 
-function sanitizeNpi(value) {
-  return String(value || '').replace(/\D/g, '').slice(0, 10);
-}
-
-function isLikelyNpi(value) {
-  return sanitizeNpi(value).length === 10;
-}
+const ELL_PROVIDER_REGISTRATION_FALLBACK_ENDPOINT = 'https://ell-npi-verifier.onrender.com/provider-registration';
 
 function isLocalHostname(hostname) {
   return ['127.0.0.1', 'localhost', '0.0.0.0', '::1'].includes(String(hostname || '').toLowerCase());
 }
 
-function isLocalEndpoint(endpoint) {
-  if (!endpoint) return false;
-
-  try {
-    const resolved = new URL(endpoint, window.location.origin);
-    return isLocalHostname(resolved.hostname);
-  } catch (error) {
-    return false;
-  }
-}
-
-function getNpiConfig() {
-  const body = document.body;
-  return {
-    endpoint: body?.dataset.npiVerificationEndpoint?.trim() || '',
-  };
-}
-
-function getNpiEndpointCandidates() {
-  const { endpoint } = getNpiConfig();
-  const currentHostIsLocal = isLocalHostname(window.location.hostname);
-  const configuredIsLocal = isLocalEndpoint(endpoint);
+function getProviderRegistrationEndpointCandidates() {
+  const configured = (document.body.dataset.providerRegistrationEndpoint || '').trim();
   const candidates = [];
+  const add = (endpoint) => {
+    if (!endpoint) return;
 
-  function addCandidate(nextEndpoint) {
-    const normalized = String(nextEndpoint || '').trim();
-    if (!normalized || candidates.includes(normalized)) return;
-    candidates.push(normalized);
+    try {
+      const url = new URL(endpoint);
+      if (!['http:', 'https:'].includes(url.protocol)) return;
+      const normalized = url.href;
+      if (!candidates.includes(normalized)) candidates.push(normalized);
+    } catch (error) {
+      console.warn('Ignoring invalid provider registration endpoint.', endpoint);
+    }
+  };
+
+  if (isLocalHostname(window.location.hostname)) {
+    add('http://127.0.0.1:8787/provider-registration');
   }
 
-  if (currentHostIsLocal && (!endpoint || configuredIsLocal || endpoint === ELL_NPI_PUBLIC_FALLBACK_ENDPOINT)) {
-    addCandidate(ELL_NPI_LOCAL_ENDPOINT);
-  }
-
-  addCandidate(endpoint);
-
-  if (!currentHostIsLocal && (!endpoint || configuredIsLocal)) {
-    addCandidate(ELL_NPI_PUBLIC_FALLBACK_ENDPOINT);
-  }
-
-  if (currentHostIsLocal && (!endpoint || configuredIsLocal || endpoint === ELL_NPI_PUBLIC_FALLBACK_ENDPOINT)) {
-    addCandidate(ELL_NPI_PUBLIC_FALLBACK_ENDPOINT);
-  }
+  add(configured);
+  add(ELL_PROVIDER_REGISTRATION_FALLBACK_ENDPOINT);
 
   return candidates;
 }
 
-function getStoredNpiAccess() {
-  try {
-    const raw = window.localStorage.getItem(ELL_NPI_STORAGE_KEY);
-    if (!raw) return null;
+async function submitProviderRegistration(payload) {
+  const attempts = [];
 
-    const parsed = JSON.parse(raw);
-    if (!parsed || parsed.valid !== true || !parsed.expiresAt) return null;
-    if (Date.now() > Number(parsed.expiresAt)) {
-      window.localStorage.removeItem(ELL_NPI_STORAGE_KEY);
-      return null;
-    }
-
-    return parsed;
-  } catch (error) {
-    return null;
-  }
-}
-
-function hasStoredNpiAccess() {
-  return Boolean(getStoredNpiAccess());
-}
-
-function getStoredNpiNumber() {
-  return getStoredNpiAccess()?.npi || '';
-}
-
-function getStoredProviderName() {
-  return getStoredNpiAccess()?.profile?.name || '';
-}
-
-function storeNpiAccess(payload) {
-  const expiresAt = Date.now() + (ELL_NPI_SESSION_HOURS * 60 * 60 * 1000);
-  const nextValue = {
-    valid: true,
-    npi: sanitizeNpi(payload?.npi || ''),
-    expiresAt,
-    profile: payload?.profile || null,
-  };
-
-  try {
-    window.localStorage.setItem(ELL_NPI_STORAGE_KEY, JSON.stringify(nextValue));
-  } catch (error) {
-    /* no-op */
-  }
-}
-
-async function verifyNpiAgainstService(npi, context = 'catalog') {
-  const normalized = sanitizeNpi(npi);
-
-  if (normalized.length !== 10) {
-    return {
-      valid: false,
-      message: 'Please enter a full 10-digit NPI to continue.',
-    };
-  }
-
-  const endpointCandidates = getNpiEndpointCandidates();
-  if (!endpointCandidates.length) {
-    return {
-      valid: false,
-      message: 'NPI verification endpoint is not configured yet.',
-    };
-  }
-
-  const endpointErrors = [];
-
-  for (const endpoint of endpointCandidates) {
+  for (const endpoint of getProviderRegistrationEndpointCandidates()) {
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          npi: normalized,
-          context,
-        }),
+        body: JSON.stringify(payload),
       });
+      const data = await response.json().catch(() => ({}));
 
-      let data = null;
-      try {
-        data = await response.json();
-      } catch (error) {
-        data = null;
+      if (!response.ok || data.ok === false) {
+        const message = data.message || `Registration endpoint returned ${response.status}.`;
+        const error = new Error(message);
+        error.status = response.status;
+        error.endpoint = endpoint;
+        throw error;
       }
 
-      if (!response.ok) {
-        return {
-          valid: false,
-          message: data?.message || 'Unable to verify this NPI right now. Please try again shortly.',
-        };
-      }
-
-      if (data?.valid) {
-        return {
-          valid: true,
-          message: data.message || 'NPI verified.',
-          npi: normalized,
-          profile: data.profile || null,
-        };
-      }
-
-      return {
-        valid: false,
-        message: data?.message || 'We could not confirm that NPI against the official source.',
-      };
+      return data;
     } catch (error) {
-      endpointErrors.push({
+      attempts.push({
         endpoint,
-        message: error instanceof Error ? error.message : 'Unknown network error',
+        status: error instanceof Error ? error.status : undefined,
+        message: error instanceof Error ? error.message : 'Unknown registration error',
       });
     }
   }
 
-  if (window.console && endpointErrors.length) {
-    window.console.warn('ELL NPI verification endpoints were unreachable.', endpointErrors);
+  console.warn('ELL provider registration endpoints were unreachable.', attempts);
+
+  if (attempts.some((attempt) => attempt.status === 404)) {
+    throw new Error('Provider registration is not deployed on the connected service yet. Please redeploy the ELL provider access service and try again.');
   }
 
-  return {
-    valid: false,
-    message: 'NPI verification is temporarily unavailable. Please try again shortly.',
+  const configuredError = attempts.find((attempt) => attempt.message && !attempt.message.includes('Failed to fetch'));
+  if (configuredError?.message) {
+    throw new Error(configuredError.message);
+  }
+
+  throw new Error('Provider registration is temporarily unavailable. Please try again shortly.');
+}
+
+function setupProviderSignupRedirects() {
+  const catalogUrl = document.body.dataset.catalogUrl || '/collections/all';
+  const registrationUrl = document.body.dataset.providerRegistrationUrl || `${catalogUrl}?view=provider-registration`;
+  const isProviderApproved = document.body.dataset.providerApproved === 'true';
+  const currentUrl = new URL(window.location.href);
+  const view = currentUrl.searchParams.get('view') || '';
+  const catalogPath = new URL(catalogUrl, window.location.origin).pathname.replace(/\/$/, '') || '/collections/all';
+  const allowedViews = new Set([
+    'about-us',
+    'quality-safety',
+    'provider-registration',
+    'provider-info',
+    'pricing-order-form',
+    'featured-biologic-of-the-month',
+  ]);
+
+  if (isProviderApproved) return;
+
+  const shouldGateUrl = (url) => {
+    const target = new URL(url, window.location.origin);
+    const targetPath = target.pathname.replace(/\/$/, '') || '/';
+    const targetView = target.searchParams.get('view') || '';
+    if (targetView && allowedViews.has(targetView)) return false;
+    return targetPath === catalogPath || targetPath.startsWith('/products/');
   };
-}
 
-function getMaskedNpi(npi) {
-  const normalized = sanitizeNpi(npi);
-  if (normalized.length !== 10) return 'verified NPI';
-  return `verified NPI ending in ${normalized.slice(-4)}`;
-}
-
-function getVerifiedProviderIdentity(profile) {
-  const providerName = profile?.name?.trim();
-  const credential = profile?.credential?.trim();
-  const taxonomyCode = profile?.taxonomyCode?.trim();
-
-  const suffixParts = [credential, taxonomyCode].filter(Boolean);
-  if (providerName && suffixParts.length) return `${providerName} (${suffixParts.join(' • ')})`;
-  if (providerName) return providerName;
-  if (suffixParts.length) return suffixParts.join(' • ');
-  return '';
-}
-
-function getVerifiedProviderSummaryText(stored) {
-  const providerIdentity = getVerifiedProviderIdentity(stored?.profile);
-  if (providerIdentity) return providerIdentity;
-  return getMaskedNpi(stored?.npi || '');
-}
-
-function syncVerifiedProviderSummary() {
-  const stored = getStoredNpiAccess();
-  const providerLine = document.querySelector('[data-verified-provider-line]');
-  const providerName = document.querySelector('[data-verified-provider-name]');
-
-  if (stored?.npi) {
-    if (providerLine instanceof HTMLElement && providerName instanceof HTMLElement) {
-      providerLine.hidden = false;
-      providerName.textContent = getVerifiedProviderSummaryText(stored);
-    }
-
+  if (!allowedViews.has(view) && shouldGateUrl(currentUrl.href)) {
+    window.location.replace(registrationUrl);
     return;
   }
 
-  if (providerLine instanceof HTMLElement) providerLine.hidden = true;
+  document.querySelectorAll('a[href]').forEach((link) => {
+    const href = link.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    if (shouldGateUrl(href)) link.setAttribute('href', registrationUrl);
+  });
 }
 
-function applyStoredNpiToRoots() {
-  const stored = getStoredNpiAccess();
-  if (!stored?.npi) return;
+function setupProviderRegistrationForm() {
+  const form = document.querySelector('[data-provider-registration-form]');
+  if (!(form instanceof HTMLFormElement)) return;
 
-  document.querySelectorAll('[data-verification-root]').forEach((root) => {
-    const input = root.querySelector('[data-npi-input]');
-    const trigger = root.querySelector('[data-verify-trigger]');
-    const status = root.querySelector('[data-verification-status]');
+  const success = form.querySelector('[data-provider-registration-success]');
+  const error = form.querySelector('[data-provider-registration-error]');
+  const submitButton = form.querySelector('[type="submit"]');
 
-    if (!(input instanceof HTMLInputElement)) return;
+  const setStatus = (target) => {
+    [success, error].forEach((element) => {
+      if (element instanceof HTMLElement) element.hidden = element !== target;
+    });
 
-    input.value = stored.npi;
-    input.readOnly = true;
-    input.setAttribute('aria-readonly', 'true');
-    input.classList.add('field--verified');
+    if (target instanceof HTMLElement) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.focus({ preventScroll: true });
+    }
+  };
 
-    const label = input.id ? root.querySelector(`label[for="${input.id}"]`) : null;
-    if (label instanceof HTMLElement) label.hidden = true;
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-    input.hidden = true;
-    if (trigger instanceof HTMLElement) trigger.hidden = true;
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
 
-    if (status instanceof HTMLElement) {
-      const institutionInput = root.querySelector('[data-institution-input]');
-      const institutionValue = institutionInput instanceof HTMLInputElement ? institutionInput.value.trim() : '';
-      const providerIdentity = getVerifiedProviderIdentity(stored?.profile);
+    const payload = {};
+    const data = new FormData(form);
 
-      if (providerIdentity) {
-        status.textContent = institutionValue
-          ? `Verified: ${providerIdentity} for ${institutionValue}.`
-          : `Verified: ${providerIdentity}.`;
-      } else {
-        status.textContent = institutionValue
-          ? `Using ${getMaskedNpi(stored.npi)} for ${institutionValue}.`
-          : `Using ${getMaskedNpi(stored.npi)} for this provider session.`;
+    data.forEach((value, key) => {
+      if (key.toLowerCase().includes('password')) return;
+      payload[key] = String(value).trim();
+    });
+
+    payload.submitted_at = new Date().toISOString();
+
+    try {
+      form.setAttribute('aria-busy', 'true');
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = true;
+        submitButton.dataset.originalLabel = submitButton.innerHTML || '';
+        submitButton.textContent = 'Submitting for review...';
+      }
+
+      const result = await submitProviderRegistration(payload);
+      if (success instanceof HTMLElement && result.message) success.textContent = result.message;
+      form.reset();
+      setStatus(success);
+    } catch (registrationError) {
+      if (error instanceof HTMLElement) {
+        error.textContent = registrationError instanceof Error
+          ? registrationError.message
+          : 'Provider registration could not be saved. Please try again shortly.';
+      }
+      setStatus(error);
+    } finally {
+      form.removeAttribute('aria-busy');
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = false;
+        submitButton.innerHTML = submitButton.dataset.originalLabel || 'Submit provider registration';
       }
     }
   });
-
-  syncVerifiedProviderSummary();
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  setupMobileNav();
-  setupStickyHeader();
-  setupNpiGate();
-  setupCatalog();
-  setupQualitySidebar();
-  setupProcurementVerification();
-  setupCartCheckoutGuard();
-  setupCurrentYear();
-  setupSiteAnimations();
-  applyStoredNpiToRoots();
-  syncVerifiedProviderSummary();
-});
 
 function setupStickyHeader() {
   const header = document.querySelector('.site-header');
@@ -304,17 +212,40 @@ function setupMobileNav() {
   const close = sheet.querySelector('[data-nav-close]');
   const backdrop = sheet.querySelector('[data-nav-backdrop]');
   const links = sheet.querySelectorAll('a');
-  const desktopQuery = window.matchMedia('(min-width: 901px)');
+  const desktopQuery = window.matchMedia('(min-width: 1041px)');
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let closeTimer;
 
   const closeSheet = () => {
+    if (!sheet.classList.contains('is-open') && !sheet.classList.contains('is-closing')) return;
+
+    window.clearTimeout(closeTimer);
     sheet.classList.remove('is-open');
     toggle.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
+    toggle.setAttribute('aria-label', 'Open menu');
+
+    if (motionQuery.matches) {
+      sheet.classList.remove('is-closing');
+      sheet.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      return;
+    }
+
+    sheet.classList.add('is-closing');
+    closeTimer = window.setTimeout(() => {
+      sheet.classList.remove('is-closing');
+      sheet.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }, 320);
   };
 
   const openSheet = () => {
+    window.clearTimeout(closeTimer);
+    sheet.classList.remove('is-closing');
+    sheet.setAttribute('aria-hidden', 'false');
     sheet.classList.add('is-open');
     toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'Close menu');
     document.body.style.overflow = 'hidden';
   };
 
@@ -323,6 +254,7 @@ function setupMobileNav() {
   };
 
   toggle.setAttribute('aria-expanded', 'false');
+  sheet.setAttribute('aria-hidden', 'true');
 
   toggle.addEventListener('click', () => {
     if (sheet.classList.contains('is-open')) closeSheet();
@@ -345,234 +277,6 @@ function setupMobileNav() {
   }
 
   syncForViewport(desktopQuery);
-}
-
-function setupNpiGate() {
-  const body = document.body;
-  const gate = document.querySelector('[data-npi-gate]');
-  if (!body || !gate) return;
-
-  const form = gate.querySelector('[data-npi-gate-form]');
-  const input = gate.querySelector('[data-npi-gate-input]');
-  const status = gate.querySelector('[data-npi-gate-status]');
-  const copy = gate.querySelector('[data-npi-gate-copy]');
-  const backdrop = gate.querySelector('[data-npi-gate-dismiss]');
-  const closeButton = gate.querySelector('[data-npi-gate-close]');
-  const providerMenu = document.querySelector('[data-provider-menu]');
-  const providerSummary = providerMenu?.querySelector('summary');
-  const protectedRoute = body.dataset.npiProtectedRoute === 'true';
-  const submitButton = form.querySelector('button[type="submit"]');
-
-  if (!(form instanceof HTMLFormElement) || !(input instanceof HTMLInputElement)) return;
-
-  let pendingHref = '';
-  let pendingAction = '';
-
-  const hasAccess = () => hasStoredNpiAccess();
-
-  const isProtectedUrl = (href) => {
-    if (!href) return false;
-
-    let url;
-    try {
-      url = new URL(href, window.location.origin);
-    } catch (error) {
-      return false;
-    }
-
-    if (url.origin !== window.location.origin) return false;
-
-    const path = url.pathname;
-    const view = url.searchParams.get('view');
-    const providerPaths = [
-      '/pages/provider-info',
-      '/pages/provider-account-setup',
-      '/pages/pricing-order-form',
-    ];
-
-    if (view === 'quality-safety' || path.includes('quality-safety')) return false;
-    if (providerPaths.includes(path)) return true;
-    if (path === '/pages/catalog') return true;
-    if (path.startsWith('/collections/')) return true;
-    if (path.startsWith('/products/')) return true;
-
-    return false;
-  };
-
-  const getGateContext = ({ href = '', action = '' } = {}) => {
-    if (action === 'provider-menu') return 'provider';
-    if (!href) return body.dataset.npiGateContext || 'catalog';
-
-    try {
-      const url = new URL(href, window.location.origin);
-      if (url.pathname.includes('provider-info') || url.pathname.includes('provider-account-setup') || url.pathname.includes('pricing-order-form')) {
-        return 'provider';
-      }
-    } catch (error) {
-      return body.dataset.npiGateContext || 'catalog';
-    }
-
-    return 'catalog';
-  };
-
-  const syncGateCopy = (context) => {
-    if (!copy) return;
-
-    copy.textContent = context === 'provider'
-      ? gate.dataset.providerCopy || copy.textContent
-      : gate.dataset.catalogCopy || copy.textContent;
-  };
-
-  const setRequiredState = (required) => {
-    gate.dataset.required = required ? 'true' : 'false';
-    if (closeButton instanceof HTMLElement) closeButton.hidden = required;
-    if (backdrop instanceof HTMLElement) backdrop.dataset.locked = required ? 'true' : 'false';
-  };
-
-  const focusInput = () => {
-    window.requestAnimationFrame(() => {
-      input.focus();
-      input.select();
-    });
-  };
-
-  const closeGate = () => {
-    if (gate.dataset.required === 'true' && !hasAccess()) return;
-
-    gate.hidden = true;
-    gate.setAttribute('aria-hidden', 'true');
-    body.classList.remove('npi-gate-open');
-    status.textContent = '';
-    pendingHref = '';
-    pendingAction = '';
-  };
-
-  const unlockProtectedView = () => {
-    body.classList.remove('ell-page--npi-pending', 'npi-gate-open');
-    body.classList.add('ell-npi-authorized');
-    gate.hidden = true;
-    gate.setAttribute('aria-hidden', 'true');
-    status.textContent = '';
-    applyStoredNpiToRoots();
-  };
-
-  const openGate = ({ href = '', action = '', required = false } = {}) => {
-    pendingHref = href;
-    pendingAction = action;
-    syncGateCopy(getGateContext({ href, action }));
-    setRequiredState(required);
-    gate.hidden = false;
-    gate.setAttribute('aria-hidden', 'false');
-    body.classList.remove('ell-page--npi-pending');
-    body.classList.add('npi-gate-open');
-    status.textContent = required
-      ? 'Enter your NPI to verify provider access.'
-      : 'Provider verification is required before continuing.';
-    focusInput();
-  };
-
-  const continueToDestination = () => {
-    if (pendingAction === 'provider-menu' && providerMenu) {
-      providerMenu.open = true;
-      providerSummary?.setAttribute('aria-expanded', 'true');
-      pendingAction = '';
-      return;
-    }
-
-    if (pendingHref) {
-      const nextUrl = new URL(pendingHref, window.location.origin);
-      const currentUrl = new URL(window.location.href);
-
-      if (nextUrl.pathname !== currentUrl.pathname || nextUrl.search !== currentUrl.search || nextUrl.hash !== currentUrl.hash) {
-        window.location.assign(nextUrl.toString());
-        return;
-      }
-    }
-
-    pendingHref = '';
-    pendingAction = '';
-  };
-
-  input.addEventListener('input', () => {
-    input.value = sanitizeNpi(input.value);
-    if (status.textContent) status.textContent = '';
-  });
-
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const npi = sanitizeNpi(input.value);
-    input.value = npi;
-
-    if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
-    status.textContent = 'Verifying NPI against the official registry...';
-
-    verifyNpiAgainstService(npi, getGateContext({ href: pendingHref, action: pendingAction }))
-      .then((result) => {
-        if (!result.valid) {
-          status.textContent = result.message;
-          input.focus();
-          return;
-        }
-
-        storeNpiAccess(result);
-        status.textContent = result.message || 'NPI verified.';
-        unlockProtectedView();
-        continueToDestination();
-      })
-      .finally(() => {
-        if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
-      });
-  });
-
-  if (backdrop instanceof HTMLElement) {
-    backdrop.addEventListener('click', () => {
-      if (backdrop.dataset.locked === 'true') return;
-      closeGate();
-    });
-  }
-
-  if (closeButton instanceof HTMLElement) {
-    closeButton.addEventListener('click', () => closeGate());
-  }
-
-  document.addEventListener(
-    'click',
-    (event) => {
-      const link = event.target.closest('a[href]');
-      if (!link || hasAccess()) return;
-      if (!isProtectedUrl(link.href)) return;
-
-      event.preventDefault();
-      openGate({ href: link.href, required: false });
-    },
-    true
-  );
-
-  if (providerSummary) {
-    providerSummary.addEventListener('click', (event) => {
-      if (hasAccess()) return;
-
-      event.preventDefault();
-      providerMenu.open = false;
-      openGate({ action: 'provider-menu', required: false });
-    });
-  }
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeGate();
-  });
-
-  if (hasAccess()) {
-    unlockProtectedView();
-    return;
-  }
-
-  if (protectedRoute) {
-    openGate({ href: window.location.href, required: true });
-  } else {
-    body.classList.remove('ell-page--npi-pending');
-  }
 }
 
 function setupCatalog() {
@@ -831,128 +535,6 @@ function setupQualitySidebar() {
   window.setTimeout(updateActiveFromScroll, 120);
 }
 
-function setupProcurementVerification() {
-  document.querySelectorAll('[data-verify-trigger]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const root = button.closest('[data-verification-root]');
-      if (!root) return;
-
-      const input = root.querySelector('[data-npi-input]');
-      const institution = root.querySelector('[data-institution-input]');
-      const status = root.querySelector('[data-verification-status]');
-      const value = input instanceof HTMLInputElement ? input.value.trim() : '';
-      const institutionValue = institution instanceof HTMLInputElement ? institution.value.trim() : '';
-
-      const normalized = sanitizeNpi(value);
-      if (input instanceof HTMLInputElement) input.value = normalized;
-
-      if (!isLikelyNpi(normalized)) {
-        if (status) status.textContent = 'Enter a valid 10-digit NPI to prepare the review details.';
-        return;
-      }
-
-      button.disabled = true;
-      if (status) status.textContent = 'Verifying NPI against the official registry...';
-
-      const result = await verifyNpiAgainstService(normalized, 'catalog');
-      button.disabled = false;
-
-      if (!result.valid) {
-        if (status) status.textContent = result.message;
-        return;
-      }
-
-      storeNpiAccess(result);
-      applyStoredNpiToRoots();
-
-      if (status) {
-        const providerIdentity = getVerifiedProviderIdentity(result.profile);
-        status.textContent = providerIdentity
-          ? institutionValue
-            ? `Verified: ${providerIdentity} for ${institutionValue}. Review details are prepared and eligibility is reviewed before fulfillment.`
-            : `Verified: ${providerIdentity}. Review details are prepared and provider eligibility is reviewed before fulfillment.`
-          : institutionValue
-            ? `NPI verified for ${institutionValue}. Review details are prepared and eligibility is reviewed before fulfillment.`
-            : 'NPI verified. Review details are prepared and provider eligibility is reviewed before fulfillment.';
-      }
-    });
-  });
-}
-
-function setupCartCheckoutGuard() {
-  const form = document.querySelector('[data-cart-form]');
-  if (!form) return;
-
-  const checkoutButton = form.querySelector('[data-checkout-submit]');
-  const npiInput = form.querySelector('[data-npi-input]');
-  const institutionInput = form.querySelector('[data-institution-input]');
-  const status = form.querySelector('[data-verification-status]');
-
-  if (!checkoutButton || !(npiInput instanceof HTMLInputElement)) return;
-
-  const syncStoredNpi = () => {
-    const storedNpi = getStoredNpiNumber();
-    if (!storedNpi) return false;
-
-    npiInput.value = storedNpi;
-    npiInput.readOnly = true;
-    npiInput.setAttribute('aria-readonly', 'true');
-    return true;
-  };
-
-  syncStoredNpi();
-
-  checkoutButton.addEventListener('click', async (event) => {
-    const storedNpi = getStoredNpiNumber();
-    const npi = sanitizeNpi(storedNpi || npiInput.value);
-    const institution = institutionInput instanceof HTMLInputElement ? institutionInput.value.trim() : '';
-
-    if (storedNpi) {
-      npiInput.value = storedNpi;
-    }
-
-    if (npi.length >= 10 && institution.length >= 2) {
-      if (storedNpi) {
-        if (status) status.textContent = `Using ${getMaskedNpi(storedNpi)}. Order review can continue.`;
-        return;
-      }
-
-      if (status) status.textContent = 'Verifying NPI against the official registry...';
-      checkoutButton.disabled = true;
-      const result = await verifyNpiAgainstService(npi, 'catalog');
-      checkoutButton.disabled = false;
-
-      if (result.valid) {
-        storeNpiAccess(result);
-        applyStoredNpiToRoots();
-        if (status) {
-          const providerIdentity = getVerifiedProviderIdentity(result.profile);
-          status.textContent = providerIdentity
-            ? `Verified: ${providerIdentity}. Order review can continue.`
-            : 'NPI verified. Order review can continue.';
-        }
-        return;
-      }
-
-      event.preventDefault();
-      if (status) status.textContent = result.message;
-      npiInput.focus();
-      form.querySelector('#clinical-verification')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    event.preventDefault();
-    if (status) {
-      status.textContent = institution.length < 2
-        ? 'Enter an affiliated institution before continuing to order review.'
-        : 'Enter a verified 10-digit NPI before continuing to order review.';
-    }
-    if (institution.length < 2 && institutionInput instanceof HTMLInputElement) institutionInput.focus();
-    else npiInput.focus();
-    form.querySelector('#clinical-verification')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  });
-}
-
 function setupCurrentYear() {
   document.querySelectorAll('[data-current-year]').forEach((element) => {
     element.textContent = String(new Date().getFullYear());
@@ -967,7 +549,7 @@ function setupSiteAnimations() {
     { selector: '.home-hero__actions .ell-button', variant: 'motion-hero-action', step: 95 },
     { selector: '.cell-visual', variant: 'motion-hero-visual' },
     { selector: '.trust-badge', variant: 'motion-fade-up', step: 70 },
-    { selector: '.solutions-heading > *', variant: 'motion-fade-up', step: 90 },
+    { selector: '.solutions-editorial__intro > *, .solutions-article', variant: 'motion-fade-up', step: 90 },
     { selector: '.solution-card', variant: 'motion-fade-up', step: 110 },
     { selector: '.feature-card', variant: 'motion-fade-up', step: 95 },
     { selector: '.collection-hero > *', variant: 'motion-fade-up', step: 90 },

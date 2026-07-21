@@ -1,7 +1,9 @@
 {% liquid
   assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
   assign quality_url = catalog_url | append: '?view=quality-safety'
-  assign about_url = '/pages/about-us'
+  assign about_url = catalog_url | append: '?view=about-us'
+  assign featured_biologic_url = catalog_url | append: '?view=featured-biologic-of-the-month'
+  assign provider_registration_url = catalog_url | append: '?view=provider-registration'
 %}
 
 <section class="ell-section feature-section">
@@ -58,15 +60,18 @@
 
     <div class="home-closing-cta surface-card">
       <p class="eyebrow">{{ section.settings.closing_eyebrow }}</p>
+      <div class="home-closing-cta__brand" aria-hidden="true">
+        <img src="{{ 'ell-logo-01.png' | asset_url }}" alt="" loading="lazy">
+      </div>
       <h2 class="section-title home-closing-cta__title">{{ section.settings.closing_tagline }}</h2>
       <div class="button-row home-closing-cta__actions">
-        <a class="ell-button ell-button--primary" href="{{ section.settings.catalog_button_link | default: catalog_url }}">
+        <a class="ell-button ell-button--primary" href="{{ section.settings.catalog_button_link | default: provider_registration_url }}">
           {{ section.settings.catalog_button_label }}
         </a>
-        <a class="ell-button ell-button--ghost" href="{{ section.settings.featured_button_link | default: quality_url }}">
+        <a class="ell-button ell-button--ghost" href="{{ section.settings.featured_button_link | default: featured_biologic_url }}">
           {{ section.settings.featured_button_label }}
         </a>
-        <a class="ell-button ell-button--ghost" href="{{ section.settings.registration_button_link | default: about_url }}">
+        <a class="ell-button ell-button--ghost" href="{{ section.settings.registration_button_link | default: provider_registration_url }}">
           {{ section.settings.registration_button_label }}
         </a>
       </div>
@@ -152,7 +157,7 @@
       "type": "textarea",
       "id": "closing_tagline",
       "label": "Closing tagline",
-      "default": "ELL — Designed for the Needs of Today's Regenerative Provider™"
+      "default": "One Marketplace. Trusted Biologics. Endless Possibilities."
     },
     {
       "type": "text",

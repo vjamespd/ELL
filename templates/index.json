@@ -4,10 +4,6 @@
       "type": "ell-home",
       "settings": {}
     },
-    "ell_trust_band": {
-      "type": "ell-trust-band",
-      "settings": {}
-    },
     "ell_solutions": {
       "type": "ell-solutions",
       "settings": {}
@@ -19,7 +15,6 @@
   },
   "order": [
     "ell_home",
-    "ell_trust_band",
     "ell_solutions",
     "ell_feature_grid"
   ]

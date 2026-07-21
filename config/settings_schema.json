@@ -73,10 +73,10 @@
     "settings": [
       {
         "type": "text",
-        "id": "npi_verification_endpoint",
-        "label": "NPI verification endpoint",
-        "default": "https://ell-npi-verifier.onrender.com/verify",
-        "info": "Use the hosted verifier URL for live storefronts. Local preview can still use http://127.0.0.1:8787/verify when the local verifier is running."
+        "id": "provider_registration_endpoint",
+        "label": "Provider registration endpoint",
+        "default": "https://ell-npi-verifier.onrender.com/provider-registration",
+        "info": "HTTPS endpoint that creates or updates Shopify Customers for provider review."
       }
     ]
   }

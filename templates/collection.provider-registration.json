@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "ell-provider-registration",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

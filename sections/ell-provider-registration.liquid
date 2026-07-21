@@ -1,0 +1,211 @@
+{% liquid
+  assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign provider_approved = false
+  assign provider_pending = false
+  if customer
+    if customer.tags contains 'provider-approved'
+      assign provider_approved = true
+    endif
+    if customer.tags contains 'provider-pending'
+      assign provider_pending = true
+    endif
+  endif
+%}
+
+<section class="ell-section provider-registration-page">
+  <div class="ell-container contact-layout">
+    <div class="contact-copy">
+      <p class="eyebrow">Provider Registration</p>
+      {% if provider_approved %}
+        <h1 class="section-title">Provider access approved</h1>
+        <p class="lead-copy">Your account is approved for Product Catalog access. You can continue into the catalog to review available products and ordering details.</p>
+      {% elsif provider_pending %}
+        <h1 class="section-title">Provider setup under review</h1>
+        <p class="lead-copy">Your provider profile is currently under internal ELL review. Product visibility and pricing access are enabled after approval.</p>
+      {% else %}
+        <h1 class="section-title">Set up provider access</h1>
+        <p class="lead-copy">Complete the registration details below so the ELL team can review your provider profile, practice information, and account setup requirements before enabling product and pricing access.</p>
+      {% endif %}
+
+      <div class="contact-support-grid">
+        <div class="support-card surface-card">
+          <span class="support-card__icon">{% render 'icon', name: 'support' %}</span>
+          <div>
+            <strong>Provider credentials</strong>
+            <p class="muted-copy" style="margin:0.25rem 0 0;font-size:0.86rem;">Share the provider identity, licensing, and specialty details needed to establish a clinical account.</p>
+          </div>
+        </div>
+        <div class="support-card surface-card">
+          <span class="support-card__icon">{% render 'icon', name: 'shield' %}</span>
+          <div>
+            <strong>Practice review</strong>
+            <p class="muted-copy" style="margin:0.25rem 0 0;font-size:0.86rem;">Institutional, shipping, and documentation needs may be reviewed before products and pricing are unlocked.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="procurement-note provider-registration-note">
+        {% render 'icon', name: 'lock' %}
+        <div class="muted-copy" style="font-size:0.9rem;">Submitting this form starts the account review process only. Provider setup, product visibility, and pricing access are enabled after internal review.</div>
+      </div>
+    </div>
+
+    <div class="contact-form-card">
+      {% if provider_approved %}
+        <div class="provider-review-state">
+          <p class="eyebrow">Approved Account</p>
+          <h2 class="serif-title">Product Catalog is unlocked</h2>
+          <p class="muted-copy">Continue to the Product Catalog using this approved customer account.</p>
+          <a class="ell-button ell-button--primary" href="{{ catalog_url }}">
+            Open Product Catalog
+            {% render 'icon', name: 'arrow-right' %}
+          </a>
+        </div>
+      {% elsif provider_pending %}
+        <div class="provider-review-state">
+          <p class="eyebrow">Internal Review</p>
+          <h2 class="serif-title">Review in progress</h2>
+          <p class="muted-copy">The ELL team is reviewing your provider account details. You may update the form below if anything has changed.</p>
+        </div>
+      {% endif %}
+
+      {% unless provider_approved %}
+      <form class="provider-registration-form" data-provider-registration-form>
+        <div class="form-status form-status--success" data-provider-registration-success role="status" aria-live="polite" tabindex="-1" hidden>
+          Provider registration received for review. The ELL team will review your details and follow up with account access next steps.
+        </div>
+        <div class="form-status form-status--error" data-provider-registration-error role="alert" aria-live="assertive" tabindex="-1" hidden>
+          Provider registration could not be saved to Shopify Customers right now. Please try again shortly or contact the ELL team directly.
+        </div>
+
+        <input type="hidden" name="registration_type" value="Provider Account Setup">
+        <input type="hidden" name="review_status" value="Submitted for internal review">
+
+        <div class="procurement-form-section">
+          <h2 class="panel-title">Provider information</h2>
+          <div class="procurement-form-grid">
+            <div>
+              <label class="stat-label" for="ProviderRegistrationFirstName">First name</label>
+              <input id="ProviderRegistrationFirstName" class="field" type="text" name="first_name" value="{% if customer %}{{ customer.first_name }}{% endif %}" autocomplete="given-name" required>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationLastName">Last name</label>
+              <input id="ProviderRegistrationLastName" class="field" type="text" name="last_name" value="{% if customer %}{{ customer.last_name }}{% endif %}" autocomplete="family-name" required>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationCredentials">Credentials</label>
+              <select id="ProviderRegistrationCredentials" class="field-select" name="credentials" required>
+                <option value="" selected disabled>Select credential</option>
+                <optgroup label="Prescribing authority">
+                  <option value="MD">MD</option>
+                  <option value="DO">DO</option>
+                  <option value="MBBS / MBChB">MBBS / MBChB</option>
+                  <option value="DDS">DDS</option>
+                  <option value="DMD">DMD</option>
+                  <option value="DPM">DPM</option>
+                  <option value="DVM">DVM</option>
+                  <option value="VMD">VMD</option>
+                </optgroup>
+                <optgroup label="Advanced practice">
+                  <option value="NP">NP</option>
+                  <option value="APRN">APRN</option>
+                  <option value="ARNP">ARNP</option>
+                  <option value="APN">APN</option>
+                  <option value="FNP / FNP-C / FNP-BC">FNP / FNP-C / FNP-BC</option>
+                  <option value="AGNP / AGPCNP / AGACNP">AGNP / AGPCNP / AGACNP</option>
+                  <option value="ACNP / ACNPC-AG">ACNP / ACNPC-AG</option>
+                  <option value="PNP / PNP-PC / PNP-AC">PNP / PNP-PC / PNP-AC</option>
+                  <option value="PMHNP / PMHNP-BC">PMHNP / PMHNP-BC</option>
+                  <option value="WHNP / WHNP-BC">WHNP / WHNP-BC</option>
+                  <option value="NNP / NNP-BC">NNP / NNP-BC</option>
+                  <option value="ENP / ENP-C">ENP / ENP-C</option>
+                  <option value="ONP">ONP</option>
+                  <option value="CNS">CNS</option>
+                  <option value="CNM">CNM</option>
+                  <option value="CRNA / CRNA-APRN">CRNA / CRNA-APRN</option>
+                  <option value="PA / PA-C">PA / PA-C</option>
+                </optgroup>
+              </select>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationEmail">Email</label>
+              <input id="ProviderRegistrationEmail" class="field" type="email" name="email" value="{% if customer %}{{ customer.email }}{% endif %}" autocomplete="email" required>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationPhone">Phone</label>
+              <input id="ProviderRegistrationPhone" class="field" type="tel" name="phone" autocomplete="tel" required>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationIdentifier">Provider license or identifier</label>
+              <input id="ProviderRegistrationIdentifier" class="field" type="text" name="provider_license_or_identifier" placeholder="NPI, license number, or country-specific provider ID">
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationSpecialty">Medical specialty</label>
+              <input id="ProviderRegistrationSpecialty" class="field" type="text" name="medical_specialty" placeholder="Orthopedics, aesthetics, longevity, wound care" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="procurement-form-section">
+          <h2 class="panel-title">Practice and institution details</h2>
+          <div class="procurement-form-grid">
+            <div>
+              <label class="stat-label" for="ProviderRegistrationInstitution">Clinic or institution</label>
+              <input id="ProviderRegistrationInstitution" class="field" type="text" name="clinic_or_institution" placeholder="Practice, clinic, medspa, or institution" required>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationWebsite">Website</label>
+              <input id="ProviderRegistrationWebsite" class="field" type="url" name="website" placeholder="https://">
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationCity">City</label>
+              <input id="ProviderRegistrationCity" class="field" type="text" name="city" autocomplete="address-level2" required>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationState">State or province</label>
+              <input id="ProviderRegistrationState" class="field" type="text" name="state_or_province" autocomplete="address-level1" required>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationCountry">Country</label>
+              <input id="ProviderRegistrationCountry" class="field" type="text" name="country" autocomplete="country-name" required>
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationOrderingStates">Ordering or shipping states</label>
+              <input id="ProviderRegistrationOrderingStates" class="field" type="text" name="ordering_or_shipping_states" placeholder="States or regions where orders may be fulfilled">
+            </div>
+          </div>
+        </div>
+
+        <div class="procurement-form-section">
+          <h2 class="panel-title">Account setup requirements</h2>
+          <div class="procurement-form-grid">
+            <div>
+              <label class="stat-label" for="ProviderRegistrationInterests">Primary product interests</label>
+              <input id="ProviderRegistrationInterests" class="field" type="text" name="primary_product_interests" placeholder="Biologics, banking, IV supplies, supplements">
+            </div>
+            <div>
+              <label class="stat-label" for="ProviderRegistrationVolume">Expected ordering profile</label>
+              <input id="ProviderRegistrationVolume" class="field" type="text" name="expected_ordering_profile" placeholder="New account, current program expansion, monthly ordering">
+            </div>
+          </div>
+
+          <label class="stat-label" for="ProviderRegistrationMessage">Additional notes</label>
+          <textarea id="ProviderRegistrationMessage" class="field-textarea" name="additional_notes" rows="6" placeholder="Share documentation needs, account setup questions, practice focus, or anything the ELL team should know."></textarea>
+        </div>
+
+        <button class="ell-button ell-button--primary" type="submit">
+          Submit provider registration
+          {% render 'icon', name: 'arrow-right' %}
+        </button>
+      </form>
+      {% endunless %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "ELL provider registration",
+  "settings": []
+}
+{% endschema %}

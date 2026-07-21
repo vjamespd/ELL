@@ -1,0 +1,26 @@
+<section class="ell-section ell-error-page">
+  <div class="ell-container">
+    <div class="error-shell surface-card">
+      <p class="eyebrow">Featured Biologic</p>
+      <h1 class="display-title">Coming Soon</h1>
+      <p class="lead-copy">Product details for the Featured Biologic of the Month will be published here once the spotlight release is finalized.</p>
+
+      <div class="button-row" style="margin-top: 2rem;">
+        <a class="ell-button ell-button--primary" href="{{ routes.root_url }}">
+          Return Home
+          {% render 'icon', name: 'arrow-right' %}
+        </a>
+        <a class="ell-button ell-button--ghost" href="{{ routes.all_products_collection_url | default: '/collections/all' }}?view=provider-registration">
+          Provider Registration
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Biologic Soon",
+  "settings": []
+}
+{% endschema %}

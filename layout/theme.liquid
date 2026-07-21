@@ -3,22 +3,10 @@
   <head>
     {% liquid
       assign is_quality_rescue = false
-      assign npi_protected_route = false
-      assign npi_gate_context = 'catalog'
       assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
       assign quality_canonical_url = shop.url | append: catalog_url | append: '?view=quality-safety'
       if request.path contains 'quality-safety' or request.params.view == 'quality-safety' or template.suffix == 'quality-safety'
         assign is_quality_rescue = true
-      endif
-
-      if request.path contains 'provider-info' or request.path contains 'provider-account-setup' or request.path contains 'pricing-order-form'
-        assign npi_protected_route = true
-        assign npi_gate_context = 'provider'
-      elsif is_quality_rescue == false
-        if template.name == 'collection' or template.name == 'product' or template.suffix == 'catalog'
-          assign npi_protected_route = true
-          assign npi_gate_context = 'catalog'
-        endif
       endif
     %}
     <meta charset="utf-8">
@@ -56,69 +44,32 @@
     <script src="{{ 'ell.js' | asset_url }}" defer></script>
     {{ content_for_header }}
   </head>
+  {% liquid
+    assign provider_registration_url = catalog_url | append: '?view=provider-registration'
+    assign provider_approved = false
+    assign provider_pending = false
+    if customer
+      if customer.tags contains 'provider-approved'
+        assign provider_approved = true
+      endif
+      if customer.tags contains 'provider-pending'
+        assign provider_pending = true
+      endif
+    endif
+  %}
   <body
-    class="ell-page ell-page--{{ template.name | handle }}{% if template.suffix != blank %} ell-page--{{ template.suffix | handle }}{% endif %}{% if is_quality_rescue %} ell-page--quality-safety{% endif %}{% if npi_protected_route %} ell-page--npi-pending{% endif %}"
-    data-npi-protected-route="{% if npi_protected_route %}true{% else %}false{% endif %}"
-    data-npi-gate-context="{{ npi_gate_context }}"
+    class="ell-page ell-page--{{ template.name | handle }}{% if template.suffix != blank %} ell-page--{{ template.suffix | handle }}{% endif %}{% if is_quality_rescue %} ell-page--quality-safety{% endif %}"
     data-catalog-url="{{ catalog_url }}"
-    data-npi-verification-endpoint="{{ settings.npi_verification_endpoint | escape }}"
+    data-provider-registration-url="{{ provider_registration_url }}"
+    data-provider-registration-endpoint="{{ settings.provider_registration_endpoint | escape }}"
+    data-customer-logged-in="{% if customer %}true{% else %}false{% endif %}"
+    data-provider-approved="{{ provider_approved }}"
+    data-provider-pending="{{ provider_pending }}"
   >
     {% section 'header' %}
     <main id="MainContent" role="main">
       {{ content_for_layout }}
     </main>
     {% section 'footer' %}
-
-    <div
-      class="npi-gate"
-      data-npi-gate
-      data-catalog-copy="Enter a 10-digit National Provider Identifier to continue into the clinical catalog, product detail pages, and provider ordering workflow."
-      data-provider-copy="Enter a 10-digit National Provider Identifier to continue into provider resources, account setup details, and pricing/order materials."
-      hidden
-      aria-hidden="true"
-    >
-      <button class="npi-gate__backdrop" type="button" aria-label="Close provider access modal" data-npi-gate-dismiss></button>
-      <div class="npi-gate__viewport">
-        <section class="npi-gate__panel surface-card" role="dialog" aria-modal="true" aria-labelledby="npi-gate-title" aria-describedby="npi-gate-copy">
-          <div class="npi-gate__head">
-            <div>
-              <p class="eyebrow">Provider Access</p>
-              <h2 class="section-title npi-gate__title" id="npi-gate-title">Enter NPI to Continue</h2>
-            </div>
-            <button class="npi-gate__close" type="button" aria-label="Close provider access modal" data-npi-gate-close>
-              {% render 'icon', name: 'close' %}
-            </button>
-          </div>
-
-          <p class="lead-copy npi-gate__copy" id="npi-gate-copy" data-npi-gate-copy>
-            {% if npi_gate_context == 'provider' %}
-              Enter a 10-digit National Provider Identifier to continue into provider resources, account setup details, and pricing/order materials.
-            {% else %}
-              Enter a 10-digit National Provider Identifier to continue into the clinical catalog, product detail pages, and provider ordering workflow.
-            {% endif %}
-          </p>
-
-          <form class="npi-gate__form" data-npi-gate-form novalidate>
-            <label class="stat-label" for="npi-gate-input">National Provider Identifier</label>
-            <input
-              id="npi-gate-input"
-              class="field npi-gate__input"
-              type="text"
-              name="npi"
-              inputmode="numeric"
-              autocomplete="off"
-              maxlength="10"
-              placeholder="Enter 10-digit NPI"
-              data-npi-gate-input
-            >
-            <p class="npi-gate__status" data-npi-gate-status aria-live="polite"></p>
-            <div class="button-row npi-gate__actions">
-              <button class="ell-button ell-button--primary" type="submit">Continue</button>
-              <a class="ell-button ell-button--ghost" href="{{ routes.root_url }}" data-npi-gate-home>Return Home</a>
-            </div>
-          </form>
-        </section>
-      </div>
-    </div>
   </body>
 </html>

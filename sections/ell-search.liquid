@@ -1,7 +1,22 @@
 {% liquid
   assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign provider_approved = false
+  if customer and customer.tags contains 'provider-approved'
+    assign provider_approved = true
+  endif
 %}
 
+{% unless provider_approved %}
+  <section class="ell-section">
+    <div class="ell-container search-page">
+      {% render 'provider-access-gate',
+        gate_eyebrow: 'Search',
+        gate_heading: 'Provider approval required to search product records',
+        gate_body: 'Product search, technical records, pricing, and ordering paths are available after provider registration and internal approval.'
+      %}
+    </div>
+  </section>
+{% else %}
 <section class="ell-section">
   <div class="ell-container search-page">
     <div class="search-page__hero">
@@ -117,6 +132,7 @@
     {% endif %}
   </div>
 </section>
+{% endunless %}
 
 {% schema %}
 {

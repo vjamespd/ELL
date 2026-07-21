@@ -3,8 +3,7 @@
   assign cart_url = routes.cart_url | default: '/cart'
   assign quality_url = catalog_url | append: '?view=quality-safety'
   assign is_quality_rescue = false
-  assign is_about_rescue = false
-  assign is_provider_coming_soon = false
+  assign is_featured_biologic_coming_soon = false
   assign error_eyebrow = section.settings.eyebrow
   assign error_heading = section.settings.heading
   assign error_body = section.settings.body
@@ -14,161 +13,32 @@
     assign is_quality_rescue = true
   endif
 
-  if request.path contains 'about-us'
-    assign is_about_rescue = true
-  endif
-
-  if request.path contains 'provider-info' or request.path contains 'provider-account-setup' or request.path contains 'pricing-order-form'
-    assign is_provider_coming_soon = true
-    assign error_eyebrow = 'Provider Access'
+  if request.path contains 'featured-biologic-of-the-month'
+    assign is_featured_biologic_coming_soon = true
+    assign error_eyebrow = 'Featured Biologic'
     assign error_heading = 'Coming Soon'
-    assign error_body = 'Provider access is coming soon. Account setup will be required to view products, pricing, and order materials once this area is available.'
+    assign error_body = 'Product details for the Featured Biologic of the Month will be published here once the spotlight release is finalized.'
     assign primary_label = 'Return Home'
-    assign secondary_label = 'Browse Inventory'
+    assign secondary_label = 'Provider Registration'
   endif
 %}
 
 <script>
   {
     const path = window.location.pathname.replace(/\/$/, '');
-    const runWhenReady = (callback) => {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', callback, { once: true });
-      } else {
-        callback();
-      }
-    };
     const redirects = {
       '/pages/quality-safety': '{{ quality_url }}',
       '/pages/legal-compliance': '{{ quality_url }}',
       '/policies/terms-of-service': '/policies/privacy-policy'
     };
-    const aboutUsPaths = [
-      '/pages/about-us'
-    ];
-    const providerComingSoonPaths = [
-      '/pages/provider-info',
-      '/pages/provider-account-setup',
-      '/pages/pricing-order-form'
-    ];
 
     if (redirects[path]) {
       window.location.replace(redirects[path]);
     }
-
-    if (aboutUsPaths.includes(path)) {
-      document.documentElement.classList.add('ell-about-us-rescue');
-      runWhenReady(() => {
-        const aboutRescue = document.querySelector('[data-about-us-rescue]');
-        const generic404 = document.querySelector('[data-generic-404]');
-        if (aboutRescue) aboutRescue.hidden = false;
-        if (generic404) generic404.hidden = true;
-      });
-    }
-
-    if (providerComingSoonPaths.includes(path)) {
-      runWhenReady(() => {
-        const shell = document.querySelector('.error-shell');
-        if (!shell) return;
-
-        const eyebrow = shell.querySelector('.eyebrow');
-        const heading = shell.querySelector('.display-title');
-        const body = shell.querySelector('.lead-copy');
-
-        if (eyebrow) eyebrow.textContent = 'Provider Access';
-        if (heading) heading.textContent = 'Coming Soon';
-        if (body) {
-          body.textContent = 'Provider access is coming soon. Account setup will be required to view products, pricing, and order materials once this area is available.';
-        }
-      });
-    }
   }
 </script>
 
-<section class="ell-section team-page" data-about-us-rescue{% unless is_about_rescue %} hidden{% endunless %}>
-    <div class="ell-container team-page__layout">
-      <div class="team-page__intro">
-        <p class="eyebrow">Leadership</p>
-        <h1 class="section-title">About Us</h1>
-        <p class="lead-copy">Meet the founding and leadership team guiding ell. across provider relationships, clinical review workflows, and institutional growth.</p>
-      </div>
-
-      <div class="team-grid">
-        <article class="team-card surface-card">
-          <div class="team-card__media">
-            <img src="{{ 'matt-stang.jpeg' | asset_url }}" alt="Matt Stang" loading="lazy">
-          </div>
-          <div class="team-card__content">
-            <div class="team-card__header">
-              <div>
-                <p class="eyebrow">Cofounder</p>
-                <h2 class="serif-title">Matt Stang</h2>
-              </div>
-              <p class="team-card__company">Stangco</p>
-            </div>
-
-            <div class="team-card__summary">
-              <p class="stat-label">Matt Stang Biography</p>
-              <p class="team-card__bio">Matt Stang is a pioneer in the regulated health space leading and selling High Times before buying it back and cofounding a dozen companies in the regulated health space from peptides to psychedelics.</p>
-            </div>
-
-            <div class="team-card__meta">
-              <a class="team-card__meta-link" href="tel:9179227937">
-                <span class="stat-label">Phone</span>
-                <strong>917.922.7937</strong>
-              </a>
-              <a class="team-card__meta-link" href="mailto:Matt@stangcollc.com">
-                <span class="stat-label">Email</span>
-                <strong>Matt@stangcollc.com</strong>
-              </a>
-            </div>
-          </div>
-        </article>
-
-        <article class="team-card surface-card">
-          <div class="team-card__media">
-            <div class="team-card__placeholder" aria-hidden="true">TBD</div>
-          </div>
-          <div class="team-card__content">
-            <div class="team-card__header">
-              <div>
-                <p class="eyebrow">Leadership Member</p>
-                <h2 class="serif-title">Additional Team Member</h2>
-              </div>
-              <p class="team-card__company">ELL</p>
-            </div>
-
-            <div class="team-card__summary">
-              <p class="stat-label">Profile Coming Soon</p>
-              <p class="team-card__bio">Additional leadership details will be added soon as the executive and advisory team roster is finalized.</p>
-            </div>
-          </div>
-        </article>
-
-        <article class="team-card surface-card">
-          <div class="team-card__media">
-            <div class="team-card__placeholder" aria-hidden="true">TBD</div>
-          </div>
-          <div class="team-card__content">
-            <div class="team-card__header">
-              <div>
-                <p class="eyebrow">Leadership Member</p>
-                <h2 class="serif-title">Additional Team Member</h2>
-              </div>
-              <p class="team-card__company">ELL</p>
-            </div>
-
-            <div class="team-card__summary">
-              <p class="stat-label">Profile Coming Soon</p>
-              <p class="team-card__bio">Additional leadership details will be added soon as the executive and advisory team roster is finalized.</p>
-            </div>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-{% if is_provider_coming_soon %}
+{% if is_featured_biologic_coming_soon %}
   <section class="ell-section ell-error-page">
     <div class="ell-container">
       <div class="error-shell surface-card">
@@ -181,21 +51,15 @@
             {{ primary_label }}
             {% render 'icon', name: 'arrow-right' %}
           </a>
-          <a class="ell-button ell-button--ghost" href="{{ catalog_url }}">
+          <a class="ell-button ell-button--ghost" href="{{ routes.all_products_collection_url | default: '/collections/all' }}?view=provider-registration">
             {{ secondary_label }}
           </a>
-        </div>
-
-        <div class="error-links">
-          <a href="/pages/provider-info">Provider Info</a>
-          <a href="/pages/provider-account-setup">Provider Account Setup</a>
-          <a href="/pages/pricing-order-form">Pricing/Order Form</a>
         </div>
       </div>
     </div>
   </section>
 {% elsif is_quality_rescue == false %}
-  <section class="ell-section ell-error-page" data-generic-404{% if is_about_rescue %} hidden{% endif %}>
+  <section class="ell-section ell-error-page" data-generic-404>
     <div class="ell-container">
       <div class="error-shell surface-card">
         <p class="eyebrow">{{ error_eyebrow }}</p>

@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "ell-featured-biologic-coming-soon",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

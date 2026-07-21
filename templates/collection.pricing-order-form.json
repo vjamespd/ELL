@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main": {
+      "type": "ell-provider-coming-soon",
+      "settings": {
+        "route_handle": "pricing-order-form",
+        "eyebrow": "Provider Access",
+        "heading": "Coming Soon",
+        "body": "Pricing and order-form materials will appear here once provider access is enabled and documentation workflows are finalized.",
+        "primary_label": "Return Home",
+        "secondary_label": "Browse Inventory"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

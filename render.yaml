@@ -12,5 +12,11 @@ services:
         value: 0.0.0.0
       - key: NPPES_API_URL
         value: https://npiregistry.cms.hhs.gov/api/
+      - key: SHOPIFY_SHOP_DOMAIN
+        value: elegance-at-the-cellular-level.myshopify.com
+      - key: SHOPIFY_API_VERSION
+        value: "2025-10"
+      - key: SHOPIFY_ADMIN_ACCESS_TOKEN
+        sync: false
       - key: ALLOWED_ORIGINS
         sync: false

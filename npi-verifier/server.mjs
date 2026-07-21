@@ -3,6 +3,12 @@ import http from 'node:http';
 const port = Number.parseInt(process.env.PORT || '8787', 10);
 const host = process.env.HOST || '0.0.0.0';
 const upstreamBaseUrl = process.env.NPPES_API_URL || 'https://npiregistry.cms.hhs.gov/api/';
+const shopifyShopDomain = String(process.env.SHOPIFY_SHOP_DOMAIN || process.env.SHOPIFY_STORE_DOMAIN || '')
+  .trim()
+  .replace(/^https?:\/\//, '')
+  .replace(/\/+$/, '');
+const shopifyAdminAccessToken = String(process.env.SHOPIFY_ADMIN_ACCESS_TOKEN || '').trim();
+const shopifyApiVersion = String(process.env.SHOPIFY_API_VERSION || '2025-10').trim();
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '*')
   .split(',')
   .map((value) => value.trim())
@@ -16,6 +22,33 @@ const approvedTaxonomyRules = [
   { credential: 'DPM', codePrefixes: ['213E'] },
 ];
 const approvedCredentialSummary = approvedTaxonomyRules.map((rule) => rule.credential).join(', ');
+const providerCredentials = new Set([
+  'MD',
+  'DO',
+  'MBBS / MBChB',
+  'DDS',
+  'DMD',
+  'DPM',
+  'DVM',
+  'VMD',
+  'NP',
+  'APRN',
+  'ARNP',
+  'APN',
+  'FNP / FNP-C / FNP-BC',
+  'AGNP / AGPCNP / AGACNP',
+  'ACNP / ACNPC-AG',
+  'PNP / PNP-PC / PNP-AC',
+  'PMHNP / PMHNP-BC',
+  'WHNP / WHNP-BC',
+  'NNP / NNP-BC',
+  'ENP / ENP-C',
+  'ONP',
+  'CNS',
+  'CNM',
+  'CRNA / CRNA-APRN',
+  'PA / PA-C',
+]);
 
 function normalizeOrigin(value) {
   return String(value || '').trim().replace(/\/+$/, '');
@@ -84,6 +117,218 @@ function readJsonBody(request) {
 
     request.on('error', reject);
   });
+}
+
+function cleanText(value, maxLength = 500) {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+}
+
+function cleanEmail(value) {
+  return cleanText(value, 254).toLowerCase();
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || ''));
+}
+
+function getSubmittedProviderRegistration(body) {
+  return {
+    firstName: cleanText(body?.first_name, 80),
+    lastName: cleanText(body?.last_name, 80),
+    credentials: cleanText(body?.credentials, 80),
+    email: cleanEmail(body?.email),
+    phone: cleanText(body?.phone, 80),
+    providerIdentifier: cleanText(body?.provider_license_or_identifier, 120),
+    medicalSpecialty: cleanText(body?.medical_specialty, 160),
+    clinicOrInstitution: cleanText(body?.clinic_or_institution, 180),
+    website: cleanText(body?.website, 200),
+    city: cleanText(body?.city, 120),
+    stateOrProvince: cleanText(body?.state_or_province, 120),
+    country: cleanText(body?.country, 120),
+    orderingOrShippingStates: cleanText(body?.ordering_or_shipping_states, 240),
+    primaryProductInterests: cleanText(body?.primary_product_interests, 240),
+    expectedOrderingProfile: cleanText(body?.expected_ordering_profile, 240),
+    additionalNotes: cleanText(body?.additional_notes, 1200),
+    submittedAt: cleanText(body?.submitted_at, 80) || new Date().toISOString(),
+  };
+}
+
+function validateProviderRegistration(payload) {
+  const missing = [];
+
+  if (!payload.firstName) missing.push('first name');
+  if (!payload.lastName) missing.push('last name');
+  if (!payload.credentials) missing.push('credentials');
+  if (!payload.email || !isValidEmail(payload.email)) missing.push('valid email');
+  if (!payload.phone) missing.push('phone');
+  if (!payload.medicalSpecialty) missing.push('medical specialty');
+  if (!payload.clinicOrInstitution) missing.push('clinic or institution');
+  if (!payload.city) missing.push('city');
+  if (!payload.stateOrProvince) missing.push('state or province');
+  if (!payload.country) missing.push('country');
+
+  if (payload.credentials && !providerCredentials.has(payload.credentials)) {
+    return {
+      valid: false,
+      message: 'Please choose a supported provider credential from the registration form.',
+    };
+  }
+
+  if (missing.length) {
+    return {
+      valid: false,
+      message: `Please complete the required provider registration fields: ${missing.join(', ')}.`,
+    };
+  }
+
+  return { valid: true };
+}
+
+function buildProviderReviewNote(payload) {
+  const rows = [
+    ['Review status', 'Provider account setup submitted for internal review'],
+    ['Submitted at', payload.submittedAt],
+    ['Provider', `${payload.firstName} ${payload.lastName}`.trim()],
+    ['Credentials', payload.credentials],
+    ['Email', payload.email],
+    ['Phone', payload.phone],
+    ['Provider license or identifier', payload.providerIdentifier || 'Not provided'],
+    ['Medical specialty', payload.medicalSpecialty],
+    ['Clinic or institution', payload.clinicOrInstitution],
+    ['Website', payload.website || 'Not provided'],
+    ['Location', [payload.city, payload.stateOrProvince, payload.country].filter(Boolean).join(', ')],
+    ['Ordering or shipping states', payload.orderingOrShippingStates || 'Not provided'],
+    ['Primary product interests', payload.primaryProductInterests || 'Not provided'],
+    ['Expected ordering profile', payload.expectedOrderingProfile || 'Not provided'],
+    ['Additional notes', payload.additionalNotes || 'None'],
+  ];
+
+  return rows.map(([label, value]) => `${label}: ${value}`).join('\n');
+}
+
+function getProviderTags(existingTags = '') {
+  const tags = new Set(
+    String(existingTags || '')
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+  );
+
+  tags.add('provider-registration');
+  if (!tags.has('provider-approved')) tags.add('provider-pending');
+
+  return Array.from(tags).join(', ');
+}
+
+function assertShopifyRegistrationConfigured() {
+  if (!shopifyShopDomain || !shopifyAdminAccessToken) {
+    const missing = [
+      shopifyShopDomain ? '' : 'SHOPIFY_SHOP_DOMAIN',
+      shopifyAdminAccessToken ? '' : 'SHOPIFY_ADMIN_ACCESS_TOKEN',
+    ].filter(Boolean);
+
+    throw new Error(`Provider registration is not configured. Missing ${missing.join(' and ')}.`);
+  }
+}
+
+async function shopifyAdminRequest(path, options = {}) {
+  assertShopifyRegistrationConfigured();
+
+  const url = new URL(`https://${shopifyShopDomain}/admin/api/${shopifyApiVersion}${path}`);
+  if (options.searchParams) {
+    Object.entries(options.searchParams).forEach(([key, value]) => {
+      url.searchParams.set(key, value);
+    });
+  }
+
+  const adminResponse = await fetch(url, {
+    method: options.method || 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': shopifyAdminAccessToken,
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined,
+  });
+
+  const text = await adminResponse.text();
+  let payload = null;
+
+  if (text) {
+    try {
+      payload = JSON.parse(text);
+    } catch (error) {
+      payload = { raw: text };
+    }
+  }
+
+  if (!adminResponse.ok) {
+    const details = payload?.errors ? JSON.stringify(payload.errors) : text || adminResponse.statusText;
+    throw new Error(`Shopify Admin API request failed with status ${adminResponse.status}: ${details}`);
+  }
+
+  return payload || {};
+}
+
+async function findCustomerByEmail(email) {
+  const payload = await shopifyAdminRequest('/customers/search.json', {
+    searchParams: {
+      query: `email:${email}`,
+    },
+  });
+
+  const customers = Array.isArray(payload?.customers) ? payload.customers : [];
+  return customers[0] || null;
+}
+
+async function upsertProviderCustomer(payload) {
+  const existingCustomer = await findCustomerByEmail(payload.email);
+  const reviewNote = buildProviderReviewNote(payload);
+
+  if (existingCustomer?.id) {
+    const existingNote = cleanText(existingCustomer.note, 2000);
+    const nextNote = existingNote ? `${reviewNote}\n\n--- Previous customer note ---\n${existingNote}` : reviewNote;
+    const updated = await shopifyAdminRequest(`/customers/${existingCustomer.id}.json`, {
+      method: 'PUT',
+      body: {
+        customer: {
+          id: existingCustomer.id,
+          first_name: payload.firstName,
+          last_name: payload.lastName,
+          email: payload.email,
+          note: nextNote,
+          tags: getProviderTags(existingCustomer.tags),
+        },
+      },
+    });
+
+    return {
+      customer: updated.customer,
+      action: 'updated',
+    };
+  }
+
+  const created = await shopifyAdminRequest('/customers.json', {
+    method: 'POST',
+    body: {
+      customer: {
+        first_name: payload.firstName,
+        last_name: payload.lastName,
+        email: payload.email,
+        verified_email: false,
+        note: reviewNote,
+        tags: getProviderTags(),
+      },
+    },
+  });
+
+  return {
+    customer: created.customer,
+    action: 'created',
+  };
 }
 
 function sanitizeNpi(value) {
@@ -242,18 +487,67 @@ async function lookupNpiAgainstNppes(npi) {
 
 const server = http.createServer(async (request, response) => {
   const origin = getAllowedOrigin(request.headers.origin);
+  const requestUrl = new URL(request.url || '/', `http://${request.headers.host || 'localhost'}`);
+  const pathname = requestUrl.pathname.replace(/\/+$/, '') || '/';
 
   if (request.method === 'OPTIONS') {
     sendJson(response, 204, {}, origin);
     return;
   }
 
-  if (request.method === 'GET' && request.url === '/health') {
-    sendJson(response, 200, { ok: true, service: 'ell-npi-verifier' }, origin);
+  if (request.method === 'GET' && pathname === '/health') {
+    sendJson(response, 200, {
+      ok: true,
+      service: 'ell-provider-access',
+      providerRegistrationConfigured: Boolean(shopifyShopDomain && shopifyAdminAccessToken),
+      shopDomain: shopifyShopDomain || null,
+    }, origin);
     return;
   }
 
-  if (request.method !== 'POST' || request.url !== '/verify') {
+  if (request.method === 'POST' && pathname === '/provider-registration') {
+    try {
+      const body = await readJsonBody(request);
+      const providerRegistration = getSubmittedProviderRegistration(body);
+      const validation = validateProviderRegistration(providerRegistration);
+
+      if (!validation.valid) {
+        sendJson(response, 422, {
+          ok: false,
+          message: validation.message,
+        }, origin);
+        return;
+      }
+
+      const result = await upsertProviderCustomer(providerRegistration);
+
+      sendJson(response, 200, {
+        ok: true,
+        status: 'pending_review',
+        action: result.action,
+        customer: {
+          id: result.customer?.id || null,
+          email: result.customer?.email || providerRegistration.email,
+          tags: result.customer?.tags || getProviderTags(),
+        },
+        message: 'Provider registration received. A Shopify customer profile is queued for internal ELL review.',
+      }, origin);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      const isConfigurationError = message.includes('Provider registration is not configured');
+
+      sendJson(response, isConfigurationError ? 503 : 502, {
+        ok: false,
+        message: isConfigurationError
+          ? 'Provider registration is not configured yet. Please contact the ELL team.'
+          : 'Provider registration could not be saved to Shopify Customers right now. Please try again shortly.',
+        error: message,
+      }, origin);
+    }
+    return;
+  }
+
+  if (request.method !== 'POST' || pathname !== '/verify') {
     sendJson(response, 404, { valid: false, message: 'Not found.' }, origin);
     return;
   }

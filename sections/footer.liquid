@@ -3,6 +3,13 @@
   assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
   assign cart_url = routes.cart_url | default: '/cart'
   assign quality_url = catalog_url | append: '?view=quality-safety'
+  assign provider_registration_url = catalog_url | append: '?view=provider-registration'
+  assign provider_approved = false
+  assign gated_catalog_url = provider_registration_url
+  if customer and customer.tags contains 'provider-approved'
+    assign provider_approved = true
+    assign gated_catalog_url = catalog_url
+  endif
 %}
 
 <footer class="site-footer">
@@ -30,7 +37,7 @@
               if platform_url == blank
                 assign platform_handle = block.settings.label | handle
                 if platform_handle contains 'catalog' or platform_handle contains 'inventory'
-                  assign platform_url = catalog_url
+                  assign platform_url = gated_catalog_url
                 elsif platform_handle contains 'procurement' or platform_handle contains 'cart'
                   assign platform_url = cart_url
                 elsif platform_handle contains 'contact' or platform_handle contains 'support'
@@ -38,8 +45,10 @@
                 elsif platform_handle contains 'order'
                   assign platform_url = cart_url
                 else
-                  assign platform_url = catalog_url
+                  assign platform_url = provider_registration_url
                 endif
+              elsif provider_approved and platform_url contains 'view=provider-registration'
+                assign platform_url = catalog_url
               endif
             %}
             <a class="site-footer__link" href="{{ platform_url }}" {{ block.shopify_attributes }}>
@@ -47,7 +56,7 @@
             </a>
           {% endfor %}
         {% else %}
-          <a class="site-footer__link" href="{{ catalog_url }}">Inventory Catalog</a>
+          <a class="site-footer__link" href="{{ gated_catalog_url }}">Inventory Catalog</a>
           <a class="site-footer__link" href="{{ cart_url }}">Cart</a>
           <a class="site-footer__link" href="/pages/contact">Contact</a>
           <a class="site-footer__link" href="{{ cart_url }}">Order Summary</a>

@@ -1,8 +1,23 @@
 {% liquid
   assign procurement_url = section.settings.procurement_link | default: routes.cart_url | default: '/cart'
   assign coa_url = section.settings.coa_link
+  assign provider_approved = false
+  if customer and customer.tags contains 'provider-approved'
+    assign provider_approved = true
+  endif
 %}
 
+{% unless provider_approved %}
+  <section class="ell-section catalog-dossier-page catalog-page__hero">
+    <div class="ell-container">
+      {% render 'provider-access-gate',
+        gate_eyebrow: 'Product Catalog',
+        gate_heading: 'Provider approval required to view catalog materials',
+        gate_body: 'Catalog materials, documentation references, and ordering actions are available to approved provider accounts.'
+      %}
+    </div>
+  </section>
+{% else %}
 <section class="ell-section catalog-dossier-page catalog-page__hero">
   <div class="ell-container detail-layout">
     <div class="detail-main">
@@ -109,20 +124,14 @@
         {% render 'icon', name: 'arrow-right' %}
       </a>
 
-      <div class="verification-box" data-verification-root>
+      <div class="verification-box">
         <div style="display:flex;gap:0.75rem;align-items:flex-start;">
           <span class="catalog-verify-icon">{% render 'icon', name: 'verified' %}</span>
           <div>
-            <strong>{{ section.settings.verify_heading }}</strong>
-            <p class="muted-copy" style="margin:0.35rem 0 0.75rem;font-size:0.86rem;">{{ section.settings.verify_body }}</p>
+            <strong>Provider account required</strong>
+            <p class="muted-copy" style="margin:0.35rem 0 0;font-size:0.86rem;">Product visibility and pricing access are enabled after provider account setup and internal review.</p>
           </div>
         </div>
-        <div class="catalog-verify-row">
-          <label class="visually-hidden" for="catalog-npi-{{ section.id }}">National Provider Identifier</label>
-          <input id="catalog-npi-{{ section.id }}" class="field" type="text" placeholder="Enter NPI Number" inputmode="numeric" data-npi-input>
-          <button class="ell-button ell-button--ghost" type="button" data-verify-trigger>{{ section.settings.verify_button }}</button>
-        </div>
-        <div class="verification-status" data-verification-status></div>
       </div>
 
       <div class="catalog-compliance">
@@ -151,6 +160,7 @@
     </aside>
   </div>
 </section>
+{% endunless %}
 
 {% schema %}
 {
@@ -200,9 +210,6 @@
     { "type": "text", "id": "shipping_condition", "label": "Shipping condition", "default": "Subject to product specifications" },
     { "type": "text", "id": "minimum_order", "label": "Minimum order", "default": "Product specific" },
     { "type": "text", "id": "panel_button", "label": "Panel button label", "default": "Open Cart" },
-    { "type": "text", "id": "verify_heading", "label": "Verification heading", "default": "Provider details requested" },
-    { "type": "textarea", "id": "verify_body", "label": "Verification body", "default": "Provider and institutional details may be reviewed before pricing, documentation, or fulfillment steps are completed." },
-    { "type": "text", "id": "verify_button", "label": "Verification button", "default": "Prepare Review" },
     { "type": "text", "id": "badges_heading", "label": "Compliance heading", "default": "Review Materials" },
     { "type": "text", "id": "support_heading", "label": "Support heading", "default": "Provider support" },
     { "type": "text", "id": "support_body", "label": "Support body", "default": "Product, documentation, and ordering questions can be routed for review." },

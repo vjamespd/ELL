@@ -1,6 +1,6 @@
 {% liquid
   assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
-  assign npi_value = cart.attributes['NPI Number']
+  assign provider_registration_url = catalog_url | append: '?view=provider-registration'
   assign institution_value = cart.attributes['Institution']
   assign po_value = cart.attributes['Purchase Order']
 %}
@@ -13,7 +13,7 @@
           <p class="eyebrow">{{ section.settings.empty_eyebrow }}</p>
           <h1 class="section-title">{{ section.settings.empty_heading }}</h1>
           <p class="lead-copy">{{ section.settings.empty_body }}</p>
-          <a class="ell-button ell-button--primary" href="{{ catalog_url }}">{{ section.settings.empty_button }}</a>
+          <a class="ell-button ell-button--primary" href="{{ provider_registration_url }}">{{ section.settings.empty_button }}</a>
         </div>
       {% else %}
         <form action="{{ routes.cart_url }}" method="post" id="cart-form" data-cart-form>
@@ -88,31 +88,15 @@
                   <span class="muted-copy">{{ section.settings.subtotal_label }}</span>
                   <strong>{{ cart.total_price | money }}</strong>
                 </div>
-                <div class="procurement-line" data-verified-provider-line hidden>
-                  <span class="muted-copy">{{ section.settings.verified_provider_label }}</span>
-                  <strong data-verified-provider-name></strong>
-                </div>
                 <div class="procurement-line">
                   <span class="muted-copy">{{ section.settings.checkout_label }}</span>
                   <strong>{{ section.settings.checkout_value }}</strong>
                 </div>
               </div>
 
-              <div id="clinical-verification" class="cart-verification" data-verification-root>
+              <div class="cart-verification">
                 <h2 class="panel-title">{{ section.settings.verification_heading }}</h2>
                 <p class="muted-copy">{{ section.settings.verification_body }}</p>
-
-                <label class="stat-label" for="cart-npi">{{ section.settings.npi_label }}</label>
-                <input
-                  id="cart-npi"
-                  class="field"
-                  type="text"
-                  name="attributes[NPI Number]"
-                  value="{{ npi_value | escape }}"
-                  placeholder="{{ section.settings.npi_placeholder }}"
-                  inputmode="numeric"
-                  data-npi-input
-                >
 
                 <label class="stat-label" for="cart-institution">{{ section.settings.institution_label }}</label>
                 <input
@@ -135,10 +119,6 @@
                   placeholder="{{ section.settings.po_placeholder }}"
                 >
 
-                <button class="ell-button ell-button--ghost" type="button" data-verify-trigger>
-                  {{ section.settings.verify_button }}
-                </button>
-                <div class="procurement-status" data-verification-status></div>
               </div>
 
               <div class="procurement-note">
@@ -150,13 +130,13 @@
                 <button class="ell-button ell-button--ghost" type="submit" name="update">
                   {{ section.settings.update_label }}
                 </button>
-                <button class="ell-button ell-button--primary" type="submit" name="checkout" data-checkout-submit>
+                <button class="ell-button ell-button--primary" type="submit" name="checkout">
                   {{ section.settings.checkout_button }}
                   {% render 'icon', name: 'arrow-right' %}
                 </button>
               </div>
 
-              <a class="ell-button ell-button--text" href="{{ catalog_url }}">{{ section.settings.continue_label }}</a>
+              <a class="ell-button ell-button--text" href="{{ provider_registration_url }}">{{ section.settings.continue_label }}</a>
             </aside>
           </div>
         </form>
@@ -179,18 +159,14 @@
     { "type": "text", "id": "quantity_label", "label": "Quantity label", "default": "Quantity" },
     { "type": "text", "id": "summary_eyebrow", "label": "Summary eyebrow", "default": "Order Summary" },
     { "type": "text", "id": "subtotal_label", "label": "Subtotal label", "default": "Subtotal" },
-    { "type": "text", "id": "verified_provider_label", "label": "Verified NPI label", "default": "Verified NPI" },
     { "type": "text", "id": "checkout_label", "label": "Checkout path label", "default": "Review path" },
     { "type": "text", "id": "checkout_value", "label": "Checkout path value", "default": "Order review" },
-    { "type": "text", "id": "verification_heading", "label": "Verification heading", "default": "Provider and institution details" },
-    { "type": "textarea", "id": "verification_body", "label": "Verification body", "default": "These fields are stored with the order for provider, institutional, and shipping eligibility review. This does not perform real-time verification." },
-    { "type": "text", "id": "npi_label", "label": "NPI label", "default": "National Provider Identifier (NPI)" },
-    { "type": "text", "id": "npi_placeholder", "label": "NPI placeholder", "default": "10-digit NPI number" },
+    { "type": "text", "id": "verification_heading", "label": "Review heading", "default": "Provider and institution details" },
+    { "type": "textarea", "id": "verification_body", "label": "Review body", "default": "These fields are stored with the order for provider, institutional, and shipping eligibility review." },
     { "type": "text", "id": "institution_label", "label": "Institution label", "default": "Affiliated Institution" },
     { "type": "text", "id": "institution_placeholder", "label": "Institution placeholder", "default": "e.g. Mayo Clinic Research" },
     { "type": "text", "id": "po_label", "label": "PO label", "default": "Purchase Order (Optional)" },
     { "type": "text", "id": "po_placeholder", "label": "PO placeholder", "default": "e.g. PO-2026-001A" },
-    { "type": "text", "id": "verify_button", "label": "Verify button", "default": "Prepare Review" },
     { "type": "textarea", "id": "note", "label": "Note", "default": "Orders may be reviewed for provider, institutional, and shipping eligibility before fulfillment." },
     { "type": "text", "id": "update_label", "label": "Update label", "default": "Update Cart" },
     { "type": "text", "id": "checkout_button", "label": "Checkout button", "default": "Continue to Order Review" },

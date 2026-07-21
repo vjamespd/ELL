@@ -4,8 +4,24 @@
   if collection_description == blank
     assign collection_description = section.settings.fallback_body
   endif
+
+  assign provider_approved = false
+  if customer and customer.tags contains 'provider-approved'
+    assign provider_approved = true
+  endif
 %}
 
+{% unless provider_approved %}
+  <section class="ell-section catalog-page__hero">
+    <div class="ell-container">
+      {% render 'provider-access-gate',
+        gate_eyebrow: 'Product Catalog',
+        gate_heading: 'Provider approval required to view the Product Catalog',
+        gate_body: 'The ELL Product Catalog is available to approved provider accounts after registration and internal review.'
+      %}
+    </div>
+  </section>
+{% else %}
 <section class="ell-section catalog-page__hero" data-catalog-root>
   <div class="ell-container">
     <div class="collection-hero">
@@ -209,6 +225,7 @@
     </div>
   </div>
 </section>
+{% endunless %}
 
 {% schema %}
 {

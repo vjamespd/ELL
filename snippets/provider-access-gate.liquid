@@ -1,0 +1,36 @@
+{% liquid
+  assign catalog_url = routes.all_products_collection_url | default: '/collections/all'
+  assign provider_registration_url = catalog_url | append: '?view=provider-registration'
+  assign login_url = routes.account_login_url | default: '/account/login'
+  assign gate_eyebrow = gate_eyebrow | default: 'Provider Access'
+  assign gate_heading = gate_heading | default: 'Provider approval required'
+  assign gate_body = gate_body | default: 'Product visibility, pricing, documentation, and provider resources are available after account setup and internal ELL review.'
+%}
+
+<div class="provider-access-gate surface-card">
+  <p class="eyebrow">{{ gate_eyebrow }}</p>
+  <h1 class="section-title">{{ gate_heading }}</h1>
+  <p class="lead-copy">{{ gate_body }}</p>
+
+  {% if customer %}
+    <div class="provider-access-gate__notice">
+      {% render 'icon', name: 'lock' %}
+      <p>Your customer account is signed in, but provider access has not been approved yet. Submit or update provider setup details so the ELL team can complete review.</p>
+    </div>
+  {% else %}
+    <div class="provider-access-gate__notice">
+      {% render 'icon', name: 'lock' %}
+      <p>Sign in with an approved provider account, or submit provider registration to begin the review process.</p>
+    </div>
+  {% endif %}
+
+  <div class="provider-access-gate__actions">
+    <a class="ell-button ell-button--primary" href="{{ provider_registration_url }}">
+      Set up provider access
+      {% render 'icon', name: 'arrow-right' %}
+    </a>
+    <a class="ell-button ell-button--ghost" href="{{ login_url }}">Log in</a>
+  </div>
+
+  <p class="muted-copy provider-access-gate__footnote">Approved access is activated by the ELL team after internal review.</p>
+</div>

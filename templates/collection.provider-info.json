@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main": {
+      "type": "ell-provider-coming-soon",
+      "settings": {
+        "route_handle": "provider-info",
+        "eyebrow": "Provider Access",
+        "heading": "Coming Soon",
+        "body": "Provider information will be published here soon, including access expectations, review steps, and onboarding guidance for clinical accounts.",
+        "primary_label": "Return Home",
+        "secondary_label": "Browse Inventory"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
